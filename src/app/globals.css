@@ -1,108 +1,45 @@
+
 @import "tailwindcss";
 
-/*
- * Uganda Buildcon palette — sampled from the official 2026 brochure,
- * 2025 Post Show Report and the 6th-edition logo.
- *   ocean blue #0c4e78 ("UGANDA" wordmark, date chips)
- *   navy       #123472 (headings, contact panels)
- *   green      #3cb44e (highlights, bullets)
- *   leaf green #72c448 (decorative wedges)
- * brand-blue is a lifted ocean blue so it stays legible on both white and
- * the navy dark sections; brand-blue-dark is the exact brochure ocean blue.
- */
-:root {
+@theme inline {
+  /* Uganda Buildcon brand */
   --color-brand-blue: #1f6fae;
   --color-brand-blue-dark: #0c4e78;
   --color-brand-navy: #123472;
   --color-brand-green: #3cb44e;
   --color-brand-green-dark: #2a9048;
   --color-brand-lime: #72c448;
+
+  /* Premium UI surfaces */
   --color-brand-dark: #0f2346;
   --color-brand-light: #f3f7fb;
   --color-brand-border: #dbe4ee;
   --color-brand-body: #4a5870;
+
   --color-background: #ffffff;
   --color-foreground: #0f2346;
+
+  /* Next.js optimized fonts */
+  --font-sans: var(--font-inter), Arial, sans-serif;
+  --font-heading: var(--font-manrope), Arial, sans-serif;
 }
 
-@theme inline {
-  --color-brand-blue: var(--color-brand-blue);
-  --color-brand-blue-dark: var(--color-brand-blue-dark);
-  --color-brand-navy: var(--color-brand-navy);
-  --color-brand-green: var(--color-brand-green);
-  --color-brand-green-dark: var(--color-brand-green-dark);
-  --color-brand-lime: var(--color-brand-lime);
-  --color-brand-dark: var(--color-brand-dark);
-  --color-brand-light: var(--color-brand-light);
-  --color-brand-border: var(--color-brand-border);
-  --color-brand-body: var(--color-brand-body);
-  --color-background: var(--color-background);
-  --color-foreground: var(--color-foreground);
-
-  --font-sans: var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-heading: var(--font-manrope), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-
-  --animate-fade-up: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
-  --animate-spin-slow: spin 40s linear infinite;
-
-  @keyframes fade-up {
-    from {
-      opacity: 0;
-      transform: translateY(24px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-}
-
-body {
-  background: var(--color-background);
-  color: var(--color-foreground);
-  font-family: var(--font-sans);
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: var(--font-heading);
+/* Only global browser-level defaults */
+:root {
+  color-scheme: light;
 }
 
 html {
+  scroll-behavior: smooth;
   scroll-padding-top: 5rem;
 }
 
+body {
+  min-height: 100%;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+  html {
+    scroll-behavior: auto;
   }
-}
-
-::selection {
-  background: var(--color-brand-blue);
-  color: #ffffff;
-}
-
-.skip-link {
-  position: absolute;
-  left: -9999px;
-  top: 0;
-  z-index: 100;
-  background: var(--color-brand-dark);
-  color: #ffffff;
-  padding: 0.75rem 1.25rem;
-  border-radius: 0 0 0.5rem 0;
-}
-
-.skip-link:focus {
-  left: 0;
 }

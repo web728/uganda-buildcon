@@ -93,7 +93,7 @@ export function Footer() {
             {/* Prominent Large Logo */}
             <Link href="/" className="inline-block transition-transform hover:scale-[1.02]">
               <Image
-                src="/logos/uganda-buildcon-logo-light.png"
+                src="/logos/logo.png"
                 alt={event.name}
                 width={869}
                 height={287}

@@ -1,6 +1,16 @@
+
 import type { Metadata } from "next";
+
 import { event } from "@/config/event";
+import { siteUrl } from "@/lib/utils/siteUrl";
+
+import {
+  getPublishedExhibitors,
+  type ExhibitorSummary,
+} from "@/lib/data/exhibitors";
+
 import { HeroSection } from "@/components/sections/home/HeroSection";
+import { HeroStatsSection } from "@/components/sections/home/HeroStatsSection";
 import { IntroSection } from "@/components/sections/home/IntroSection";
 import { WhyUgandaSection } from "@/components/sections/home/WhyUgandaSection";
 import { ExhibitionProfileSection } from "@/components/sections/home/ExhibitionProfileSection";
@@ -12,67 +22,191 @@ import { VenueSection } from "@/components/sections/home/VenueSection";
 import { PartnersSection } from "@/components/sections/home/PartnersSection";
 import { NewsSection } from "@/components/sections/home/NewsSection";
 import { FinalCtaSection } from "@/components/sections/home/FinalCtaSection";
-import { HeroStatsSection } from "@/components/sections/home/HeroStatsSection";
-import { getPublishedExhibitors, type ExhibitorSummary } from "@/lib/data/exhibitors";
 
+/**
+ * Homepage rendering
+ *
+ * Keep dynamic rendering if the published exhibitor
+ * directory must reflect database changes immediately.
+ *
+ * For better caching, consider ISR after confirming
+ * getPublishedExhibitors() supports caching safely.
+ */
 export const dynamic = "force-dynamic";
 
-const homeTitle = `${event.name} | Building & Construction Expo in Kampala`;
-const homeDescription = `${event.name} (${event.editionLabel}) — Uganda's largest B2B trade show for building materials, construction machinery, architecture, interiors and engineering. ${event.dates.display} at ${event.venue.fullLocation}. Book a stand or register to visit free.`;
+/**
+ * Canonical website configuration
+ */
+const BASE_URL = siteUrl.replace(/\/+$/, "");
 
+const EVENT_YEAR = event.dates.start.slice(0, 4);
+
+const HOME_URL = `${BASE_URL}/`;
+
+const OG_IMAGE = `${BASE_URL}/images/og/og-default.jpg`;
+
+const HOME_TITLE =
+  `Uganda Buildcon ${EVENT_YEAR} | ` +
+  `Building & Construction Expo Uganda`;
+
+const HOME_DESCRIPTION =
+  `Explore Uganda Buildcon ${EVENT_YEAR}, a leading ` +
+  `building and construction B2B trade exhibition ` +
+  `in Kampala. ${event.dates.display} at ` +
+  `${event.venue.fullLocation}. Discover building ` +
+  `materials, machinery, architecture, interiors ` +
+  `and engineering solutions. Register to visit.`;
+
+/**
+ * Homepage SEO metadata
+ *
+ * Global robots, verification, fonts and site-wide
+ * organization/event schema come from RootLayout.
+ */
 export const metadata: Metadata = {
-  title: { absolute: homeTitle },
-  description: homeDescription,
-  keywords: [
-    "Uganda Buildcon 2027",
-    "Uganda Buildcon International Expo",
-    "construction expo Uganda",
-    "building materials exhibition Kampala",
-    "construction machinery trade show Uganda",
-    "UMA Show Grounds exhibition",
-    "East Africa construction trade show",
-  ],
-  alternates: { canonical: "/" },
-  openGraph: {
-    title: homeTitle,
-    description: `Meet contractors, developers, architects and buyers at Uganda's largest building & construction B2B expo — ${event.dates.display}, ${event.venue.fullLocation}.`,
-    url: "/",
-    siteName: event.name,
-    images: [{ url: "/images/og/og-default.jpg", width: 1200, height: 630, alt: `${event.name} — ${event.dates.display}, ${event.venue.fullLocation}` }],
-    locale: "en_UG",
-    type: "website",
+  title: {
+    absolute: HOME_TITLE,
   },
+
+  description: HOME_DESCRIPTION,
+
+  keywords: [
+    "Uganda Buildcon",
+    `Uganda Buildcon ${EVENT_YEAR}`,
+    `Uganda Buildcon International Expo ${EVENT_YEAR}`,
+    "Uganda construction expo",
+    "Construction exhibition Uganda",
+    "Construction expo Kampala",
+    "Building materials exhibition Uganda",
+    "Construction machinery exhibition",
+    "Building and construction trade show",
+    "East Africa construction expo",
+    "Architecture exhibition Uganda",
+    "Interior design exhibition Kampala",
+    "Construction equipment trade fair",
+    "UMA Show Grounds Kampala",
+    "Uganda building industry exhibition",
+  ],
+
+  alternates: {
+    canonical: HOME_URL,
+    languages: {
+      "en-UG": HOME_URL,
+      "x-default": HOME_URL,
+    },
+  },
+
+  openGraph: {
+    type: "website",
+    locale: "en_UG",
+    url: HOME_URL,
+    siteName: event.name,
+
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
+
+    images: [
+      {
+        url: OG_IMAGE,
+        width: 1200,
+        height: 630,
+        type: "image/jpeg",
+        alt:
+          `${event.name} ${EVENT_YEAR} — ` +
+          `${event.dates.display}, ${event.venue.fullLocation}`,
+      },
+    ],
+  },
+
   twitter: {
     card: "summary_large_image",
-    title: homeTitle,
-    description: `Uganda's largest building & construction B2B expo — ${event.dates.display}, ${event.venue.fullLocation}.`,
-    images: ["/images/og/og-default.jpg"],
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
+    images: [OG_IMAGE],
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+
+  other: {
+    "geo.region": "UG-102",
+    "geo.placename": "Kampala, Uganda",
   },
 };
 
+/**
+ * Homepage
+ *
+ * Server Component:
+ * - SEO-friendly server-rendered structure
+ * - Dynamic published exhibitor data
+ * - No unnecessary client-side JavaScript
+ * - Preserves all existing homepage sections
+ */
 export default async function HomePage() {
   let exhibitors: ExhibitorSummary[] = [];
+
   try {
     exhibitors = await getPublishedExhibitors();
-  } catch {
-    exhibitors = [];
+  } catch (error) {
+    console.error(
+      "[HomePage] Failed to fetch published exhibitors:",
+      error
+    );
   }
 
   return (
-    <main id="main-content" className="flex flex-col min-h-screen">
+    <>
+      {/* 01 — Hero / Primary H1 */}
       <HeroSection />
+
+      {/* 02 — Previous edition statistics */}
       <HeroStatsSection />
+
+      {/* 03 — Event introduction */}
       <IntroSection />
+
+      {/* 04 — Uganda construction market */}
       <WhyUgandaSection />
+
+      {/* 05 — Exhibition sectors */}
       <ExhibitionProfileSection />
+
+      {/* 06 — Exhibitor benefits */}
       <WhyExhibitSection />
+
+      {/* 07 — Visitors and decision-makers */}
       <WhoWillYouMeetSection />
+
+      {/* 08 — Previous edition highlights */}
       <PreviousEditionSection />
-      <ExhibitorDirectoryPreviewSection exhibitors={exhibitors} />
+
+      {/* 09 — Published exhibitor directory */}
+      <ExhibitorDirectoryPreviewSection
+        exhibitors={exhibitors}
+      />
+
+      {/* 10 — Venue and location */}
       <VenueSection />
+
+      {/* 11 — Organisers and partners */}
       <PartnersSection />
+
+      {/* 12 — Latest expo news */}
       <NewsSection />
+
+      {/* 13 — Final conversion CTA */}
       <FinalCtaSection />
-    </main>
+    </>
   );
 }
