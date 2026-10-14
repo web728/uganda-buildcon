@@ -230,7 +230,7 @@ export function Header() {
             )}
           >
             <Image
-              src="/logos/logo.png"
+              src="/logos/uganda-logo.png"
               alt={event.name}
               width={869}
               height={287}
