@@ -1,412 +1,602 @@
+
 "use client";
 
+import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion, type Variants } from "framer-motion";
+
+import {
+  motion,
+  type Variants,
+} from "framer-motion";
+
 import { event } from "@/config/event";
 import { Container } from "@/components/ui/Container";
 
-const containerVariants: Variants = {
-  hidden: { opacity: 0 },
+const EASE = [0.22, 1, 0.36, 1] as const;
+
+const GROUP: Variants = {
+  hidden: {},
   visible: {
-    opacity: 1,
     transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.05,
+      staggerChildren: 0.12,
+      delayChildren: 0.06,
     },
   },
 };
 
-const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 18, filter: "blur(4px)" },
+const REVEAL: Variants = {
+  hidden: {
+    opacity: 0,
+    y: 22,
+  },
   visible: {
     opacity: 1,
     y: 0,
-    filter: "blur(0px)",
     transition: {
-      duration: 0.6,
-      ease: [0.16, 1, 0.3, 1],
+      duration: 0.8,
+      ease: EASE,
     },
   },
 };
 
-const ORGANISERS_DATA = [
-  {
-    name: "FUTUREX TRADE FAIR & EVENTS PVT. LTD.",
-    shortBadge: "Futurex Group",
-    badgeTheme: "blue",
-    hq: "New Delhi, India",
-    established: "Operating Since 2011",
-    url: "https://www.futurextrade.com/",
-    logo: "/logos/futurex-logo.png",
-    paragraphs: [
-      "FUTUREX TRADE FAIR & EVENTS PVT. LTD. is an international exhibition and corporate-events organiser headquartered in New Delhi, India. Operating since 2011, Futurex's portfolio spans 220+ international trade exhibitions and conferences across industrial sectors including garments, building and infrastructure, agriculture, wood and woodworking, power, education, printing, plastics, and packaging.",
-      "Futurex's portfolio represents 16,500+ exhibitors, 25,800+ brands on display, and 950,000+ visitors, reflecting its experience in building B2B platforms that connect manufacturers, suppliers, buyers, distributors, and industry decision-makers.",
-    ],
-    stats: [
-      { label: "Trade Exhibitions", val: "220+" },
-      { label: "Exhibitors Hosted", val: "16,500+" },
-      { label: "Brands on Display", val: "25,800+" },
-      { label: "Global Trade Visitors", val: "950K+" },
-    ],
+const WORD_GROUP: Variants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.085,
+      delayChildren: 0.08,
+    },
   },
-  {
-    name: "EXHIBITIONS & TRADE SERVICES INDIA PVT. LTD.",
-    shortBadge: "ETSIPL",
-    badgeTheme: "green",
-    hq: "Navi Mumbai, India",
-    established: "ISO 9001:2015 Certified",
-    url: "https://www.etsipl.in/",
-    logo: "/logos/etsipl-logo.png",
-    paragraphs: [
-      "EXHIBITIONS & TRADE SERVICES INDIA PRIVATE LIMITED (ETSIPL), based out of Navi Mumbai, India, is an ISO 9001:2015 Certified Organization with more than 12 years of experience in the promotion and organizing of trade exhibitions across the globe.",
-      "Through its extensive global network, ETSIPL maintains a worldwide presence with strategic local partners stationed across major trade continents. Dedicated to delivering best-in-class trade facilitation, Through Uganda Buildcon, ETSIPL aims to provide opportunities to explore the potential of Uganda and the other countries in the East Africa region.",
-    ],
-    stats: [
-      { label: "Global Track Record", val: "12+ Yrs" },
-      { label: "Quality Certification", val: "ISO 9001" },
-      { label: "Partner Network", val: "Worldwide" },
-      { label: "Regional Target", val: "East Africa" },
-    ],
-  },
-];
+};
 
-const CONTACT_DESKS = [
+const WORD: Variants = {
+  hidden: {
+    opacity: 0,
+    y: "110%",
+  },
+  visible: {
+    opacity: 1,
+    y: "0%",
+    transition: {
+      duration: 0.85,
+      ease: EASE,
+    },
+  },
+};
+
+/* ==========================================
+   ORGANISER CONTENT
+
+   Names, URLs, logos and contacts are
+   sourced from event.ts.
+
+   No unsupported metrics added.
+========================================== */
+
+const ORGANISER_CONTENT = [
   {
-    company: "Futurex Group",
-    name: event.contact.futurex.name,
-    phone: event.contact.futurex.phone,
-    email: event.contact.futurex.email,
-    location: "New Delhi Secretariat",
+    description:
+      "Futurex Trade Fair & Events Pvt. Ltd. is an exhibition and events organiser based in New Delhi, India. Its work includes business-to-business trade exhibitions that connect manufacturers, suppliers, buyers and industry professionals across multiple sectors.",
+    additional:
+      "As a joint organiser of Uganda Buildcon, Futurex contributes its exhibition planning and industry networking experience to the building and construction trade platform.",
+    location: "New Delhi, India",
   },
   {
-    company: "ETSIPL",
-    name: event.contact.etsipl.name,
-    phone: event.contact.etsipl.phone,
-    email: event.contact.etsipl.email,
-    location: "Navi Mumbai Desk",
+    description:
+      "Exhibitions & Trade Services India Pvt. Ltd. (ETSIPL) is an exhibition organiser based in Navi Mumbai, India, working with businesses and trade exhibition partners across international markets.",
+    additional:
+      "Through Uganda Buildcon, ETSIPL supports opportunities for industry engagement between international suppliers, regional businesses and construction sector professionals in Uganda and East Africa.",
+    location: "Navi Mumbai, India",
   },
-];
+] as const;
+
+/* ==========================================
+   ICONS
+========================================== */
+
+function ArrowIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-4 w-4 shrink-0"
+    >
+      <path d="M5 12h14m-6-6 6 6-6 6" />
+    </svg>
+  );
+}
+
+function ExternalIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-4 w-4 shrink-0"
+    >
+      <path d="M7 17 17 7M8 7h9v9" />
+    </svg>
+  );
+}
+
+function MailIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-[18px] w-[18px]"
+    >
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <path d="m3 7 9 6 9-6" />
+    </svg>
+  );
+}
+
+function PhoneIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-[18px] w-[18px]"
+    >
+      <path d="M22 16.9v3a2 2 0 0 1-2.2 2A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7l.5 3a2 2 0 0 1-.6 1.8L7.1 10a16 16 0 0 0 6.9 6.9l1.5-1.9a2 2 0 0 1 1.8-.6l3 .5A2 2 0 0 1 22 16.9Z" />
+    </svg>
+  );
+}
+
+/* ==========================================
+   HEADING REVEAL
+========================================== */
+
+function AnimatedWords({
+  text,
+  className = "",
+}: {
+  text: string;
+  className?: string;
+}) {
+  const words = text.trim().split(/\s+/);
+
+  return (
+    <span className={className}>
+      {words.map((word, index) => (
+        <span
+          key={`${word}-${index}`}
+          className="inline-block overflow-hidden align-bottom"
+        >
+          <motion.span
+            variants={WORD}
+            className="inline-block"
+          >
+            {word}
+          </motion.span>
+
+          {index < words.length - 1
+            ? "\u00A0"
+            : null}
+        </span>
+      ))}
+    </span>
+  );
+}
+
+function SectionLabel({
+  children,
+  light = false,
+}: {
+  children: ReactNode;
+  light?: boolean;
+}) {
+  return (
+    <div className="flex items-center gap-3">
+      <span className="h-[2px] w-8 shrink-0 bg-[#28A45A]" />
+
+      <span
+        className={`text-[10px] font-bold uppercase tracking-[0.15em] ${
+          light
+            ? "text-white/65"
+            : "text-[#1769A4]"
+        }`}
+      >
+        {children}
+      </span>
+    </div>
+  );
+}
+
+/* ==========================================
+   ORGANISER PROFILE
+========================================== */
+
+function OrganiserProfile({
+  index,
+}: {
+  index: number;
+}) {
+  const organiser = event.organisers[index];
+  const content = ORGANISER_CONTENT[index];
+
+  if (!organiser || !content) return null;
+
+  const isFuturex = index === 0;
+
+  return (
+    <motion.article
+      variants={REVEAL}
+      className="group relative flex h-full min-w-0 flex-col overflow-hidden rounded-xl border border-[#E1E8EE] bg-white transition-[border-color,box-shadow] duration-300 hover:border-[#1769A4]/30 hover:shadow-[0_18px_45px_rgba(16,35,55,0.055)]"
+    >
+      {/* Logo area */}
+      <div className="relative flex min-h-[150px] items-center justify-between gap-5 border-b border-[#E8EDF2] bg-[#FAFBFC] px-6 py-7 sm:px-8">
+        <a
+          href={organiser.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`Visit ${organiser.name} official website`}
+          className="relative block h-[85px] w-full max-w-[220px]"
+        >
+          <Image
+            src={organiser.logo}
+            alt={`${organiser.name} official logo`}
+            fill
+            sizes="220px"
+            className="object-contain object-left"
+          />
+        </a>
+
+        <span
+          aria-hidden="true"
+          className={`h-9 w-[3px] shrink-0 rounded-full ${
+            isFuturex
+              ? "bg-[#1769A4]"
+              : "bg-[#28A45A]"
+          }`}
+        />
+      </div>
+
+      {/* Company information */}
+      <div className="flex flex-1 flex-col p-6 sm:p-8">
+        <p className="text-[11px] font-semibold tracking-[0.03em] text-[#718294]">
+          {content.location}
+        </p>
+
+        <h3 className="mt-3 font-heading text-[clamp(1.15rem,1.7vw,1.5rem)] font-bold leading-[1.35] tracking-[-0.025em] text-[#101214]">
+          {organiser.name}
+        </h3>
+
+        <div className="mt-5 space-y-4">
+          <p className="text-[13px] leading-[1.85] tracking-[-0.005em] text-[#607083] sm:text-[14px]">
+            {content.description}
+          </p>
+
+          <p className="text-[13px] leading-[1.85] tracking-[-0.005em] text-[#607083] sm:text-[14px]">
+            {content.additional}
+          </p>
+        </div>
+
+        <div className="mt-auto pt-7">
+          <div className="border-t border-[#E8EDF2] pt-5">
+            <a
+              href={organiser.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group/link inline-flex items-center gap-2 text-[12px] font-bold text-[#1769A4] transition-colors hover:text-[#28A45A]"
+            >
+              Visit Official Website
+
+              <span className="transition-transform duration-300 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5">
+                <ExternalIcon />
+              </span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <span
+        aria-hidden="true"
+        className={`absolute bottom-0 left-0 h-[2px] w-full origin-left scale-x-0 transition-transform duration-500 group-hover:scale-x-100 ${
+          isFuturex
+            ? "bg-[#1769A4]"
+            : "bg-[#28A45A]"
+        }`}
+      />
+    </motion.article>
+  );
+}
+
+/* ==========================================
+   CONTACT DESK
+========================================== */
+
+function ContactDesk({
+  company,
+  name,
+  phone,
+  email,
+}: {
+  company: string;
+  name: string;
+  phone: string;
+  email: string;
+}) {
+  const cleanPhone = phone.replace(/[^+\d]/g, "");
+
+  return (
+    <motion.article
+      variants={REVEAL}
+      className="group min-w-0 border-b border-[#E2E8EE] py-6 first:pt-0 last:border-b-0 last:pb-0 sm:py-7"
+    >
+   
+
+      <h3 className="mt-2 font-heading text-[19px] font-bold leading-[1.35] tracking-[-0.025em] text-[#101214]">
+        {name}
+      </h3>
+
+      <div className="mt-4 flex flex-col gap-3">
+        <a
+          href={`tel:${cleanPhone}`}
+          className="group/link flex w-fit min-w-0 items-center gap-3 text-[13px] font-medium text-[#526477] transition-colors hover:text-[#1769A4]"
+        >
+          <span className="shrink-0 text-[#28A45A]">
+            <PhoneIcon />
+          </span>
+
+          <span className="tabular-nums">
+            {phone}
+          </span>
+        </a>
+
+        <a
+          href={`mailto:${email}`}
+          className="group/link flex w-fit min-w-0 items-center gap-3 text-[13px] font-medium text-[#526477] transition-colors hover:text-[#1769A4]"
+        >
+          <span className="shrink-0 text-[#1769A4]">
+            <MailIcon />
+          </span>
+
+          <span className="break-all">
+            {email}
+          </span>
+        </a>
+      </div>
+    </motion.article>
+  );
+}
+
+/* ==========================================
+   MAIN ORGANISERS VIEW
+========================================== */
 
 export function OrganisersClientView() {
   return (
-    <div className="relative overflow-hidden py-14 sm:py-20 text-brand-dark selection:bg-brand-blue selection:text-white">
-      {/* Background Architectural Vector Pattern */}
-      <div className="pointer-events-none absolute inset-0 -z-10 select-none opacity-[0.035]">
-        <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="organisers-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#081a36" strokeWidth="0.85" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#organisers-grid)" />
-        </svg>
-      </div>
+    <div className="overflow-hidden bg-white text-[#101214]">
+      {/* INTRODUCTION */}
+      <section
+        aria-labelledby="organisers-intro-heading"
+        className="py-14 sm:py-16 lg:py-20"
+      >
+        <Container>
+          <motion.div
+            variants={GROUP}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{
+              once: true,
+              amount: 0.15,
+            }}
+            className="flex flex-col gap-6 border-b border-[#E3E9EF] pb-8 lg:flex-row lg:items-end lg:justify-between"
+          >
+            <div className="max-w-[760px]">
+              <motion.div variants={REVEAL}>
+                <SectionLabel>
+                  Joint Event Organisers
+                </SectionLabel>
+              </motion.div>
 
-      <Container className="relative z-10 w-full">
-        {/* ========================================================= */}
-        {/* Header Block                                              */}
-        {/* ========================================================= */}
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between pb-8 border-b border-slate-200/80">
-          <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 rounded-full border border-brand-blue/20 bg-brand-blue/[0.06] px-4 py-1">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-blue opacity-75" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-blue" />
-              </span>
-              <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-brand-blue">
-                Joint Global Organisers
-              </span>
+              <motion.h2
+                id="organisers-intro-heading"
+                variants={WORD_GROUP}
+                aria-label="The People Behind Uganda Buildcon"
+                className="mt-5 font-heading text-[clamp(2rem,3.6vw,3.6rem)] font-extrabold leading-[1.12] tracking-[-0.045em]"
+              >
+                <span aria-hidden="true">
+                  <AnimatedWords text="The People Behind" />
+                  {" "}
+                  <AnimatedWords
+                    text="Uganda"
+                    className="text-[#1769A4]"
+                  />
+                  {" "}
+                  <AnimatedWords
+                    text="Buildcon."
+                    className="text-[#28A45A]"
+                  />
+                </span>
+              </motion.h2>
+
+              <motion.p
+                variants={REVEAL}
+                className="mt-5 max-w-[710px] text-[14px] leading-[1.85] tracking-[-0.005em] text-[#607083] sm:text-[15px]"
+              >
+                {event.name} is jointly organised by
+                Futurex Trade Fair &amp; Events Pvt. Ltd.
+                and Exhibitions &amp; Trade Services
+                India Pvt. Ltd. (ETSIPL). Both organisations
+                contribute exhibition experience and
+                industry connections to the Uganda
+                building and construction trade platform.
+              </motion.p>
             </div>
 
-            <h2 className="mt-3.5 text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-brand-dark">
-              About the{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue via-sky-500 to-brand-green">
-                Organisers
-              </span>
-            </h2>
-
-            <p className="mt-2.5 text-sm sm:text-base leading-relaxed text-slate-600 font-normal">
-              {event.name} is jointly convened by Futurex Trade Fair &amp; Events and ETSIPL—combining decades of industrial trade fair experience, thousands of global exhibitors, and high-impact East African trade networks.
-            </p>
-          </div>
-
-          <div className="shrink-0">
-            <Link
-              href={event.cta.bookStand}
-              className="inline-flex items-center justify-center rounded-full bg-brand-blue px-7 py-3 text-xs font-bold uppercase tracking-wider text-white shadow-[0_4px_20px_rgba(31,111,174,0.3)] transition-all duration-300 hover:bg-brand-blue-dark hover:shadow-[0_6px_28px_rgba(31,111,174,0.45)] hover:-translate-y-0.5 active:translate-y-0"
-            >
-              Book Exhibition Stand →
-            </Link>
-          </div>
-        </div>
-
-        {/* ========================================================= */}
-        {/* Deep Dive Organiser Showcase Cards                        */}
-        {/* ========================================================= */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-40px" }}
-          className="mt-10 grid grid-cols-1 gap-8 lg:grid-cols-2"
-        >
-          {ORGANISERS_DATA.map((org) => {
-            const isBlue = org.badgeTheme === "blue";
-
-            return (
-              <motion.div
-                key={org.name}
-                variants={itemVariants}
-                className="group relative flex flex-col justify-between rounded-3xl border border-slate-200/90 bg-white p-7 sm:p-9 shadow-[0_4px_24px_rgba(0,0,0,0.03)] transition-all duration-300 hover:border-brand-blue/50 hover:shadow-2xl hover:shadow-brand-blue/[0.08]"
+            <motion.div variants={REVEAL}>
+              <Link
+                href={event.cta.bookStand}
+                className="group inline-flex min-h-11 items-center justify-center gap-3 rounded-lg bg-[#1769A4] px-6 py-3 text-[13px] font-bold text-white transition-[background-color,transform] duration-300 hover:-translate-y-0.5 hover:bg-[#105685] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#28A45A] motion-reduce:transform-none"
               >
-                <div>
-                  {/* Top Bar: Large Logo Container + External Link */}
-                  <div className="flex items-center justify-between gap-4 pb-6 border-b border-slate-100">
-                    <a
-                      href={org.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="relative block h-16 w-48 sm:h-20 sm:w-56 transition-transform duration-300 group-hover:scale-105"
-                    >
-                      <Image
-                        src={org.logo}
-                        alt={org.name}
-                        fill
-                        sizes="240px"
-                        className="object-contain object-left"
-                      />
-                    </a>
+                Book a Stand
 
-                    <a
-                      href={org.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50/80 px-3.5 py-1.5 text-xs font-semibold text-slate-700 transition-all hover:border-brand-blue hover:text-brand-blue hover:bg-white"
-                    >
-                      <span>Official Site</span>
-                      <span className="text-slate-400 group-hover:text-brand-blue">↗</span>
-                    </a>
-                  </div>
+                <span className="transition-transform duration-300 group-hover:translate-x-1">
+                  <ArrowIcon />
+                </span>
+              </Link>
+            </motion.div>
+          </motion.div>
 
-                  {/* Operational Meta Badge */}
-                  <div className="mt-5 flex flex-wrap items-center gap-2.5 text-xs font-semibold">
-                    <span
-                      className={`rounded-full px-3 py-0.5 text-[11px] font-bold uppercase tracking-wider ${
-                        isBlue
-                          ? "bg-brand-blue/10 text-brand-blue"
-                          : "bg-brand-green/10 text-brand-green"
-                      }`}
-                    >
-                      {org.shortBadge}
-                    </span>
-                    <span className="text-slate-300">•</span>
-                    <span className="text-slate-500">{org.hq}</span>
-                    <span className="text-slate-300">•</span>
-                    <span className="text-slate-700 font-medium">{org.established}</span>
-                  </div>
+          {/* Company showcase */}
+          <motion.div
+            variants={GROUP}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{
+              once: true,
+              amount: 0.1,
+            }}
+            className="mt-8 grid items-stretch gap-5 lg:grid-cols-2 lg:gap-6"
+          >
+            {event.organisers.map((organiser, index) => (
+              <OrganiserProfile
+                key={organiser.name}
+                index={index}
+              />
+            ))}
+          </motion.div>
+        </Container>
+      </section>
 
-                  {/* Company Name */}
-                  <h3 className="mt-3 text-lg sm:text-xl font-extrabold tracking-tight text-brand-dark group-hover:text-brand-blue transition-colors">
-                    {org.name}
-                  </h3>
-
-                  {/* Paragraphs */}
-                  <div className="mt-3.5 space-y-3 text-xs sm:text-sm leading-relaxed text-slate-600 font-normal">
-                    {org.paragraphs.map((p, pIdx) => (
-                      <p key={pIdx}>{p}</p>
-                    ))}
-                  </div>
-
-                  {/* Metric Highlights 4-Box Grid */}
-                  <div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-4">
-                    {org.stats.map((st) => (
-                      <div
-                        key={st.label}
-                        className="rounded-2xl border border-slate-100 bg-slate-50/70 p-3 text-center transition-colors group-hover:bg-slate-50"
-                      >
-                        <div
-                          className={`text-base sm:text-lg font-black tracking-tight ${
-                            isBlue ? "text-brand-blue" : "text-brand-green"
-                          }`}
-                        >
-                          {st.val}
-                        </div>
-                        <div className="mt-0.5 text-[10px] font-semibold text-slate-500 uppercase tracking-tight">
-                          {st.label}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Card Micro Footer */}
-                <div className="mt-7 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-brand-blue">
-                  <span>Authorized International Secretariat</span>
-                  <span className="transition-transform group-hover:translate-x-1">→</span>
-                </div>
-              </motion.div>
-            );
-          })}
+   
+{/* ==========================================
+    OFFICIAL CONTACTS
+========================================== */}
+<section
+  aria-labelledby="organisers-contact-heading"
+  className="border-t border-[#E4EAF0] bg-[#F8FAFB] py-12 sm:py-14 lg:py-16"
+>
+  <Container>
+    {/* Section heading */}
+    <motion.div
+      variants={GROUP}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.15 }}
+      className="flex flex-col gap-4 border-b border-[#E0E7ED] pb-6 lg:flex-row lg:items-end lg:justify-between"
+    >
+      <div className="max-w-[680px]">
+        <motion.div variants={REVEAL}>
+          <SectionLabel>Official Contacts</SectionLabel>
         </motion.div>
 
-    {/* ========================================================= */}
-{/* Unified Contact Hub (3 Identical Balanced Cards)          */}
-{/* ========================================================= */}
-<div className="mt-14 sm:mt-18 rounded-3xl border border-slate-200/90 bg-white p-6 sm:p-9 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-  
-  {/* Hub Header */}
-  <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between pb-6 border-b border-slate-100">
-    <div>
-      <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-brand-blue">
-        Official Directory
-      </span>
-      <h3 className="mt-1 text-2xl sm:text-3xl font-extrabold tracking-tight text-brand-dark">
-        Reach the Organising Secretariat
-      </h3>
-    </div>
-    <p className="text-xs text-slate-500 font-normal max-w-sm">
-      Direct official desks for stall bookings, international pavilions, and sponsorship inquiries.
-    </p>
-  </div>
-
-  {/* 3 Identical Cards Grid */}
-  <div className="mt-7 grid grid-cols-1 gap-4 md:grid-cols-3 items-stretch">
-    
-    {/* Card 1 & 2: Contact Desks */}
-    {CONTACT_DESKS.map((desk) => {
-      const cleanPhone = desk.phone.replace(/[^0-9+]/g, "");
-      const isFuturex = desk.company === "Futurex Group";
-
-      return (
-        <div
-          key={desk.company}
-          className="group relative flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-slate-50/50 p-5 transition-all duration-200 hover:border-brand-blue/40 hover:bg-white hover:shadow-lg hover:shadow-slate-200/50"
+        <motion.h2
+          id="organisers-contact-heading"
+          variants={REVEAL}
+          className="mt-4 font-heading text-[clamp(1.8rem,2.8vw,2.8rem)] font-extrabold leading-[1.15] tracking-[-0.04em] text-[#101214]"
         >
-          <div>
-            {/* Header: Badge + Location */}
-            <div className="flex items-center justify-between gap-2">
-              <span
-                className={`inline-block rounded-md px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${
-                  isFuturex
-                    ? "bg-brand-blue/10 text-brand-blue"
-                    : "bg-brand-green/10 text-brand-green"
-                }`}
-              >
-                {desk.company}
-              </span>
-              <span className="text-[11px] font-medium text-slate-400">
-                {desk.location}
-              </span>
-            </div>
-
-            {/* Representative Name */}
-            <div className="mt-4">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                Official Representative
-              </div>
-              <h4 className="mt-0.5 text-base font-bold text-brand-dark group-hover:text-brand-blue transition-colors">
-                {desk.name}
-              </h4>
-            </div>
-          </div>
-
-          {/* Contact Links */}
-          <div className="mt-5 pt-3.5 border-t border-slate-200/70 flex flex-col gap-2 text-xs">
-            <a
-              href={`tel:${cleanPhone}`}
-              className="inline-flex items-center gap-2.5 rounded-xl border border-slate-200/70 bg-white px-3 py-2 font-semibold text-slate-700 transition-all hover:border-brand-green/50 hover:text-brand-green hover:shadow-sm"
-            >
-              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-emerald-50 text-brand-green">
-                <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                </svg>
-              </span>
-              <span className="tabular-nums">{desk.phone}</span>
-            </a>
-
-            <a
-              href={`mailto:${desk.email}`}
-              className="inline-flex items-center gap-2.5 rounded-xl border border-slate-200/70 bg-white px-3 py-2 font-semibold text-slate-700 transition-all hover:border-brand-blue/50 hover:text-brand-blue hover:shadow-sm"
-            >
-              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-sky-50 text-brand-blue">
-                <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-              </span>
-              <span className="truncate">{desk.email}</span>
-            </a>
-          </div>
-        </div>
-      );
-    })}
-
-    {/* Card 3: Reserve Stand (Exact Match in Size & Alignment) */}
-    <div className="relative flex flex-col justify-between overflow-hidden rounded-2xl bg-[#081a36] p-5 text-white shadow-md transition-all hover:shadow-xl">
-      {/* Subtle Glow */}
-      <div className="pointer-events-none absolute -right-8 -top-8 h-28 w-28 rounded-full bg-brand-blue/20 blur-xl" />
-
-      <div className="relative z-10">
-        <div className="flex items-center justify-between gap-2">
-          <span className="inline-flex items-center gap-1.5 rounded-md border border-white/10 bg-white/[0.06] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-300">
-            <span className="h-1.5 w-1.5 rounded-full bg-brand-green animate-pulse" />
-            Active
+          Connect with the{" "}
+          <span className="text-[#1769A4]">
+            Organising Team.
           </span>
-          <span className="text-[11px] font-medium text-slate-400">
-            Expo 2027
-          </span>
-        </div>
+        </motion.h2>
 
-        <div className="mt-5">
-          <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-            Booth Allocation
-          </div>
-          <h4 className="mt-0.5 text-base font-bold text-white">
-            Reserve Your Prime Stand
-          </h4>
-        </div>
+        <motion.p
+          variants={REVEAL}
+          className="mt-3 max-w-[610px] text-[13px] leading-[1.8] text-[#607083] sm:text-[14px]"
+        >
+          For exhibition participation, stand bookings,
+          international enquiries and visitor assistance,
+          reach our official representatives directly.
+        </motion.p>
       </div>
 
-      {/* Buttons matching contact pills layout height */}
-      <div className="relative z-10 mt-5 pt-3.5 border-t border-white/10 flex flex-col gap-2 text-xs">
-        <Link
-          href={event.cta.bookStand}
-          className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-brand-blue px-3 py-2 font-bold uppercase tracking-wider text-white shadow-[0_2px_10px_rgba(31,111,174,0.35)] transition-all hover:bg-brand-blue-dark active:scale-[0.99]"
-        >
-          <span>Book Stand Space</span>
-          <span>→</span>
-        </Link>
-
+      <motion.div variants={REVEAL}>
         <Link
           href="/contact"
-          className="inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/[0.04] px-3 py-2 font-semibold text-slate-200 transition-all hover:bg-white/10"
+          className="group inline-flex items-center gap-2 text-[13px] font-bold text-[#1769A4] transition-colors hover:text-[#28A45A]"
         >
-          General Helpdesk
+          Contact Us
+          <span className="transition-transform duration-300 group-hover:translate-x-1">
+            <ArrowIcon />
+          </span>
         </Link>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
 
-  </div>
-</div>
+    {/* Three evenly aligned contact cards */}
+    <motion.div
+      variants={GROUP}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.1 }}
+      className="mt-6 grid items-stretch gap-4 md:grid-cols-2 lg:grid-cols-3"
+    >
+      {[
+        event.contact.futurex,
+        event.contact.etsipl,
+        event.contact.futurexSales,
+      ].map((contact) => (
+        <motion.article
+          key={contact.email}
+          variants={REVEAL}
+          className="group flex h-full min-w-0 flex-col rounded-xl border border-[#E0E7ED] bg-white p-5 transition-[border-color,box-shadow] duration-300 hover:border-[#1769A4]/30 hover:shadow-[0_12px_30px_rgba(15,33,53,0.045)] sm:p-6"
+        >
+          {/* Company and name */}
+          <div className="min-w-0">
+           
 
-        {/* Bottom Booking Ribbon */}
-        <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-3 rounded-2xl border border-brand-blue/20 bg-gradient-to-r from-brand-blue/[0.05] via-white to-brand-green/[0.05] p-4 sm:p-5 shadow-sm">
-          <div className="flex items-center gap-3 text-xs text-slate-700">
-            <span className="flex h-2.5 w-2.5 rounded-full bg-brand-green animate-pulse shrink-0" />
-            <span>
-              Joint organisers of the {event.editionLabel.toLowerCase()} at {event.venue.fullLocation}.
-            </span>
+            <h3 className="mt-2 font-heading text-[17px] font-bold leading-[1.4] tracking-[-0.025em] text-[#101214] sm:text-[18px]">
+              {contact.name}
+            </h3>
           </div>
 
-          <Link
-            href={event.cta.bookStand}
-            className="shrink-0 inline-flex items-center justify-center rounded-full bg-brand-blue px-6 py-2.5 text-xs font-bold uppercase tracking-wider text-white shadow-md hover:bg-brand-blue-dark transition-all duration-200"
-          >
-            Inquire for Space
-          </Link>
-        </div>
+          {/* Contact details aligned consistently */}
+          <div className="mt-auto flex flex-col gap-3 border-t border-[#E8EDF2] pt-4 [margin-top:20px]">
+            <a
+              href={`tel:${contact.phone.replace(/[^\d+]/g, "")}`}
+              className="flex min-h-8 min-w-0 items-center gap-2.5 text-[12px] font-medium text-[#526477] transition-colors hover:text-[#1769A4] sm:text-[13px]"
+            >
+              <span className="shrink-0 text-[#28A45A]">
+                <PhoneIcon />
+              </span>
+              <span className="tabular-nums">
+                {contact.phone}
+              </span>
+            </a>
 
-      </Container>
+            <a
+              href={`mailto:${contact.email}`}
+              className="flex min-h-8 min-w-0 items-start gap-2.5 text-[12px] font-medium leading-[1.6] text-[#526477] transition-colors hover:text-[#1769A4]"
+            >
+              <span className="mt-0.5 shrink-0 text-[#1769A4]">
+                <MailIcon />
+              </span>
+              <span className="min-w-0 break-all">
+                {contact.email}
+              </span>
+            </a>
+          </div>
+        </motion.article>
+      ))}
+    </motion.div>
+  </Container>
+</section>
+
     </div>
   );
 }

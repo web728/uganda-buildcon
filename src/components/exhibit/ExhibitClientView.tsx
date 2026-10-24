@@ -1,57 +1,104 @@
+
 "use client";
 
+import type { ReactNode } from "react";
 import Link from "next/link";
-import { motion, type Variants } from "framer-motion";
+import {
+  motion,
+  useReducedMotion,
+  type Variants,
+} from "framer-motion";
+
 import { event } from "@/config/event";
 import { Container } from "@/components/ui/Container";
-import { BenefitCard } from "@/components/ui/BenefitCard";
 
-const containerVariants: Variants = {
-  hidden: { opacity: 0 },
+const EASE = [0.22, 1, 0.36, 1] as const;
+
+const GROUP: Variants = {
+  hidden: {},
   visible: {
-    opacity: 1,
     transition: {
-      staggerChildren: 0.08,
-      delayChildren: 0.05,
+      staggerChildren: 0.1,
+      delayChildren: 0.06,
     },
   },
 };
 
-// Exact 5 Objectives directly from Brochure Page 02 ("Why Participate?")
+const REVEAL: Variants = {
+  hidden: { opacity: 0, y: 22 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.8,
+      ease: EASE,
+    },
+  },
+};
+
+const WORD_GROUP: Variants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.075,
+      delayChildren: 0.06,
+    },
+  },
+};
+
+const WORD: Variants = {
+  hidden: { opacity: 0, y: "110%" },
+  visible: {
+    opacity: 1,
+    y: "0%",
+    transition: {
+      duration: 0.85,
+      ease: EASE,
+    },
+  },
+};
+
+/* ==========================================
+   EXHIBITOR BENEFITS
+========================================== */
+
 const CORE_PILLARS = [
   {
     title: "Access New Buyers",
-    body: "Present your products directly to companies actively involved in construction, projects, procurement, and wholesale distribution across East Africa.",
-    badge: "Direct Procurement",
+    body:
+      "Present your products to businesses involved in construction projects, procurement and wholesale distribution across Uganda and East Africa.",
   },
   {
     title: "Develop Distribution",
-    body: "Meet vetted importers, distributors, wholesalers, dealers, and regional market representatives seeking new manufacturing supply partnerships.",
-    badge: "B2B Channels",
+    body:
+      "Meet importers, distributors, wholesalers and dealers to explore new manufacturing and supply partnerships.",
   },
   {
     title: "Enter the Ugandan Market",
-    body: "Introduce your brand to an expanding industrial audience and build sustainable, direct long-term commercial relationships in East Africa.",
-    badge: "Market Entry",
+    body:
+      "Introduce your brand to the regional construction industry and develop long-term commercial relationships.",
   },
   {
     title: "Generate Business Enquiries",
-    body: "Engage contractors, developers, professional buyers, and project procurement teams actively searching for materials and technology suppliers.",
-    badge: "Targeted Leads",
+    body:
+      "Engage contractors, developers and procurement teams searching for construction materials, equipment and technology suppliers.",
   },
   {
     title: "Reach Industry Specifiers",
-    body: "Connect with architects, civil engineers, MEP consultants, and quantity surveyors who specify products in upcoming commercial blueprints.",
-    badge: "Specification",
+    body:
+      "Connect with architects, engineers, MEP consultants and quantity surveyors who influence construction product selection.",
   },
   {
     title: "Live Product Demonstration",
-    body: "Showcase machinery durability, technical tooling, and premium interior finishes through interactive floor demos to decision-makers.",
-    badge: "Live Staging",
+    body:
+      "Present machinery, technical equipment, building products and finishes through live demonstrations and interactive displays.",
   },
-];
+] as const;
 
-// Exhibitor profile — Uganda Buildcon brochure ("Exhibitors")
+/* ==========================================
+   EXHIBITOR PROFILES
+========================================== */
+
 const WHO_SHOULD_EXHIBIT = [
   "Building Material Companies",
   "Construction Machinery Companies",
@@ -61,226 +108,528 @@ const WHO_SHOULD_EXHIBIT = [
   "Architectural Design & Finishing Firms",
   "Importers & Distributors",
   "Ugandan Manufacturers",
-];
+] as const;
 
-// Stand Participation Formats
+/* ==========================================
+   PARTICIPATION OPTIONS
+========================================== */
+
 const PARTICIPATION_OPTIONS = [
   {
     title: "Shell Scheme Space",
-    desc: "Turnkey exhibition booth fitted with carpet, standard fascia name board, spotlights, electrical points, counter, and chairs.",
-    tag: "Standard Turnkey",
+    desc:
+      "A ready-to-use exhibition booth with standard fittings. Final inclusions and specifications are confirmed by the organisers.",
   },
   {
     title: "Raw Bare Space",
-    desc: "Unfurnished space ideal for bespoke pavilion designs, high-capacity machinery placement, and custom fabrication.",
-    tag: "Custom Build",
+    desc:
+      "Unfurnished exhibition space for companies planning custom-built stands, display environments or branded pavilions.",
   },
   {
     title: "International Pavilions",
-    desc: "Coordinated delegation stands for export promotion councils, regional trade associations, and national pavilions.",
-    tag: "Country Groups",
+    desc:
+      "Coordinated exhibition participation for trade associations, export promotion bodies and international business delegations.",
   },
   {
     title: "Machinery & Heavy Displays",
-    desc: "Space for earthmoving, concrete and heavy equipment displays — allocated with the organisers according to venue access and load requirements.",
-    tag: "Heavy Displays",
+    desc:
+      "Exhibition space for construction machinery and equipment, subject to venue access, load requirements and organiser approval.",
   },
-];
+] as const;
+
+/* ==========================================
+   SHARED UI
+========================================== */
+
+function SectionLabel({
+  children,
+  light = false,
+}: {
+  children: ReactNode;
+  light?: boolean;
+}) {
+  return (
+    <div className="flex items-center gap-3">
+      <span className="h-[2px] w-8 shrink-0 bg-[#28A45A]" />
+      <span
+        className={`text-[10px] font-bold uppercase tracking-[0.15em] ${
+          light ? "text-white/65" : "text-[#1769A4]"
+        }`}
+      >
+        {children}
+      </span>
+    </div>
+  );
+}
+
+function ArrowIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.7}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-4 w-4 shrink-0"
+    >
+      <path d="M5 12h14m-6-6 6 6-6 6" />
+    </svg>
+  );
+}
+
+function AnimatedWords({
+  text,
+  className = "",
+}: {
+  text: string;
+  className?: string;
+}) {
+  const words = text.trim().split(/\s+/);
+
+  return (
+    <span className={className}>
+      {words.map((word, index) => (
+        <span
+          key={`${word}-${index}`}
+          className="inline-block overflow-hidden align-bottom"
+        >
+          <motion.span
+            variants={WORD}
+            className="inline-block"
+          >
+            {word}
+          </motion.span>
+          {index < words.length - 1 ? "\u00A0" : null}
+        </span>
+      ))}
+    </span>
+  );
+}
+
+/* ==========================================
+   ORIGINAL BLUEPRINT SVG
+   Same grid geometry, subtle motion added
+========================================== */
+
+function BlueprintArtwork({
+  dark = false,
+}: {
+  dark?: boolean;
+}) {
+  const reduced = useReducedMotion() === true;
+
+  return (
+    <svg
+      aria-hidden="true"
+      focusable="false"
+      viewBox="0 0 600 300"
+      fill="none"
+      className="h-full w-full"
+    >
+      <defs>
+        <pattern
+          id={dark ? "exhibit-grid-dark" : "exhibit-grid-light"}
+          width="36"
+          height="36"
+          patternUnits="userSpaceOnUse"
+        >
+          <path
+            d="M36 0H0V36"
+            stroke={dark ? "#FFFFFF" : "#1769A4"}
+            strokeOpacity={dark ? ".16" : ".12"}
+            strokeWidth=".8"
+          />
+        </pattern>
+
+        <linearGradient
+          id={dark ? "exhibit-trace-dark" : "exhibit-trace-light"}
+          x1="0"
+          y1="0"
+          x2="600"
+          y2="300"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stopColor="#1769A4" />
+          <stop offset="1" stopColor="#28A45A" />
+        </linearGradient>
+      </defs>
+
+      <rect
+        width="600"
+        height="300"
+        fill={`url(#${dark ? "exhibit-grid-dark" : "exhibit-grid-light"})`}
+      />
+
+      <path
+        d="M-40 220C120 110 240 300 390 155S530 95 650 145"
+        stroke={dark ? "#FFFFFF" : "#1769A4"}
+        strokeOpacity={dark ? ".16" : ".13"}
+        strokeWidth="1.2"
+      />
+
+      <motion.path
+        d="M-40 220C120 110 240 300 390 155S530 95 650 145"
+        stroke={`url(#${dark ? "exhibit-trace-dark" : "exhibit-trace-light"})`}
+        strokeOpacity=".8"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeDasharray="75 1500"
+        initial={false}
+        animate={
+          reduced
+            ? undefined
+            : { strokeDashoffset: [0, -1575] }
+        }
+        transition={{
+          duration: 17,
+          repeat: Infinity,
+          ease: "linear",
+        }}
+      />
+    </svg>
+  );
+}
+
+/* ==========================================
+   BENEFIT CARD
+========================================== */
+
+function BenefitItem({
+  title,
+  body,
+}: {
+  title: string;
+  body: string;
+}) {
+  return (
+    <motion.article
+      variants={REVEAL}
+      className="group relative flex h-full min-w-0 flex-col overflow-hidden rounded-xl border border-[#E2E8EF] bg-white p-6 transition-[border-color,box-shadow] duration-300 hover:border-[#1769A4]/35 hover:shadow-[0_15px_40px_rgba(16,35,55,0.055)] sm:p-7"
+    >
+      <span
+        aria-hidden="true"
+        className="mb-5 h-[3px] w-9 bg-[#28A45A] transition-[width] duration-500 group-hover:w-16"
+      />
+
+      <h3 className="font-heading text-[18px] font-bold leading-[1.35] tracking-[-0.025em] text-[#111820]">
+        {title}
+      </h3>
+
+      <p className="mt-3 text-[13px] leading-[1.85] tracking-[-0.005em] text-[#607083] sm:text-[14px]">
+        {body}
+      </p>
+    </motion.article>
+  );
+}
+
+/* ==========================================
+   PARTICIPATION CARD
+========================================== */
+
+function ParticipationItem({
+  title,
+  desc,
+}: {
+  title: string;
+  desc: string;
+}) {
+  return (
+    <motion.article
+      variants={REVEAL}
+      className="group relative flex min-w-0 flex-col border border-white/15 bg-white/[0.045] p-5 transition-[background-color,border-color] duration-300 hover:border-[#28A45A]/55 hover:bg-white/[0.075] sm:p-6"
+    >
+      <span
+        aria-hidden="true"
+        className="mb-5 h-[2px] w-9 bg-[#28A45A]"
+      />
+
+      <h3 className="font-heading text-[17px] font-bold leading-[1.35] tracking-[-0.025em] text-white">
+        {title}
+      </h3>
+
+      <p className="mt-3 text-[13px] leading-[1.8] text-white/65">
+        {desc}
+      </p>
+    </motion.article>
+  );
+}
+
+/* ==========================================
+   MAIN EXHIBIT CLIENT VIEW
+========================================== */
 
 export function ExhibitClientView() {
   return (
-    <div className="relative overflow-hidden py-14 sm:py-20 text-brand-dark">
-      {/* Background Architectural Vector Grid */}
-      <div className="pointer-events-none absolute inset-0 -z-10 select-none opacity-[0.035]">
-        <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="exhibit-client-grid" width="36" height="36" patternUnits="userSpaceOnUse">
-              <path d="M 36 0 L 0 0 0 36" fill="none" stroke="#0f2346" strokeWidth="0.8" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#exhibit-client-grid)" />
-        </svg>
-      </div>
-
-      <Container className="relative z-10 w-full">
-        {/* ========================================================= */}
-        {/* Header Block: Balanced Titles & Top Right Action          */}
-        {/* ========================================================= */}
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between pb-8 border-b border-slate-200/80">
-          <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 rounded-full border border-brand-blue/20 bg-brand-blue/[0.06] px-4 py-1">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-blue opacity-75" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-blue" />
-              </span>
-              <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-brand-blue">
-                Commercial Exhibition Benefits
-              </span>
-            </div>
-
-            <h2 className="mt-4 text-2xl sm:text-4xl font-extrabold tracking-[-0.03em] leading-[1.15] text-brand-dark">
-              Strategic Commercial{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue via-sky-500 to-brand-green">
-                Advantages for Exhibitors
-              </span>
-            </h2>
-
-            <p className="mt-2.5 text-xs sm:text-sm leading-[1.7] text-slate-500 font-normal">
-              Three focused business days to present your solutions directly to contractors, developers, architects, and high-volume buyers driving Uganda&apos;s infrastructure growth.
-            </p>
-          </div>
-
-          <div className="shrink-0">
-            <Link
-              href={event.cta.bookStand}
-              className="inline-flex items-center justify-center rounded-full bg-brand-blue px-6 py-3 text-xs font-semibold uppercase tracking-wider text-white shadow-[0_4px_16px_rgba(31,111,174,0.25)] transition-all duration-300 hover:bg-brand-blue-dark hover:shadow-[0_6px_22px_rgba(31,111,174,0.35)] hover:-translate-y-0.5 active:translate-y-0"
-            >
-              Reserve Stand Space →
-            </Link>
-          </div>
-        </div>
-
-        {/* ========================================================= */}
-        {/* Core Pillars: Spacious 3-Column Grid (No Chipku Feel)     */}
-        {/* ========================================================= */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-40px" }}
-          className="mt-8 sm:mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+    <div className="overflow-hidden bg-white text-[#111820]">
+      {/* =====================================
+          EXHIBITOR BENEFITS
+      ===================================== */}
+      <section
+        aria-labelledby="exhibitor-benefits-heading"
+        className="relative overflow-hidden py-14 sm:py-16 lg:py-20"
+      >
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute right-[-200px] top-[-80px] h-[300px] w-[600px] opacity-[0.4]"
         >
-          {CORE_PILLARS.map((item, idx) => (
-            <BenefitCard
-              key={item.title}
-              title={item.title}
-              description={item.body}
-              badge={item.badge}
-              index={idx}
-              light={false}
-            />
-          ))}
-        </motion.div>
-
-        {/* ========================================================= */}
-        {/* Who Should Exhibit Strip                                  */}
-        {/* ========================================================= */}
-        <div className="mt-14 sm:mt-18 rounded-3xl border border-slate-200/80 bg-white p-6 sm:p-8 shadow-sm">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between pb-5 border-b border-slate-100">
-            <div>
-              <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-brand-green">
-                Target Profiles
-              </span>
-              <h3 className="mt-1 text-base sm:text-lg font-bold tracking-tight text-brand-dark">
-                Who Should Exhibit?
-              </h3>
-            </div>
-            <span className="text-xs text-slate-400">8 Key Industry Profiles</span>
-          </div>
-
-          <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {WHO_SHOULD_EXHIBIT.map((item) => (
-              <div
-                key={item}
-                className="flex items-center gap-2.5 rounded-xl border border-slate-100 bg-slate-50/70 p-3.5 text-xs font-semibold text-slate-700 transition-colors hover:border-brand-blue/30 hover:bg-white hover:text-brand-dark"
-              >
-                <span className="h-1.5 w-1.5 rounded-full bg-brand-green shrink-0" />
-                <span className="truncate">{item}</span>
-              </div>
-            ))}
-          </div>
+          <BlueprintArtwork />
         </div>
 
-        {/* ========================================================= */}
-        {/* Stand Participation Formats                               */}
-        {/* ========================================================= */}
-        <div className="relative mt-14 sm:mt-18 overflow-hidden rounded-3xl bg-[#081a36] p-7 sm:p-10 text-white shadow-2xl border border-white/10">
-          <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-brand-blue/15 blur-3xl" />
-          <div className="pointer-events-none absolute -left-20 -bottom-20 h-64 w-64 rounded-full bg-brand-green/15 blur-3xl" />
+        <Container className="relative z-10">
+          <motion.div
+            variants={GROUP}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.15 }}
+            className="flex flex-col gap-6 border-b border-[#E5EAF0] pb-7 lg:flex-row lg:items-end lg:justify-between"
+          >
+            <div className="max-w-[790px]">
+              <motion.div variants={REVEAL}>
+                <SectionLabel>
+                  Exhibitor Opportunities
+                </SectionLabel>
+              </motion.div>
 
-          <div className="relative z-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between pb-6 border-b border-white/10">
-            <div className="max-w-xl">
-              <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-brand-blue">
-                Participation Options
-              </span>
-              <h3 className="mt-2 text-xl sm:text-3xl font-extrabold tracking-tight text-white leading-snug">
-                Choose Your Exhibition Presence
-              </h3>
-              <p className="mt-2 text-xs sm:text-sm text-slate-300 font-normal leading-[1.7]">
-                Options tailored to international brand pavilions, equipment demonstrations, and materials distribution displays.
-              </p>
+              <motion.h2
+                id="exhibitor-benefits-heading"
+                variants={WORD_GROUP}
+                aria-label="Grow Your Business at Uganda Buildcon"
+                className="mt-5 font-heading text-[clamp(2rem,3.6vw,3.65rem)] font-extrabold leading-[1.12] tracking-[-0.045em]"
+              >
+                <span aria-hidden="true">
+                  <AnimatedWords text="Grow Your Business" />
+                  {" "}
+                  <AnimatedWords text="at" />
+                  {" "}
+                  <AnimatedWords
+                    text="Uganda Buildcon."
+                    className="text-[#1769A4]"
+                  />
+                </span>
+              </motion.h2>
+
+              <motion.p
+                variants={REVEAL}
+                className="mt-5 max-w-[670px] text-[14px] leading-[1.85] tracking-[-0.005em] text-[#607083] sm:text-[15px]"
+              >
+                Showcase your construction products,
+                machinery and technologies to industry
+                professionals seeking new suppliers,
+                business partnerships and project
+                solutions across Uganda and East Africa.
+              </motion.p>
             </div>
 
-            <div className="shrink-0">
+            <motion.div variants={REVEAL}>
               <Link
                 href={event.cta.bookStand}
-                className="inline-flex items-center justify-center rounded-full bg-brand-blue px-6 py-2.5 text-xs font-semibold uppercase tracking-wider text-white shadow-[0_0_20px_rgba(31,111,174,0.35)] transition-all duration-300 hover:bg-brand-blue-dark active:scale-95"
+                className="group inline-flex min-h-11 items-center justify-center gap-4 rounded-lg bg-[#1769A4] px-6 py-3 text-[13px] font-bold text-white transition-[background-color,transform] duration-300 hover:-translate-y-0.5 hover:bg-[#105685] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#28A45A] motion-reduce:transform-none"
               >
-                Request Stand Floor Plan →
+                Book a Stand
+                <span className="transition-transform duration-300 group-hover:translate-x-1">
+                  <ArrowIcon />
+                </span>
               </Link>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
-          <div className="relative z-10 mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {PARTICIPATION_OPTIONS.map((opt, i) => (
-              <div
-                key={opt.title}
-                className="group flex flex-col justify-between rounded-2xl border border-white/10 bg-white/[0.03] p-5 sm:p-6 backdrop-blur-md transition-all duration-300 hover:border-brand-blue/50 hover:bg-white/[0.06]"
-              >
-                <div>
-                  <div className="flex items-center justify-between pb-3 border-b border-white/[0.08]">
-                    <span className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-slate-300">
-                      {opt.tag}
-                    </span>
-                    <span className="text-[10px] font-mono font-bold text-slate-500">
-                      0{i + 1}
-                    </span>
-                  </div>
-
-                  <h4 className="mt-4 text-sm sm:text-base font-bold text-white group-hover:text-brand-blue transition-colors">
-                    {opt.title}
-                  </h4>
-
-                  <p className="mt-2 text-xs leading-[1.7] text-slate-300 font-normal">
-                    {opt.desc}
-                  </p>
-                </div>
-
-                <div className="mt-5 pt-3 border-t border-white/[0.06] flex items-center justify-between text-xs font-semibold text-brand-blue">
-                  <span>Explore Format</span>
-                  <span className="transition-transform group-hover:translate-x-1">→</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Bottom Action Ribbon */}
-        <div className="mt-10 flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl border border-brand-blue/20 bg-gradient-to-r from-brand-blue/[0.04] via-white to-brand-green/[0.04] p-5 sm:p-6 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-green/10 text-brand-green">
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <div>
-              <h4 className="text-xs sm:text-sm font-bold text-brand-dark">
-                Stand space allocations are currently active
-              </h4>
-              <p className="text-[11px] text-slate-500 font-normal mt-0.5">
-                Held from {event.dates.display} at {event.venue.fullLocation}.
-              </p>
-            </div>
-          </div>
-
-          <Link
-            href={event.cta.bookStand}
-            className="shrink-0 inline-flex items-center justify-center rounded-full bg-brand-blue px-6 py-2.5 text-xs font-semibold uppercase tracking-wider text-white shadow-md hover:bg-brand-blue-dark transition-all duration-200"
+          <motion.div
+            variants={GROUP}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.08 }}
+            className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
           >
-            Book Exhibition Stand
-          </Link>
+            {CORE_PILLARS.map((item) => (
+              <BenefitItem
+                key={item.title}
+                title={item.title}
+                body={item.body}
+              />
+            ))}
+          </motion.div>
+        </Container>
+      </section>
+
+      {/* =====================================
+          WHO SHOULD EXHIBIT
+      ===================================== */}
+      <section
+        aria-labelledby="who-should-exhibit-heading"
+        className="border-y border-[#E5EBF0] bg-[#F8FAFB] py-14 sm:py-16 lg:py-20"
+      >
+        <Container>
+          <div className="grid items-start gap-9 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-16">
+            <motion.div
+              variants={GROUP}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.2 }}
+            >
+              <motion.div variants={REVEAL}>
+                <SectionLabel>
+                  Exhibitor Profiles
+                </SectionLabel>
+              </motion.div>
+
+              <motion.h2
+                id="who-should-exhibit-heading"
+                variants={REVEAL}
+                className="mt-5 font-heading text-[clamp(1.9rem,3vw,3rem)] font-extrabold leading-[1.15] tracking-[-0.045em]"
+              >
+                Who Should{" "}
+                <span className="text-[#1769A4]">
+                  Exhibit?
+                </span>
+              </motion.h2>
+
+              <motion.p
+                variants={REVEAL}
+                className="mt-4 max-w-[420px] text-[14px] leading-[1.85] text-[#607083]"
+              >
+                Uganda Buildcon welcomes companies
+                supplying building materials, machinery,
+                technologies and specialised solutions
+                to the construction industry.
+              </motion.p>
+
+              <motion.div
+                variants={REVEAL}
+                className="mt-6"
+              >
+                <Link
+                  href="/exhibition-profile"
+                  className="group inline-flex items-center gap-2 text-[13px] font-bold text-[#1769A4] transition-colors hover:text-[#28A45A]"
+                >
+                  Explore Exhibition Profile
+                  <span className="transition-transform duration-300 group-hover:translate-x-1">
+                    <ArrowIcon />
+                  </span>
+                </Link>
+              </motion.div>
+            </motion.div>
+
+            <motion.ul
+              variants={GROUP}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.12 }}
+              className="grid gap-3 sm:grid-cols-2"
+            >
+              {WHO_SHOULD_EXHIBIT.map((item) => (
+                <motion.li
+                  key={item}
+                  variants={REVEAL}
+                  className="group flex min-w-0 items-start gap-3 rounded-lg border border-[#E2E8EF] bg-white px-5 py-4 transition-[border-color,box-shadow] duration-300 hover:border-[#1769A4]/30 hover:shadow-[0_8px_25px_rgba(16,35,55,0.035)]"
+                >
+                  <span className="mt-[8px] h-1.5 w-1.5 shrink-0 rounded-full bg-[#28A45A]" />
+                  <span className="text-[13px] font-semibold leading-[1.6] tracking-[-0.01em] text-[#243548]">
+                    {item}
+                  </span>
+                </motion.li>
+              ))}
+            </motion.ul>
+          </div>
+        </Container>
+      </section>
+
+      {/* =====================================
+          STAND PARTICIPATION OPTIONS
+      ===================================== */}
+      <section
+        aria-labelledby="participation-options-heading"
+        className="relative isolate overflow-hidden bg-[#080F1D] py-14 text-white sm:py-16 lg:py-20"
+      >
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 z-0 overflow-hidden opacity-[0.4]"
+        >
+          <div className="absolute -right-[180px] top-0 h-[300px] w-[600px]">
+            <BlueprintArtwork dark />
+          </div>
         </div>
-      </Container>
+
+        <Container className="relative z-10">
+          <motion.div
+            variants={GROUP}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.18 }}
+            className="flex flex-col gap-6 border-b border-white/15 pb-7 lg:flex-row lg:items-end lg:justify-between"
+          >
+            <div className="max-w-[740px]">
+              <motion.div variants={REVEAL}>
+                <SectionLabel light>
+                  Exhibition Participation
+                </SectionLabel>
+              </motion.div>
+
+              <motion.h2
+                id="participation-options-heading"
+                variants={REVEAL}
+                className="mt-5 font-heading text-[clamp(1.9rem,3.25vw,3.25rem)] font-extrabold leading-[1.14] tracking-[-0.045em]"
+              >
+                Choose Your{" "}
+                <span className="text-[#7ACB58]">
+                  Exhibition Presence.
+                </span>
+              </motion.h2>
+
+              <motion.p
+                variants={REVEAL}
+                className="mt-5 max-w-[640px] text-[14px] leading-[1.85] text-white/65 sm:text-[15px]"
+              >
+                Explore participation formats for
+                product displays, custom-built stands,
+                international delegations and
+                construction machinery.
+              </motion.p>
+            </div>
+
+            <motion.div variants={REVEAL}>
+              <Link
+                href={event.cta.bookStand}
+                className="group inline-flex min-h-11 items-center justify-center gap-3 rounded-lg bg-[#1769A4] px-6 py-3 text-[13px] font-bold text-white transition-colors duration-300 hover:bg-[#105685] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#28A45A]"
+              >
+                Enquire About Stand Space
+                <span className="transition-transform duration-300 group-hover:translate-x-1">
+                  <ArrowIcon />
+                </span>
+              </Link>
+            </motion.div>
+          </motion.div>
+
+          <motion.div
+            variants={GROUP}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.1 }}
+            className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+          >
+            {PARTICIPATION_OPTIONS.map((option) => (
+              <ParticipationItem
+                key={option.title}
+                title={option.title}
+                desc={option.desc}
+              />
+            ))}
+          </motion.div>
+
+          <motion.p
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.75, ease: EASE }}
+            className="mt-6 text-[12px] leading-[1.75] text-white/50"
+          >
+            Stand specifications, availability and
+            installation requirements are confirmed
+            directly by the organising team.
+          </motion.p>
+        </Container>
+      </section>
     </div>
   );
 }

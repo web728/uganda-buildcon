@@ -1,8 +1,14 @@
+
 "use client";
 
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
+
+import {
+  motion,
+  useReducedMotion,
+} from "framer-motion";
+
 import type { ExhibitorSummary } from "@/lib/data/exhibitors";
 
 interface ExhibitorCardProps {
@@ -10,85 +16,134 @@ interface ExhibitorCardProps {
   index?: number;
 }
 
-export function ExhibitorCard({ exhibitor, index = 0 }: ExhibitorCardProps) {
-  const isEven = index % 2 === 0;
+const EASE = [0.22, 1, 0.36, 1] as const;
+
+function ArrowIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.7}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-4 w-4"
+    >
+      <path d="M5 12h14m-6-6 6 6-6 6" />
+    </svg>
+  );
+}
+
+function LocationIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.7}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-[15px] w-[15px]"
+    >
+      <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1116 0z" />
+      <circle cx="12" cy="10" r="2.5" />
+    </svg>
+  );
+}
+
+export function ExhibitorCard({
+  exhibitor,
+}: ExhibitorCardProps) {
+  const reducedMotion = useReducedMotion() === true;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-30px" }}
-      transition={{ duration: 0.4, delay: index * 0.05 }}
-      whileHover={{ y: -6, transition: { duration: 0.2 } }}
-      className="h-full"
+    <motion.article
+      whileHover={
+        reducedMotion ? undefined : { y: -4 }
+      }
+      transition={{
+        duration: 0.3,
+        ease: EASE,
+      }}
+      className="h-full min-w-0"
     >
       <Link
         href={`/exhibitors/${exhibitor.slug}`}
-        className="group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm transition-all duration-300 hover:border-brand-blue/50 hover:shadow-xl hover:shadow-brand-blue/10"
+        aria-label={`View ${exhibitor.companyName} exhibitor profile`}
+        className="group relative flex h-full min-w-0 flex-col overflow-hidden rounded-xl border border-[#E1E8EF] bg-white transition-[border-color,box-shadow] duration-300 hover:border-[#1769A4]/35 hover:shadow-[0_16px_38px_rgba(16,35,55,0.06)] focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#1769A4]"
       >
-        {/* Subtle Gradient Glow */}
-        <div
-          className={`absolute -right-8 -top-8 h-20 w-20 rounded-full bg-gradient-to-br ${
-            isEven ? "from-brand-blue/15" : "from-teal-500/15"
-          } to-transparent opacity-60 blur-xl transition-all duration-300 group-hover:scale-150 group-hover:opacity-100`}
+        {/* TOP ACCENT */}
+        <span
+          aria-hidden="true"
+          className="absolute inset-x-0 top-0 h-[3px] origin-left scale-x-0 bg-[#28A45A] transition-transform duration-500 group-hover:scale-x-100"
         />
 
-        <div>
-          {/* Top Bar: Country & Stand Badge */}
-          <div className="flex items-center justify-between gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-[11px] font-semibold text-slate-600">
-              <svg className="h-3 w-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              {exhibitor.country}
-            </span>
+        <div className="flex flex-1 flex-col p-5 sm:p-6">
+          {/* COUNTRY + STAND */}
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            {exhibitor.country ? (
+              <span className="inline-flex min-w-0 items-center gap-1.5 text-[11px] font-semibold leading-[1.5] text-[#758596]">
+                <LocationIcon />
+                <span>{exhibitor.country}</span>
+              </span>
+            ) : (
+              <span />
+            )}
 
             {exhibitor.standNumber && (
-              <span className="rounded-md border border-teal-500/30 bg-teal-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-teal-700">
+              <span className="rounded-md bg-[#28A45A]/[0.08] px-2.5 py-1 text-[10px] font-bold leading-[1.5] text-[#208648]">
                 Stand {exhibitor.standNumber}
               </span>
             )}
           </div>
 
-          {/* Logo Frame */}
-          <div className="mt-5 flex h-20 w-full items-center justify-center rounded-xl border border-slate-100 bg-slate-50/80 p-3 transition-colors duration-200 group-hover:border-brand-blue/20 group-hover:bg-white">
+          {/* COMPANY LOGO */}
+          <div className="mt-5 flex h-[115px] w-full items-center justify-center rounded-lg border border-[#EBEFF3] bg-[#F9FBFC] p-4 transition-colors duration-300 group-hover:border-[#1769A4]/20 group-hover:bg-white">
             {exhibitor.logoUrl ? (
               <Image
                 src={exhibitor.logoUrl}
-                alt={exhibitor.companyName}
-                width={160}
-                height={64}
-                className="max-h-full w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+                alt={`${exhibitor.companyName} logo`}
+                width={200}
+                height={90}
+                sizes="(max-width: 640px) 180px, 200px"
+                className="max-h-[85px] max-w-full object-contain transition-transform duration-500 group-hover:scale-[1.04] motion-reduce:transform-none"
               />
             ) : (
-              <div className="flex h-full w-full items-center justify-center rounded-lg bg-slate-100 px-3 text-center text-sm font-bold text-slate-700">
+              <span className="max-w-full break-words text-center font-heading text-[15px] font-bold leading-[1.4] tracking-[-0.025em] text-[#344657]">
                 {exhibitor.companyName}
-              </div>
+              </span>
             )}
           </div>
 
-          {/* Company Name */}
-          <h3 className="mt-4 text-base sm:text-lg font-bold leading-snug text-slate-900 transition-colors duration-200 group-hover:text-brand-blue">
-            {exhibitor.companyName}
-          </h3>
+          {/* COMPANY DETAILS */}
+          <div className="mt-5">
+            <h3 className="font-heading text-[17px] font-bold leading-[1.4] tracking-[-0.025em] text-[#172536] transition-colors duration-300 group-hover:text-[#1769A4] sm:text-[18px]">
+              {exhibitor.companyName}
+            </h3>
 
-          {/* Category Badge */}
-          {exhibitor.category && (
-            <p className="mt-2 text-xs font-bold uppercase tracking-wider text-teal-600">
-              {exhibitor.category}
-            </p>
-          )}
-        </div>
+            {exhibitor.category && (
+              <p className="mt-2 text-[12px] font-semibold leading-[1.6] text-[#28A45A]">
+                {exhibitor.category}
+              </p>
+            )}
+          </div>
 
-        {/* Footer Link Indicator */}
-        <div className="mt-6 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] font-semibold text-slate-400 group-hover:text-brand-blue">
-          <span>View Exhibitor Profile</span>
-          <svg className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-          </svg>
+          {/* FOOTER LINK */}
+          <div className="mt-auto pt-6">
+            <div className="flex items-center justify-between gap-3 border-t border-[#E9EEF2] pt-4">
+              <span className="text-[12px] font-semibold text-[#1769A4]">
+                View Exhibitor Profile
+              </span>
+
+              <span className="text-[#1769A4] transition-transform duration-300 group-hover:translate-x-1">
+                <ArrowIcon />
+              </span>
+            </div>
+          </div>
         </div>
       </Link>
-    </motion.div>
+    </motion.article>
   );
 }

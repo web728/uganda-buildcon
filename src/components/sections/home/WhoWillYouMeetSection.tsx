@@ -1,228 +1,503 @@
+
 "use client";
 
 import Link from "next/link";
-import { motion, type Variants } from "framer-motion";
+import { useSyncExternalStore } from "react";
+import {
+  motion,
+  type Variants,
+} from "framer-motion";
+
 import { Container } from "@/components/ui/Container";
+import { event } from "@/config/event";
 
-const containerVariants: Variants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.08,
-      delayChildren: 0.05,
-    },
-  },
-};
+/* =====================================================
+   WHO WILL YOU MEET — MINIMAL PREMIUM SECTION
+===================================================== */
 
-const cardVariants: Variants = {
-  hidden: { opacity: 0, y: 20, filter: "blur(4px)" },
-  visible: {
-    opacity: 1,
-    y: 0,
-    filter: "blur(0px)",
-    transition: {
-      duration: 0.45,
-      ease: [0.16, 1, 0.3, 1],
-    },
-  },
-};
+const EASE = [0.22, 1, 0.36, 1] as const;
 
-// Official 5 Core Buyer Groups
-const VISITOR_PILLARS = [
+const BUYER_GROUPS = [
   {
     num: "01",
     title: "Architects & Engineers",
     subtitle: "Specifiers & Consultants",
-    tags: ["Architects & Planners", "Structural & Civil Engineers", "Consultants", "Urban Planners"],
-    icon: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z",
+    tags: [
+      "Architects & Planners",
+      "Structural & Civil Engineers",
+      "Consultants",
+      "Urban Planners",
+    ],
   },
   {
     num: "02",
     title: "Contractors & Builders",
     subtitle: "Execution Specialists",
-    tags: ["Building Contractors", "Subcontractors", "Builders", "Safety Professionals"],
-    icon: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4",
+    tags: [
+      "Building Contractors",
+      "Subcontractors",
+      "Builders",
+      "Safety Professionals",
+    ],
   },
   {
     num: "03",
     title: "Importers & Distributors",
     subtitle: "Supply Chain & Wholesalers",
-    tags: ["Importers", "Dealers & Distributors", "Retailers", "Sourcing Professionals"],
-    icon: "M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z",
+    tags: [
+      "Importers",
+      "Dealers & Distributors",
+      "Retailers",
+      "Sourcing Professionals",
+    ],
   },
   {
     num: "04",
     title: "Developers & Owners",
     subtitle: "Capital Project Leaders",
-    tags: ["Real Estate Developers", "Property Investors", "Investors & Financiers", "Hoteliers"],
-    icon: "M3 21h18M3 7v14m18-14v14M8 3h8v4H8V3zM9 11h2m-2 4h2m4-4h2m-4 4h2",
+    tags: [
+      "Real Estate Developers",
+      "Property Investors",
+      "Investors & Financiers",
+      "Hoteliers",
+    ],
   },
   {
     num: "05",
     title: "Government & Institutions",
     subtitle: "Public & Private Sector",
-    tags: ["Building Authorities", "Universities & Research Institutes", "Health Facilities"],
-    icon: "M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10",
+    tags: [
+      "Building Authorities",
+      "Universities & Research Institutes",
+      "Health Facilities",
+    ],
   },
-];
+] as const;
 
-export function WhoWillYouMeetSection() {
+/* =====================================================
+   HYDRATION-SAFE REDUCED MOTION
+===================================================== */
+
+function subscribeMotion(callback: () => void) {
+  const media = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  );
+
+  media.addEventListener("change", callback);
+
+  return () =>
+    media.removeEventListener("change", callback);
+}
+
+function getMotionSnapshot() {
+  return window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  ).matches;
+}
+
+function useMotionPreference() {
+  return useSyncExternalStore(
+    subscribeMotion,
+    getMotionSnapshot,
+    () => true
+  );
+}
+
+/* =====================================================
+   ANIMATION VARIANTS
+===================================================== */
+
+const stagger: Variants = {
+  hidden: {},
+  show: {
+    transition: {
+      staggerChildren: 0.085,
+      delayChildren: 0.04,
+    },
+  },
+};
+
+const fadeUp: Variants = {
+  hidden: {
+    opacity: 0,
+    y: 20,
+  },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.7,
+      ease: EASE,
+    },
+  },
+};
+
+/* =====================================================
+   ICONS
+===================================================== */
+
+function ArrowIcon() {
   return (
-    <section className="relative overflow-hidden bg-slate-50/60 py-16 sm:py-24 text-slate-900 border-b border-slate-200/80">
-      
-      {/* Background Ambient Glow */}
-      <div className="pointer-events-none absolute -top-24 left-1/2 -z-10 h-96 w-full max-w-7xl -translate-x-1/2 bg-gradient-to-b from-brand-blue/10 via-sky-400/5 to-transparent blur-3xl opacity-60" />
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-[17px] w-[17px] shrink-0"
+    >
+      <path d="M5 12h14m-6-6 6 6-6 6" />
+    </svg>
+  );
+}
 
-      {/* Modern Grid Blueprint Texture */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-0 opacity-[0.03] [mask-image:radial-gradient(ellipse_80%_60%_at_50%_50%,#000_40%,transparent_100%)]"
-        style={{
-          backgroundImage:
-            "linear-gradient(to right, #0f172a 1px, transparent 1px), linear-gradient(to bottom, #0f172a 1px, transparent 1px)",
-          backgroundSize: "40px 40px",
+function ArrowUpRightIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-[17px] w-[17px] shrink-0"
+    >
+      <path d="M7 17 17 7M8 7h9v9" />
+    </svg>
+  );
+}
+
+/* =====================================================
+   MINIMAL ANIMATED SVG
+
+   Deliberately subtle:
+   - Thin orbital lines
+   - Moving blue/green tracing segments
+   - Slow rotating marker
+   - No network clutter or giant illustration
+===================================================== */
+
+function AnimatedAccent({
+  reduced,
+}: {
+  reduced: boolean;
+}) {
+  return (
+    <svg
+      viewBox="0 0 560 420"
+      fill="none"
+      aria-hidden="true"
+      focusable="false"
+      className="h-full w-full"
+    >
+      <circle
+        cx="360"
+        cy="205"
+        r="174"
+        stroke="#1769A4"
+        strokeOpacity=".12"
+        strokeWidth="1"
+      />
+
+      <circle
+        cx="360"
+        cy="205"
+        r="134"
+        stroke="#28A45A"
+        strokeOpacity=".16"
+        strokeWidth="1"
+      />
+
+      <circle
+        cx="360"
+        cy="205"
+        r="92"
+        stroke="#1769A4"
+        strokeOpacity=".1"
+        strokeWidth="1"
+      />
+
+      {/* Traveling arc */}
+      <motion.circle
+        cx="360"
+        cy="205"
+        r="174"
+        stroke="#1769A4"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeDasharray="100 1094"
+        initial={false}
+        animate={
+          reduced
+            ? undefined
+            : {
+                strokeDashoffset: [0, -1194],
+              }
+        }
+        transition={{
+          duration: 16,
+          repeat: Infinity,
+          ease: "linear",
         }}
       />
 
-      <Container className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* ========================================================= */}
-        {/* Header Bar Layout                                         */}
-        {/* ========================================================= */}
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between pb-8 border-b border-slate-200/80">
-          <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 rounded-full border border-brand-blue/20 bg-brand-blue/5 px-3.5 py-1 backdrop-blur-md">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-blue opacity-75" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-blue" />
-              </span>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-brand-blue">
-                Visitor Demographics • 5 Trade Buyer Groups
-              </span>
-            </div>
+      {/* Second traveling arc */}
+      <motion.circle
+        cx="360"
+        cy="205"
+        r="134"
+        stroke="#28A45A"
+        strokeOpacity=".65"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeDasharray="64 842"
+        initial={false}
+        animate={
+          reduced
+            ? undefined
+            : {
+                strokeDashoffset: [0, 906],
+              }
+        }
+        transition={{
+          duration: 20,
+          repeat: Infinity,
+          ease: "linear",
+        }}
+      />
 
-            <h2 className="mt-4 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900 leading-tight">
-              The Decision-Makers Who{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue via-sky-600 to-brand-green">
-                Buy, Build, Specify &amp; Source
-              </span>
-            </h2>
+      {/* Slow orbital point */}
+      <motion.g
+        initial={false}
+        animate={
+          reduced
+            ? undefined
+            : { rotate: 360 }
+        }
+        transition={{
+          duration: 28,
+          repeat: Infinity,
+          ease: "linear",
+        }}
+        style={{
+          transformOrigin: "360px 205px",
+        }}
+      >
+        <circle
+          cx="360"
+          cy="31"
+          r="5"
+          fill="#28A45A"
+        />
+      </motion.g>
 
-            <p className="mt-2.5 text-xs sm:text-sm leading-relaxed text-slate-600 font-normal">
-              The expo welcomes B2B and B2C visitors — real estate developers, architects, project managers, purchasing managers, government officials and key industry stakeholders.
-            </p>
+      {/* Fine technical guide lines */}
+      <path
+        d="M360 0V420M0 205H560"
+        stroke="#1769A4"
+        strokeOpacity=".055"
+        strokeWidth="1"
+        strokeDasharray="4 9"
+      />
+    </svg>
+  );
+}
+
+/* =====================================================
+   REFINED BUYER ROW
+===================================================== */
+
+function BuyerRow({
+  buyer,
+}: {
+  buyer: (typeof BUYER_GROUPS)[number];
+}) {
+  return (
+    <motion.article
+      variants={fadeUp}
+      className="group relative border-b border-[#E4E9EC] py-6 sm:py-7"
+    >
+      <div className="grid items-start gap-4 sm:grid-cols-[44px_minmax(0,1.1fr)_minmax(0,1fr)] sm:gap-6">
+        {/* Number */}
+        <span className="font-heading text-[12px] font-bold tracking-[0.08em] text-[#28A45A] sm:pt-1">
+          {buyer.num}
+        </span>
+
+        {/* Title */}
+        <div>
+          <h3 className="font-heading text-[clamp(1.05rem,1.5vw,1.3rem)] font-bold leading-[1.3] tracking-[-0.035em] text-[#111111] transition-colors duration-300 group-hover:text-[#1769A4]">
+            {buyer.title}
+          </h3>
+
+          <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.09em] text-[#8795A1]">
+            {buyer.subtitle}
+          </p>
+        </div>
+
+        {/* Roles */}
+        <div className="flex flex-wrap gap-x-5 gap-y-2.5">
+          {buyer.tags.map((tag) => (
+            <span
+              key={tag}
+              className="inline-flex items-center gap-2 text-[12px] leading-[1.6] text-[#58677B]"
+            >
+              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#28A45A]/70" />
+              {tag}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* Hover accent */}
+      <span
+        aria-hidden="true"
+        className="absolute bottom-[-1px] left-0 h-[2px] w-20 origin-left scale-x-0 bg-[#1769A4] transition-transform duration-500 group-hover:scale-x-100"
+      />
+    </motion.article>
+  );
+}
+
+/* =====================================================
+   MAIN SECTION
+===================================================== */
+
+export function WhoWillYouMeetSection() {
+  const reduced = useMotionPreference();
+
+  return (
+    <section
+      aria-labelledby="who-will-you-meet"
+      className="relative isolate overflow-hidden border-b border-[#E4E9EC] bg-white py-16 text-[#111111] sm:py-20 lg:py-24"
+    >
+      {/* Background SVG */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 overflow-hidden"
+      >
+        <div className="absolute -right-[220px] -top-[145px] h-[420px] w-[560px] opacity-[0.45] sm:-right-[110px] sm:h-[510px] sm:w-[680px] lg:-right-[80px] lg:opacity-[0.55]">
+          <AnimatedAccent reduced={reduced} />
+        </div>
+
+        <div className="absolute inset-0 bg-gradient-to-r from-white via-white/85 to-white/35" />
+      </div>
+
+      <Container className="relative z-10">
+        {/* ==================================
+            HEADER
+        ================================== */}
+
+        <motion.div
+          variants={stagger}
+          initial={reduced ? false : "hidden"}
+          whileInView="show"
+          viewport={{
+            once: true,
+            amount: 0.2,
+          }}
+          className="grid items-end gap-7 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-12"
+        >
+          <div className="max-w-[760px]">
+            <motion.div
+              variants={fadeUp}
+              className="mb-5 flex items-center gap-3"
+            >
+              <span className="h-[3px] w-9 bg-[#28A45A]" />
+
+              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#1769A4] sm:text-[11px]">
+                Visitor Profiles
+              </span>
+            </motion.div>
+
+            <motion.h2
+              variants={fadeUp}
+              id="who-will-you-meet"
+              className="font-heading text-[clamp(2.15rem,3.6vw,3.75rem)] font-extrabold leading-[1.12] tracking-[-0.05em] text-[#111111]"
+            >
+              The People Behind
+              <br />
+              Every{" "}
+              <span className="text-[#1769A4]">
+                Project.
+              </span>
+            </motion.h2>
+
+            <motion.p
+              variants={fadeUp}
+              className="mt-5 max-w-[590px] text-[14px] leading-[1.85] text-[#58677B] sm:text-[15px]"
+            >
+              Meet the professionals who design,
+              build, develop, specify and source
+              for Uganda&apos;s construction sector.
+              Explore the key visitor groups
+              attending Uganda Buildcon.
+            </motion.p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 shrink-0">
+          <motion.div
+            variants={fadeUp}
+            className="flex flex-wrap items-center gap-3"
+          >
             <Link
               href="/who-should-visit"
-              className="inline-flex items-center justify-center rounded-xl border border-slate-300 bg-white px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-slate-700 shadow-sm transition-all duration-300 hover:border-brand-blue hover:text-brand-blue hover:shadow-md active:scale-95"
+              className="group inline-flex min-h-12 items-center justify-center gap-3 rounded-lg border border-[#DCE5EA] bg-white px-5 py-3 text-[13px] font-bold text-[#111111] transition-[border-color,color,transform] duration-300 hover:-translate-y-0.5 hover:border-[#28A45A] hover:text-[#1769A4] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#28A45A] motion-reduce:transform-none"
             >
-              Visitor Guide →
+              Visitor Guide
+              <ArrowUpRightIcon />
             </Link>
+
             <Link
-              href="/register-to-visit"
-              className="inline-flex items-center justify-center rounded-xl bg-brand-blue px-6 py-2.5 text-xs font-bold uppercase tracking-wider text-white shadow-lg shadow-brand-blue/20 transition-all duration-300 hover:bg-brand-blue-dark hover:shadow-brand-blue/30 active:scale-95"
+              href={event.cta.registerVisit}
+              className="group inline-flex min-h-12 items-center justify-center gap-3 rounded-lg bg-[#1769A4] px-6 py-3 text-[13px] font-bold text-white transition-[background-color,transform] duration-300 hover:-translate-y-0.5 hover:bg-[#105685] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#28A45A] motion-reduce:transform-none"
             >
               Register to Visit
+              <ArrowIcon />
             </Link>
-          </div>
-        </div>
-
-        {/* ========================================================= */}
-        {/* Spacious Wide Grid Cards (3 Columns Max for Optimal Width) */}
-        {/* ========================================================= */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-40px" }}
-          className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8"
-        >
-          {VISITOR_PILLARS.map((pillar, idx) => {
-            const isBlue = idx % 2 === 0;
-
-            return (
-              <motion.div
-                key={pillar.num}
-                variants={cardVariants}
-                className="group relative flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-white p-7 shadow-sm transition-all duration-300 hover:border-brand-blue/40 hover:shadow-xl hover:shadow-brand-blue/5 hover:-translate-y-1.5"
-              >
-                <div>
-                  {/* Top Card Header: Icon & Index */}
-                  <div className="flex items-center justify-between pb-5 border-b border-slate-100">
-                    <div className="flex items-center gap-3.5">
-                      <div
-                        className={`flex h-11 w-11 items-center justify-center rounded-xl transition-colors duration-300 ${
-                          isBlue
-                            ? "bg-brand-blue/10 text-brand-blue group-hover:bg-brand-blue group-hover:text-white"
-                            : "bg-brand-green/10 text-brand-green group-hover:bg-brand-green group-hover:text-white"
-                        }`}
-                      >
-                        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d={pillar.icon} />
-                        </svg>
-                      </div>
-
-                      <div>
-                        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">
-                          {pillar.subtitle}
-                        </span>
-                        <h3 className="text-base font-bold tracking-tight text-slate-900 group-hover:text-brand-blue transition-colors">
-                          {pillar.title}
-                        </h3>
-                      </div>
-                    </div>
-
-                    <span className="text-sm font-mono font-bold tracking-wider text-slate-300 group-hover:text-slate-500 transition-colors shrink-0">
-                      {pillar.num}
-                    </span>
-                  </div>
-
-                  {/* Horizontal Badges */}
-                  <div className="mt-5 flex flex-wrap gap-2">
-                    {pillar.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="inline-flex items-center rounded-lg border border-slate-200/70 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600 transition-all duration-200 group-hover:border-brand-blue/30 group-hover:bg-white"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Bottom Footer Link */}
-                <div className="mt-8 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-brand-blue">
-                  <span>Target Buyer Segment</span>
-                  <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
-                </div>
-              </motion.div>
-            );
-          })}
+          </motion.div>
         </motion.div>
 
-        {/* ========================================================= */}
-        {/* Bottom Callout Banner                                     */}
-        {/* ========================================================= */}
-        <div className="mt-12 flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl border border-slate-200/90 bg-white p-6 shadow-sm">
-          <div className="flex items-center gap-3.5 text-xs sm:text-sm font-medium text-slate-600">
-            <span className="h-2.5 w-2.5 rounded-full bg-brand-green animate-pulse shrink-0" />
-            <span>
-              Pre-registration is now active for qualified trade buyers, architects, contractors, and project developers.
-            </span>
-          </div>
+        {/* ==================================
+            BUYER DIRECTORY
+        ================================== */}
+
+        <motion.div
+          variants={stagger}
+          initial={reduced ? false : "hidden"}
+          whileInView="show"
+          viewport={{
+            once: true,
+            amount: 0.08,
+          }}
+          className="mt-12 border-t border-[#E4E9EC] sm:mt-14"
+        >
+          {BUYER_GROUPS.map((buyer) => (
+            <BuyerRow key={buyer.num} buyer={buyer} />
+          ))}
+        </motion.div>
+
+        {/* ==================================
+            QUIET FOOTER
+        ================================== */}
+
+        <div className="mt-8 flex flex-wrap items-center justify-between gap-5">
+          <p className="max-w-[640px] text-[12px] leading-[1.75] text-[#718396]">
+            From early-stage planning to project delivery,
+            Uganda Buildcon connects the people and
+            organisations involved in the built environment.
+          </p>
 
           <Link
-            href="/register-to-visit"
-            className="inline-flex items-center gap-2 text-xs font-bold text-brand-blue hover:text-brand-blue-dark transition-colors whitespace-nowrap shrink-0"
+            href={event.cta.registerVisit}
+            className="group inline-flex items-center gap-2 border-b border-[#1769A4]/35 pb-1 text-[13px] font-bold text-[#1769A4] transition-colors hover:text-[#28A45A]"
           >
-            <span>Get Free Visitor Badge</span>
-            <span>→</span>
+            Get Visitor Pass
+            <span className="transition-transform duration-300 group-hover:translate-x-1">
+              <ArrowIcon />
+            </span>
           </Link>
         </div>
-
       </Container>
     </section>
   );

@@ -1,214 +1,541 @@
+
 "use client";
 
 import Link from "next/link";
-import { motion, type Variants } from "framer-motion";
+import {
+  motion,
+  useReducedMotion,
+  type Variants,
+} from "framer-motion";
+
 import { event } from "@/config/event";
 import { Container } from "@/components/ui/Container";
 
-const containerVariants: Variants = {
-  hidden: { opacity: 0 },
+const EASE = [0.22, 1, 0.36, 1] as const;
+
+const GROUP: Variants = {
+  hidden: {},
   visible: {
-    opacity: 1,
     transition: {
       staggerChildren: 0.08,
-      delayChildren: 0.05,
+      delayChildren: 0.04,
     },
   },
 };
 
-const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 16, filter: "blur(4px)" },
+const REVEAL: Variants = {
+  hidden: { opacity: 0, y: 20 },
   visible: {
     opacity: 1,
     y: 0,
-    filter: "blur(0px)",
     transition: {
-      duration: 0.55,
-      ease: [0.16, 1, 0.3, 1],
+      duration: 0.72,
+      ease: EASE,
     },
   },
 };
 
-const CORE_PARAMETERS = [
+const WORD_GROUP: Variants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.065,
+    },
+  },
+};
+
+const WORD: Variants = {
+  hidden: { opacity: 0, y: "105%" },
+  visible: {
+    opacity: 1,
+    y: "0%",
+    transition: {
+      duration: 0.8,
+      ease: EASE,
+    },
+  },
+};
+
+/* ==========================================
+   INFORMATION FROM EVENT CONFIG
+========================================== */
+
+const VISIT_DETAILS = [
   {
-    title: "Official Dates",
+    title: "Event Dates",
     value: event.dates.display,
-    subtitle: "Three dedicated B2B exhibition days",
-    badge: "Calendar",
+    description: event.editionLabel,
     icon: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z",
   },
   {
     title: "Exhibition Venue",
     value: event.venue.name,
-    subtitle: "Home of Uganda Buildcon, Lugogo",
-    badge: "Facility",
+    description: "UMA Show Grounds, Lugogo",
     icon: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5",
   },
   {
-    title: "Host City & Hub",
+    title: "Host City",
     value: `${event.venue.city}, ${event.venue.country}`,
-    subtitle: "Capital city and commercial centre",
-    badge: "Location",
-    icon: "M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z",
+    description: event.dates.timezone,
+    icon: "M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1116 0zM12 10h.01",
   },
   {
-    title: "Access Policy",
-    value: "Complimentary Trade Entry",
-    subtitle: "Pre-registration required for badge",
-    badge: "Admission",
+    title: "Visitor Registration",
+    value: "Trade Visitor Registration",
+    description: "Register online before attending",
     icon: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z",
   },
-];
+] as const;
+
+/* ==========================================
+   VISITOR FAQ
+========================================== */
 
 const FAQS = [
   {
-    q: "Is there an entry fee for trade professionals?",
-    a: "Trade visitor admission is complimentary for qualified architects, contractors, civil engineers, developers, importers, and procurement professionals who pre-register online.",
-    tag: "Registration",
+    question:
+      "How do I register to attend Uganda Buildcon?",
+    answer:
+      "Use the official visitor registration form to submit your details before attending. Follow the confirmation and badge collection instructions issued by the organisers.",
   },
   {
-    q: "How do international delegates obtain visa assistance?",
-    a: "Visitors must check their country-specific visa requirements via the official Uganda e-Visa portal (visas.immigration.go.ug). Registered trade delegates can request an invitation letter from the organisers to support their visa application.",
-    tag: "Immigration",
+    question:
+      "Do international visitors need a visa?",
+    answer:
+      "Entry requirements depend on nationality and travel documents. Check the official Uganda immigration portal before travelling. Contact the organisers if you require information about an invitation letter.",
   },
   {
-    q: "What are the exhibition operating timings?",
-    a: `The exhibition runs daily across the three event dates, ${event.dates.display}. Specific daily visitor entrance times and badge pickup schedules will be emailed directly to registered attendees.`,
-    tag: "Timings",
+    question:
+      "What are the exhibition opening hours?",
+    answer:
+      `The exhibition is scheduled for ${event.dates.display}. Daily visitor opening and closing times have not yet been confirmed. Check official event communications before planning your arrival.`,
   },
   {
-    q: "How do I reach the UMA Show Grounds from the airport?",
-    a: "International visitors arrive at Entebbe International Airport (EBB). The UMA Show Grounds are in Lugogo, Kampala, and can be reached by taxi, ride-hailing services or hotel shuttles, including via the Kampala–Entebbe Expressway.",
-    tag: "Logistics",
+    question:
+      "How do I travel to the venue from the airport?",
+    answer:
+      `International visitors arriving at Entebbe International Airport can arrange onward transport to ${event.venue.city}. The venue is ${event.venue.name}, at UMA Show Grounds, Lugogo. Confirm your journey and transport arrangements in advance.`,
   },
-];
+] as const;
 
-export function PlanYourVisitClientView() {
-  const cleanPhone = event.contact.general.phone.replace(/[^0-9+]/g, "");
+/* ==========================================
+   OFFICIAL THREE CONTACTS
+========================================== */
+
+const CONTACTS = [
+  event.contact.futurex,
+  event.contact.etsipl,
+  event.contact.futurexSales,
+] as const;
+
+/* ==========================================
+   SHARED COMPONENTS
+========================================== */
+
+function SectionLabel({
+  children,
+  light = false,
+}: {
+  children: React.ReactNode;
+  light?: boolean;
+}) {
+  return (
+    <div className="flex items-center gap-3">
+      <span
+        aria-hidden="true"
+        className="h-[2px] w-8 shrink-0 bg-[#28A45A]"
+      />
+      <span
+        className={`text-[11px] font-bold uppercase tracking-[0.12em] ${
+          light ? "text-white/60" : "text-[#1769A4]"
+        }`}
+      >
+        {children}
+      </span>
+    </div>
+  );
+}
+
+function ArrowIcon({
+  external = false,
+}: {
+  external?: boolean;
+}) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.7}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-4 w-4 shrink-0"
+    >
+      {external ? (
+        <path d="M7 17 17 7M8 7h9v9" />
+      ) : (
+        <path d="M5 12h14m-6-6 6 6-6 6" />
+      )}
+    </svg>
+  );
+}
+
+function AnimatedWords({
+  text,
+  className = "",
+}: {
+  text: string;
+  className?: string;
+}) {
+  const words = text.split(/\s+/);
 
   return (
-    <div className="relative overflow-hidden py-14 sm:py-20 text-brand-dark">
-      {/* Background Architectural Vector Grid */}
-      <div className="pointer-events-none absolute inset-0 -z-10 select-none opacity-[0.035]">
-        <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="plan-visit-grid" width="36" height="36" patternUnits="userSpaceOnUse">
-              <path d="M 36 0 L 0 0 0 36" fill="none" stroke="#0f2346" strokeWidth="0.8" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#plan-visit-grid)" />
+    <span className={className}>
+      {words.map((word, index) => (
+        <span
+          key={`${word}-${index}`}
+          className="inline-block overflow-hidden align-bottom"
+        >
+          <motion.span variants={WORD} className="inline-block">
+            {word}
+          </motion.span>
+          {index < words.length - 1 ? "\u00A0" : null}
+        </span>
+      ))}
+    </span>
+  );
+}
+
+/* ==========================================
+   ARCHITECTURAL SVG
+========================================== */
+
+function ArchitecturalGrid() {
+  const reduced = useReducedMotion() === true;
+
+  return (
+    <svg
+      aria-hidden="true"
+      focusable="false"
+      viewBox="0 0 720 360"
+      fill="none"
+      preserveAspectRatio="xMidYMid slice"
+      className="h-full w-full"
+    >
+      <defs>
+        <pattern
+          id="plan-visit-premium-grid"
+          width="36"
+          height="36"
+          patternUnits="userSpaceOnUse"
+        >
+          <path
+            d="M36 0H0V36"
+            stroke="#1769A4"
+            strokeOpacity=".14"
+            strokeWidth=".8"
+          />
+        </pattern>
+      </defs>
+
+      <rect
+        width="720"
+        height="360"
+        fill="url(#plan-visit-premium-grid)"
+      />
+
+      <motion.path
+        d="M0 280H185V210H345V120H720"
+        stroke="#1769A4"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        initial={false}
+        animate={
+          reduced
+            ? undefined
+            : {
+                pathLength: [0, 1, 1],
+                opacity: [0, 0.6, 0],
+              }
+        }
+        transition={{
+          duration: 14,
+          repeat: Infinity,
+          repeatDelay: 2,
+          ease: "easeInOut",
+        }}
+      />
+
+      <motion.path
+        d="M75 355V260H275V180H510V85H720"
+        stroke="#28A45A"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        initial={false}
+        animate={
+          reduced
+            ? undefined
+            : {
+                pathLength: [0, 1, 1],
+                opacity: [0, 0.55, 0],
+              }
+        }
+        transition={{
+          duration: 16,
+          repeat: Infinity,
+          repeatDelay: 2,
+          ease: "easeInOut",
+        }}
+      />
+    </svg>
+  );
+}
+
+/* ==========================================
+   EVENT DETAIL CARD
+========================================== */
+
+function DetailCard({
+  item,
+  index,
+}: {
+  item: (typeof VISIT_DETAILS)[number];
+  index: number;
+}) {
+  const blue = index % 2 === 0;
+
+  return (
+    <motion.article
+      variants={REVEAL}
+      className="group flex h-full min-w-0 flex-col rounded-xl border border-[#E2E8EF] bg-white p-5 transition-[border-color,box-shadow] duration-300 hover:border-[#1769A4]/30 hover:shadow-[0_12px_30px_rgba(16,35,55,0.04)] sm:p-6"
+    >
+      <div
+        className={`flex h-10 w-10 items-center justify-center rounded-lg ${
+          blue
+            ? "bg-[#1769A4]/[0.08] text-[#1769A4]"
+            : "bg-[#28A45A]/[0.08] text-[#28A45A]"
+        }`}
+      >
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={1.7}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="h-5 w-5"
+        >
+          <path d={item.icon} />
         </svg>
       </div>
 
-      <Container className="relative z-10 w-full">
-        {/* ========================================================= */}
-        {/* Section 1: Core Parameters Grid                           */}
-        {/* ========================================================= */}
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between pb-8 border-b border-slate-200/80">
-          <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 rounded-full border border-brand-blue/20 bg-brand-blue/[0.06] px-4 py-1">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-blue opacity-75" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-blue" />
-              </span>
-              <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-brand-blue">
-                Visitor Parameters
-              </span>
-            </div>
+      <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.09em] text-[#7D8C9B]">
+        {item.title}
+      </p>
 
-            <h2 className="mt-4 text-2xl sm:text-4xl font-extrabold tracking-[-0.03em] leading-[1.15] text-brand-dark">
-              Key Dates &amp;{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue via-sky-500 to-brand-green">
-                Location Details
-              </span>
-            </h2>
+      <h3 className="mt-2 font-heading text-[17px] font-bold leading-[1.35] tracking-[-0.025em] text-[#172536] sm:text-[18px]">
+        {item.value}
+      </h3>
 
-            <p className="mt-2.5 text-xs sm:text-sm leading-[1.7] text-slate-500 font-normal">
-              Essential show details to help you plan your flights, local transit and stay in Kampala.
-            </p>
-          </div>
+      <p className="mt-2 text-[12px] leading-[1.7] text-[#667789]">
+        {item.description}
+      </p>
+    </motion.article>
+  );
+}
 
-          <div className="shrink-0">
-            <Link
-              href={event.cta.registerVisit}
-              className="inline-flex items-center justify-center rounded-full bg-brand-blue px-6 py-3 text-xs font-semibold uppercase tracking-wider text-white shadow-[0_4px_16px_rgba(31,111,174,0.25)] transition-all duration-300 hover:bg-brand-blue-dark hover:shadow-[0_6px_22px_rgba(31,111,174,0.35)] hover:-translate-y-0.5 active:translate-y-0"
+/* ==========================================
+   COMPACT CONTACT HELPDESK
+========================================== */
+
+function VisitorHelpdesk() {
+  return (
+    <div className="grid items-start gap-7 lg:grid-cols-[0.85fr_1.6fr] lg:gap-10">
+      <div className="max-w-sm">
+        <SectionLabel light>
+          Visitor Assistance
+        </SectionLabel>
+
+        <h2
+          id="visit-helpdesk-heading"
+          className="mt-3 font-heading text-[23px] font-bold leading-[1.2] tracking-[-0.035em] text-white sm:text-[27px]"
+        >
+          Need Assistance?
+        </h2>
+
+        <p className="mt-2 text-[12px] leading-[1.7] text-white/55 sm:text-[13px]">
+          For registration, travel guidance and
+          delegation enquiries, contact the organisers.
+        </p>
+
+        <Link
+          href="/contact"
+          className="mt-4 inline-flex items-center gap-2 text-[12px] font-semibold text-[#7ACB58] hover:text-white"
+        >
+          Contact Organisers
+          <ArrowIcon />
+        </Link>
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-3">
+        {CONTACTS.map((contact) => (
+          <article
+            key={contact.email}
+            className="min-w-0 rounded-lg border border-white/10 bg-white/[0.035] p-4"
+          >
+            <h3 className="text-[13px] font-bold leading-[1.4] text-white">
+              {contact.name}
+            </h3>
+
+            <a
+              href={`tel:${contact.phone.replace(/[^\d+]/g, "")}`}
+              className="mt-3 block text-[12px] font-medium tabular-nums text-white/75 hover:text-[#7ACB58]"
             >
-              Get Visitor Badge →
-            </Link>
-          </div>
+              {contact.phone}
+            </a>
+
+            <a
+              href={`mailto:${contact.email}`}
+              className="mt-1.5 block break-all text-[11px] leading-[1.6] text-white/55 hover:text-[#7ACB58]"
+            >
+              {contact.email}
+            </a>
+          </article>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ==========================================
+   MAIN PAGE CONTENT
+========================================== */
+
+export function PlanYourVisitClientView() {
+  const reduced = useReducedMotion() === true;
+  const initial = reduced ? false : "hidden";
+
+  return (
+    <div className="overflow-hidden bg-white text-[#111820]">
+      {/* VISITOR ESSENTIALS */}
+      <section
+        aria-labelledby="visit-essentials-heading"
+        className="relative isolate overflow-hidden py-14 sm:py-16 lg:py-20"
+      >
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-40 -top-16 -z-10 h-[360px] w-[680px] opacity-35"
+        >
+          <ArchitecturalGrid />
         </div>
 
-        {/* 4 Core Parameter Cards (Spacious, Zero-Chipku Grid) */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-40px" }}
-          className="mt-8 sm:mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
-        >
-          {CORE_PARAMETERS.map((item, idx) => {
-            const isBlue = idx % 2 === 0;
-
-            return (
-              <motion.div
-                key={item.title}
-                variants={itemVariants}
-                className="group relative flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-white/95 p-6 shadow-[0_2px_12px_rgb(0,0,0,0.02)] backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-brand-blue/40 hover:shadow-xl hover:shadow-brand-blue/5"
-              >
-                <div>
-                  <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-                    <div
-                      className={`flex h-10 w-10 items-center justify-center rounded-xl transition-colors ${
-                        isBlue
-                          ? "bg-brand-blue/[0.08] text-brand-blue group-hover:bg-brand-blue group-hover:text-white"
-                          : "bg-brand-green/[0.08] text-brand-green group-hover:bg-brand-green group-hover:text-white"
-                      }`}
-                    >
-                      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d={item.icon} />
-                      </svg>
-                    </div>
-
-                    <span className="rounded-full border border-slate-200/80 bg-slate-50 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
-                      {item.badge}
-                    </span>
-                  </div>
-
-                  <span className="mt-4 block text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                    {item.title}
-                  </span>
-
-                  <h3 className="mt-1 text-base sm:text-lg font-bold tracking-tight text-brand-dark group-hover:text-brand-blue transition-colors">
-                    {item.value}
-                  </h3>
-
-                  <p className="mt-1 text-xs leading-[1.65] text-slate-500 font-normal">
-                    {item.subtitle}
-                  </p>
-                </div>
-
-                <div className="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-brand-blue">
-                  <span>Show Parameter</span>
-                  <span className="transition-transform group-hover:translate-x-1">→</span>
-                </div>
+        <Container className="relative z-10">
+          <motion.div
+            variants={GROUP}
+            initial={initial}
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.12 }}
+            className="flex flex-col gap-6 border-b border-[#E5EAF0] pb-8 lg:flex-row lg:items-end lg:justify-between"
+          >
+            <div className="max-w-[780px]">
+              <motion.div variants={REVEAL}>
+                <SectionLabel>
+                  Visitor Information
+                </SectionLabel>
               </motion.div>
-            );
-          })}
-        </motion.div>
 
-        {/* ========================================================= */}
-        {/* Section 2: Interactive Venue Map Showcase                 */}
-        {/* ========================================================= */}
-        <div className="mt-14 sm:mt-18 rounded-3xl border border-slate-200/80 bg-white p-6 sm:p-8 shadow-sm">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between pb-6 border-b border-slate-100">
-            <div>
-              <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-brand-green">
-                Interactive Navigation
-              </span>
-              <h3 className="mt-1 text-lg sm:text-2xl font-bold tracking-tight text-brand-dark">
-                {event.venue.name}
-              </h3>
-              <p className="mt-1 text-xs text-slate-500">
+              <motion.h2
+                id="visit-essentials-heading"
+                variants={WORD_GROUP}
+                aria-label="Everything You Need to Plan Your Visit"
+                className="mt-5 font-heading text-[clamp(2rem,3.5vw,3.55rem)] font-extrabold leading-[1.13] tracking-[-0.045em]"
+              >
+                <span aria-hidden="true">
+                  <AnimatedWords text="Everything You Need" />
+                  {" "}
+                  <AnimatedWords
+                    text="to Plan Your Visit."
+                    className="text-[#1769A4]"
+                  />
+                </span>
+              </motion.h2>
+
+              <motion.p
+                variants={REVEAL}
+                className="mt-5 max-w-[680px] text-[14px] leading-[1.85] text-[#607083] sm:text-[15px]"
+              >
+                Find key event details, venue directions
+                and practical visitor guidance for{" "}
+                {event.name} in {event.venue.city}.
+              </motion.p>
+            </div>
+
+            <motion.div variants={REVEAL}>
+              <Link
+                href={event.cta.registerVisit}
+                className="group inline-flex min-h-11 items-center justify-center gap-3 rounded-lg bg-[#1769A4] px-6 py-3 text-[13px] font-bold text-white transition-colors hover:bg-[#105685] focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#28A45A]"
+              >
+                Register to Visit
+                <span className="transition-transform duration-300 group-hover:translate-x-1 motion-reduce:transform-none">
+                  <ArrowIcon />
+                </span>
+              </Link>
+            </motion.div>
+          </motion.div>
+
+          <motion.div
+            variants={GROUP}
+            initial={initial}
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.08 }}
+            className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+          >
+            {VISIT_DETAILS.map((item, index) => (
+              <DetailCard
+                key={item.title}
+                item={item}
+                index={index}
+              />
+            ))}
+          </motion.div>
+        </Container>
+      </section>
+
+      {/* VENUE AND MAP */}
+      <section
+        aria-labelledby="visit-venue-heading"
+        className="border-y border-[#E5EAF0] bg-[#F8FAFB] py-14 sm:py-16 lg:py-20"
+      >
+        <Container>
+          <motion.div
+            initial={
+              reduced ? false : { opacity: 0, y: 18 }
+            }
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.75, ease: EASE }}
+            className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between"
+          >
+            <div className="max-w-[680px]">
+              <SectionLabel>
+                Venue & Directions
+              </SectionLabel>
+
+              <h2
+                id="visit-venue-heading"
+                className="mt-4 font-heading text-[clamp(1.85rem,3vw,3rem)] font-bold leading-[1.15] tracking-[-0.04em]"
+              >
+                Find Your Way to{" "}
+                <span className="text-[#1769A4]">
+                  {event.venue.name}.
+                </span>
+              </h2>
+
+              <p className="mt-3 text-[13px] leading-[1.8] text-[#607083] sm:text-[14px]">
                 {event.venue.fullLocation}
               </p>
             </div>
@@ -217,140 +544,120 @@ export function PlanYourVisitClientView() {
               href={event.venue.mapLinkUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-slate-50 px-5 py-2.5 text-xs font-semibold text-slate-700 transition-all hover:border-brand-blue hover:text-brand-blue hover:bg-white shrink-0"
+              className="inline-flex min-h-11 w-fit items-center justify-center gap-2 rounded-lg border border-[#D8E2E9] bg-white px-5 py-3 text-[13px] font-semibold text-[#1769A4] transition-colors hover:border-[#1769A4]"
             >
-              Open in Google Maps ↗
+              Open in Google Maps
+              <ArrowIcon external />
             </a>
-          </div>
+          </motion.div>
 
-          <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200/80 bg-slate-100 shadow-inner">
+          <motion.div
+            initial={
+              reduced ? false : { opacity: 0, y: 20 }
+            }
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.12 }}
+            transition={{ duration: 0.8, ease: EASE }}
+            className="mt-7 overflow-hidden rounded-xl border border-[#DFE7ED] bg-white"
+          >
             <iframe
-              title={`Map of ${event.venue.name}, ${event.venue.city}`}
+              title={`Location map of ${event.venue.name}, ${event.venue.city}`}
               src={event.venue.mapEmbedUrl}
-              className="h-[360px] sm:h-[420px] w-full border-0"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
+              className="h-[300px] w-full border-0 sm:h-[390px] lg:h-[430px]"
+              allowFullScreen
             />
-          </div>
-        </div>
+          </motion.div>
+        </Container>
+      </section>
 
-        {/* ========================================================= */}
-        {/* Section 3: Visitor FAQ (Breathable 2-Column Grid)          */}
-        {/* ========================================================= */}
-        <div className="mt-14 sm:mt-18">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between pb-6 border-b border-slate-200/80">
-            <div>
-              <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-brand-blue">
-                Frequently Asked Questions
-              </span>
-              <h3 className="mt-1 text-xl sm:text-3xl font-extrabold tracking-tight text-brand-dark">
-                Visitor Guidelines &amp; Protocol
-              </h3>
-            </div>
-            <p className="text-xs text-slate-500 font-normal">
-              Clear answers to help streamline your visit to the expo.
-            </p>
-          </div>
-
-          <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2">
-            {FAQS.map((faq) => (
-              <div
-                key={faq.q}
-                className="group flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-white p-6 sm:p-7 shadow-[0_2px_10px_rgb(0,0,0,0.02)] transition-all hover:border-brand-blue/40 hover:shadow-lg"
-              >
-                <div>
-                  <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                    <span className="rounded-full bg-slate-100 px-3 py-0.5 text-[9px] font-bold uppercase tracking-wider text-slate-600">
-                      {faq.tag}
-                    </span>
-                    <span className="text-brand-blue text-xs font-bold">Q&amp;A</span>
-                  </div>
-
-                  <h4 className="mt-4 text-base font-bold text-brand-dark group-hover:text-brand-blue transition-colors leading-snug">
-                    {faq.q}
-                  </h4>
-
-                  <p className="mt-2.5 text-xs sm:text-[13.5px] leading-[1.75] text-slate-600 font-normal">
-                    {faq.a}
-                  </p>
-                </div>
-
-                <div className="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-brand-blue">
-                  <span>Verified Guideline</span>
-                  <span>✓</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* ========================================================= */}
-        {/* Section 4: Direct Secretariat Contact Desk                */}
-        {/* ========================================================= */}
-        <div className="mt-14 sm:mt-18 rounded-3xl border border-slate-200/80 bg-white p-6 sm:p-8 shadow-sm">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-            <div className="max-w-xl">
-              <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-brand-blue">
-                Visitor &amp; Delegation Assistance
-              </span>
-              <h3 className="mt-1 text-lg sm:text-xl font-bold tracking-tight text-brand-dark">
-                Have Additional Questions Regarding Your Visit?
-              </h3>
-              <p className="mt-2 text-xs sm:text-sm leading-[1.7] text-slate-500 font-normal">
-                For international delegation hosting, travel invitation letters, or bulk corporate registrations, reach out directly to the joint organising committee.
-              </p>
-            </div>
-
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
-              <a
-                href={`tel:${cleanPhone}`}
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-5 py-3 text-xs font-semibold text-slate-700 transition-all hover:border-brand-blue hover:text-brand-blue hover:bg-white"
-              >
-                <svg className="h-4 w-4 text-brand-green" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                </svg>
-                {event.contact.general.phone}
-              </a>
-
-              <a
-                href={`mailto:${event.contact.general.email}`}
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-brand-blue px-6 py-3 text-xs font-semibold uppercase tracking-wider text-white shadow-md hover:bg-brand-blue-dark transition-all"
-              >
-                <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-                Email Helpdesk
-              </a>
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom Registration Action Ribbon */}
-        <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl border border-brand-blue/20 bg-gradient-to-r from-brand-blue/[0.04] via-white to-brand-green/[0.04] p-5 sm:p-6 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-green/10 text-brand-green">
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <div>
-              <h4 className="text-xs sm:text-sm font-bold text-brand-dark">
-                Free trade visitor registration is currently active
-              </h4>
-              <p className="text-[11px] text-slate-500 font-normal mt-0.5">
-                Held from {event.dates.display} at {event.venue.fullLocation}.
-              </p>
-            </div>
-          </div>
-
-          <Link
-            href={event.cta.registerVisit}
-            className="shrink-0 inline-flex items-center justify-center rounded-full bg-brand-blue px-6 py-2.5 text-xs font-semibold uppercase tracking-wider text-white shadow-md hover:bg-brand-blue-dark transition-all duration-200"
+      {/* VISITOR FAQ */}
+      <section
+        aria-labelledby="visit-faq-heading"
+        className="bg-white py-14 sm:py-16 lg:py-20"
+      >
+        <Container>
+          <motion.div
+            variants={GROUP}
+            initial={initial}
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.15 }}
+            className="max-w-[760px]"
           >
-            Register for Free Badge
-          </Link>
-        </div>
-      </Container>
+            <motion.div variants={REVEAL}>
+              <SectionLabel>
+                Visitor Guidance
+              </SectionLabel>
+            </motion.div>
+
+            <motion.h2
+              id="visit-faq-heading"
+              variants={REVEAL}
+              className="mt-5 font-heading text-[clamp(1.9rem,3vw,3rem)] font-bold leading-[1.15] tracking-[-0.045em]"
+            >
+              Frequently Asked{" "}
+              <span className="text-[#1769A4]">
+                Questions.
+              </span>
+            </motion.h2>
+
+            <motion.p
+              variants={REVEAL}
+              className="mt-4 text-[14px] leading-[1.8] text-[#607083]"
+            >
+              Useful information about visitor registration,
+              travel requirements and exhibition access.
+            </motion.p>
+          </motion.div>
+
+          <motion.div
+            variants={GROUP}
+            initial={initial}
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.08 }}
+            className="mt-8 grid gap-x-10 md:grid-cols-2"
+          >
+            {FAQS.map((faq) => (
+              <motion.article
+                key={faq.question}
+                variants={REVEAL}
+                className="border-b border-[#E2E9EF] py-6 first:pt-0"
+              >
+                <h3 className="font-heading text-[16px] font-bold leading-[1.4] tracking-[-0.02em] text-[#172536] sm:text-[17px]">
+                  {faq.question}
+                </h3>
+
+                <p className="mt-3 text-[13px] leading-[1.85] text-[#667789] sm:text-[14px]">
+                  {faq.answer}
+                </p>
+
+                {faq.question.includes("visa") && (
+                  <a
+                    href="https://visas.immigration.go.ug/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-3 inline-flex items-center gap-2 text-[12px] font-semibold text-[#1769A4] hover:text-[#28A45A]"
+                  >
+                    Official Uganda e-Visa Portal
+                    <ArrowIcon external />
+                  </a>
+                )}
+              </motion.article>
+            ))}
+          </motion.div>
+        </Container>
+      </section>
+
+      {/* COMPACT OFFICIAL HELPDESK */}
+      <section
+        aria-labelledby="visit-helpdesk-heading"
+        className="relative bg-[#0B1423] py-9 text-white sm:py-11 lg:py-12"
+      >
+        <Container>
+          <VisitorHelpdesk />
+        </Container>
+      </section>
     </div>
   );
 }

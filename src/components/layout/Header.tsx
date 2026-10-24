@@ -1,33 +1,198 @@
 
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion, useReducedMotion } from "framer-motion";
 
 import { mainNav } from "@/config/navigation";
 import { event } from "@/config/event";
-import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { MobileMenu } from "./MobileMenu";
 import { clsx } from "@/lib/utils/clsx";
 
+/* =========================================================
+   PREMIUM SVG ICONS
+========================================================= */
+
+function ArrowUpRightIcon({
+  className = "h-4 w-4",
+}: {
+  className?: string;
+}) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="M7 17 17 7M8 7h9v9" />
+    </svg>
+  );
+}
+
+function ArrowRightIcon({
+  className = "h-4 w-4",
+}: {
+  className?: string;
+}) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="M5 12h14m-6-6 6 6-6 6" />
+    </svg>
+  );
+}
+
+function ChevronDownIcon({
+  open = false,
+}: {
+  open?: boolean;
+}) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 20 20"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={clsx(
+        "h-3.5 w-3.5 shrink-0",
+        "transition-transform duration-300 ease-premium",
+        open && "rotate-180"
+      )}
+    >
+      <path d="m5 7 5 5 5-5" />
+    </svg>
+  );
+}
+
+function CalendarIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-3.5 w-3.5 shrink-0"
+    >
+      <rect x="3" y="5" width="18" height="16" rx="2" />
+      <path d="M7 3v4M17 3v4M3 10h18" />
+    </svg>
+  );
+}
+
+function MapPinIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-3.5 w-3.5 shrink-0"
+    >
+      <path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z" />
+      <circle cx="12" cy="10" r="2.5" />
+    </svg>
+  );
+}
+
+function MenuIcon({
+  open,
+}: {
+  open: boolean;
+}) {
+  return (
+    <span
+      aria-hidden="true"
+      className="relative block h-5 w-6"
+    >
+      <span
+        className={clsx(
+          "absolute left-0 top-[3px] h-[2px] w-6 rounded-full bg-current",
+          "transition-all duration-300 ease-premium",
+          open && "top-[9px] rotate-45"
+        )}
+      />
+
+      <span
+        className={clsx(
+          "absolute left-0 top-[9px] h-[2px] w-6 rounded-full bg-current",
+          "transition-all duration-200 ease-premium",
+          open && "scale-x-0 opacity-0"
+        )}
+      />
+
+      <span
+        className={clsx(
+          "absolute left-0 top-[15px] h-[2px] w-6 rounded-full bg-current",
+          "transition-all duration-300 ease-premium",
+          open && "top-[9px] -rotate-45"
+        )}
+      />
+    </span>
+  );
+}
+
+/* =========================================================
+   HEADER COMPONENT
+========================================================= */
+
 export function Header() {
+  const pathname = usePathname();
+
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [openDropdown, setOpenDropdown] = useState<
+    string | null
+  >(null);
 
-  const pathname = usePathname();
   const navRef = useRef<HTMLElement>(null);
   const previousPathname = useRef(pathname);
-  const reduceMotion = useReducedMotion();
 
-  // Header always remains visible, even when scrolling down.
+  /* -------------------------------------------------------
+     SCROLL DETECTION
+     Header remains fixed with constant height.
+  ------------------------------------------------------- */
+
   useEffect(() => {
+    let animationFrame = 0;
+
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 24);
+      if (animationFrame) return;
+
+      animationFrame = window.requestAnimationFrame(() => {
+        setIsScrolled(window.scrollY > 16);
+        animationFrame = 0;
+      });
     };
 
     handleScroll();
@@ -38,10 +203,17 @@ export function Header() {
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
+
+      if (animationFrame) {
+        window.cancelAnimationFrame(animationFrame);
+      }
     };
   }, []);
 
-  // Close menus when the route changes.
+  /* -------------------------------------------------------
+     CLOSE MENUS AFTER NAVIGATION
+  ------------------------------------------------------- */
+
   useEffect(() => {
     if (previousPathname.current !== pathname) {
       previousPathname.current = pathname;
@@ -50,11 +222,15 @@ export function Header() {
     }
   }, [pathname]);
 
-  // Lock page scrolling while mobile menu is open.
+  /* -------------------------------------------------------
+     LOCK SCROLL FOR MOBILE MENU
+  ------------------------------------------------------- */
+
   useEffect(() => {
     if (!mobileOpen) return;
 
     const previousOverflow = document.body.style.overflow;
+
     document.body.style.overflow = "hidden";
 
     return () => {
@@ -62,172 +238,212 @@ export function Header() {
     };
   }, [mobileOpen]);
 
-  const handleKeyDown = useCallback((e: KeyboardEvent) => {
-    if (e.key === "Escape") {
-      setMobileOpen(false);
-      setOpenDropdown(null);
-    }
+  /* -------------------------------------------------------
+     CLOSE DROPDOWNS / MOBILE MENU
+  ------------------------------------------------------- */
+
+  const closeMenus = useCallback(() => {
+    setMobileOpen(false);
+    setOpenDropdown(null);
   }, []);
 
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        closeMenus();
+      }
+    };
+
+    const handleOutsideClick = (event: MouseEvent) => {
       if (
         navRef.current &&
-        !navRef.current.contains(e.target as Node)
+        !navRef.current.contains(event.target as Node)
       ) {
         setOpenDropdown(null);
       }
     };
 
     document.addEventListener("keydown", handleKeyDown);
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener(
+      "mousedown",
+      handleOutsideClick
+    );
 
     return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener(
+        "keydown",
+        handleKeyDown
+      );
+
+      document.removeEventListener(
+        "mousedown",
+        handleOutsideClick
+      );
     };
-  }, [handleKeyDown]);
+  }, [closeMenus]);
 
-  const marqueeItems = [
-    {
-      badge: "EVENT DATES",
-      text: event.dates.display,
-      dot: "bg-sky-400",
-    },
-    {
-      badge: "EXPO VENUE",
-      text: event.venue.fullLocation,
-      dot: "bg-emerald-400",
-    },
-    {
-      badge: "SPACE ALLOCATION",
-      text: `${event.editionLabel} · Stand Bookings Open`,
-      dot: "bg-cyan-400",
-    },
-  ];
-
-  const marqueeContent = (
-    <div className="flex shrink-0 items-center gap-10 pr-10">
-      {marqueeItems.map((item) => (
-        <div
-          key={item.badge}
-          className="flex shrink-0 items-center gap-3 whitespace-nowrap"
-        >
-          <span
-            className={clsx(
-              "h-1.5 w-1.5 rounded-full",
-              "shadow-[0_0_10px_currentColor]",
-              item.dot
-            )}
-          />
-
-          <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-sky-300 sm:text-[11px]">
-            {item.badge}
-          </span>
-
-          <span className="text-[11px] font-semibold tracking-wide text-white sm:text-xs">
-            {item.text}
-          </span>
-
-          <span className="ml-5 text-sm text-white/25">
-            ✦
-          </span>
-        </div>
-      ))}
-    </div>
-  );
+  /* =======================================================
+     RENDER
+  ======================================================= */
 
   return (
     <header
       className={clsx(
         "fixed inset-x-0 top-0 z-[100] w-full",
-        "translate-y-0",
-        "isolate",
-        "transition-[box-shadow,background-color] duration-300",
-        isScrolled && "shadow-[0_16px_45px_rgba(0,0,0,0.28)]"
+        "bg-white",
+        "transition-shadow duration-300 ease-premium",
+        isScrolled
+          ? "shadow-[0_10px_35px_rgba(16,43,78,0.09)]"
+          : "shadow-none"
       )}
     >
-      {/* Premium announcement ribbon */}
+      {/* ===================================================
+          01. PREMIUM BRAND BLUE TOP STRIP
+
+          Matches Book a Stand primary button.
+          Fixed height: 30px
+      =================================================== */}
+
       <div
-        className={clsx(
-          "relative overflow-hidden",
-          "border-b border-white/10",
-          "bg-[#061329] text-white",
-          "py-2.5",
-          "select-none"
-        )}
+        className="
+          relative
+          flex
+          h-[30px]
+          items-center
+          overflow-hidden
+          border-b
+          border-white/15
+          bg-brand-blue
+          text-white
+        "
       >
-        {/* Decorative top highlight */}
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-sky-400/70 to-transparent" />
-
-        {/* Left fade */}
-        <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-12 bg-gradient-to-r from-[#061329] to-transparent sm:w-28" />
-
-        {/* Right fade */}
-        <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-gradient-to-l from-[#061329] to-transparent sm:w-28" />
-
-        {/* Continuous marquee */}
-        <div className="group flex overflow-hidden">
-          <motion.div
-            className="flex w-max shrink-0 items-center"
-            animate={
-              reduceMotion
-                ? undefined
-                : { x: ["0%", "-50%"] }
-            }
-            transition={{
-              duration: 30,
-              repeat: Infinity,
-              ease: "linear",
-            }}
-            style={{
-              willChange: reduceMotion ? "auto" : "transform",
-            }}
+        <Container
+          className="
+            flex
+            w-full
+            items-center
+            justify-between
+            gap-4
+          "
+        >
+          {/* DATE + VENUE */}
+          <div
+            className="
+              flex
+              min-w-0
+              items-center
+              gap-3
+              text-[10px]
+              font-medium
+              text-white
+              sm:gap-4
+              sm:text-[11px]
+            "
           >
-            <div className="flex shrink-0">
-              {marqueeContent}
-              {marqueeContent}
-            </div>
+            <span className="inline-flex shrink-0 items-center gap-2">
+              <CalendarIcon />
+              <span>{event.dates.display}</span>
+            </span>
 
-            <div aria-hidden="true" className="flex shrink-0">
-              {marqueeContent}
-              {marqueeContent}
-            </div>
-          </motion.div>
-        </div>
+            <span
+              aria-hidden="true"
+              className="hidden h-3 w-px bg-white/35 sm:block"
+            />
+
+            <span
+              className="
+                hidden
+                min-w-0
+                items-center
+                gap-2
+                sm:inline-flex
+              "
+            >
+              <MapPinIcon />
+
+              <span className="truncate">
+                {event.venue.fullLocation}
+              </span>
+            </span>
+          </div>
+
+          {/* EDITION */}
+          <div
+            className="
+              hidden
+              shrink-0
+              items-center
+              gap-2
+              lg:flex
+            "
+          >
+            <span className="h-1.5 w-1.5 rounded-full bg-[#A9F0C0]" />
+
+            <span
+              className="
+                text-[10px]
+                font-bold
+                uppercase
+                tracking-[0.14em]
+                text-white
+              "
+            >
+              {event.editionLabel}
+            </span>
+          </div>
+        </Container>
       </div>
 
-      {/* Main glass navigation */}
+      {/* ===================================================
+          02. LIGHT MINIMAL NAVBAR
+
+          Mobile: 64px
+          Tablet/Desktop: 82px
+
+          Total header height:
+          Mobile 94px
+          Tablet/Desktop 112px
+      =================================================== */}
+
       <div
         className={clsx(
-          "relative w-full",
-          "border-b border-white/10",
-          "backdrop-blur-2xl",
-          "transition-all duration-300",
+          "relative h-16 border-b sm:h-[82px]",
+          "transition-[background-color,border-color] duration-300",
           isScrolled
-            ? "bg-[#081a36]/95 py-2 shadow-[0_12px_36px_rgba(2,8,23,0.22)]"
-            : "bg-[#081a36]/90 py-3 sm:py-3.5"
+            ? "border-brand-border bg-white/95 backdrop-blur-xl"
+            : "border-[#E8EDF2] bg-white"
         )}
       >
-        {/* Subtle ambient glow */}
-        <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute -top-28 left-1/4 h-44 w-72 rounded-full bg-sky-500/[0.08] blur-3xl" />
-          <div className="absolute -top-24 right-1/4 h-40 w-64 rounded-full bg-blue-500/[0.07] blur-3xl" />
-        </div>
+        <Container
+          className="
+            relative
+            flex
+            h-full
+            w-full
+            items-center
+            justify-between
+            gap-3
+          "
+        >
+          {/* ==============================================
+              LOGO
+          ============================================== */}
 
-        <Container className="relative z-10 flex max-w-7xl items-center justify-between gap-3">
-          {/* Logo */}
           <Link
             href="/"
-            aria-label={`${event.name} home`}
-            className={clsx(
-              "group relative z-10 flex shrink-0 items-center",
-              "rounded-lg",
-              "transition-transform duration-300",
-              "hover:scale-[1.02]",
-              "focus-visible:outline-none",
-              "focus-visible:ring-2 focus-visible:ring-sky-400"
-            )}
+            aria-label={`${event.name} — Home`}
+            className="
+              group
+              relative
+              z-10
+              flex
+              shrink-0
+              items-center
+              rounded-md
+              focus-visible:outline-2
+              focus-visible:outline-offset-4
+              focus-visible:outline-brand-green
+            "
           >
             <Image
               src="/logos/uganda-logo.png"
@@ -235,45 +451,87 @@ export function Header() {
               width={869}
               height={287}
               priority
-              className={clsx(
-                "w-auto object-contain object-left",
-                "transition-all duration-300",
-                isScrolled
-                  ? "h-10 sm:h-11 lg:h-14"
-                  : "h-11 sm:h-12 lg:h-16"
-              )}
+              sizes="(min-width: 1280px) 185px, (min-width: 640px) 160px, 135px"
+              className="
+                h-auto
+                w-[135px]
+                object-contain
+                object-left
+                transition-transform
+                duration-300
+                ease-premium
+                group-hover:scale-[1.025]
+                motion-reduce:transform-none
+                sm:w-[160px]
+                lg:w-[145px]
+                xl:w-[185px]
+              "
             />
           </Link>
 
-          {/* Desktop navigation */}
+          {/* ==============================================
+              DESKTOP NAVIGATION
+              Plain text, no boxes or pill wrapper
+          ============================================== */}
+
           <nav
             ref={navRef}
-            aria-label="Primary Navigation"
-            className="hidden min-w-0 items-center justify-center lg:flex"
+            aria-label="Primary navigation"
+            className="
+              hidden
+              min-w-0
+              flex-1
+              items-center
+              justify-center
+              lg:flex
+            "
           >
             <ul
-              className={clsx(
-                "flex items-center gap-0.5 xl:gap-1",
-                "rounded-full",
-                "border border-white/[0.14]",
-                "bg-white/[0.055]",
-                "p-1.5",
-                "shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_8px_25px_rgba(0,0,0,0.14)]",
-                "backdrop-blur-2xl",
-                "transition-colors duration-300",
-                "hover:border-white/25"
-              )}
+              className="
+                flex
+                min-w-0
+                items-center
+                justify-center
+                gap-0
+                xl:gap-1.5
+              "
             >
               {mainNav.map((item) => {
-                const isActive =
+                const hasChildren = Boolean(
+                  item.children?.length
+                );
+
+                const isParentActive =
                   pathname === item.href ||
                   (
                     item.href !== "/" &&
                     pathname?.startsWith(`${item.href}/`)
                   );
 
-                const hasChildren = Boolean(item.children?.length);
-                const isDropdownOpen = openDropdown === item.label;
+                const isChildActive = Boolean(
+                  item.children?.some(
+                    (child) =>
+                      pathname === child.href ||
+                      (
+                        child.href !== "/" &&
+                        pathname?.startsWith(
+                          `${child.href}/`
+                        )
+                      )
+                  )
+                );
+
+                const isActive =
+                  isParentActive || isChildActive;
+
+                const isOpen =
+                  openDropdown === item.label;
+
+                const dropdownId = `nav-dropdown-${
+                  item.href
+                    .replace(/[^a-zA-Z0-9]/g, "-")
+                    .replace(/^-+|-+$/g, "") || "home"
+                }`;
 
                 return (
                   <li
@@ -289,144 +547,227 @@ export function Header() {
                         setOpenDropdown(null);
                       }
                     }}
-                    onBlur={(e) => {
+                    onBlur={(event) => {
                       if (
-                        !e.currentTarget.contains(
-                          e.relatedTarget as Node | null
+                        !event.currentTarget.contains(
+                          event.relatedTarget as Node | null
                         )
                       ) {
                         setOpenDropdown(null);
                       }
                     }}
                   >
+                    {/* PARENT NAV ITEM */}
                     <div className="flex items-center">
                       <Link
                         href={item.href}
-                        aria-current={isActive ? "page" : undefined}
+                        aria-current={
+                          isActive ? "page" : undefined
+                        }
+                        onClick={() =>
+                          setOpenDropdown(null)
+                        }
                         className={clsx(
-                          "relative inline-flex items-center",
-                          "rounded-full",
-                          "px-2.5 py-2 xl:px-3.5",
-                          "text-[11px] font-semibold xl:text-xs",
-                          "tracking-wide whitespace-nowrap",
-                          "transition-all duration-200",
-                          "focus-visible:outline-none",
-                          "focus-visible:ring-2 focus-visible:ring-sky-400",
+                          "relative inline-flex h-11 items-center",
+                          "whitespace-nowrap px-1.5 py-2",
+                          "font-sans text-[11px] font-semibold",
+                          "tracking-[0.005em]",
+                          "transition-colors duration-300 ease-premium",
+                          "xl:px-2.5 xl:text-[12px]",
+                          "focus-visible:outline-2",
+                          "focus-visible:outline-brand-green",
                           isActive
-                            ? "bg-gradient-to-b from-white/20 to-white/10 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.14)]"
-                            : "text-slate-200 hover:bg-white/[0.09] hover:text-white"
+                            ? "text-brand-blue"
+                            : "text-brand-navy hover:text-brand-blue"
                         )}
                       >
                         {item.label}
+
+                        {/* MINIMAL GREEN ACTIVE UNDERLINE */}
+                        <span
+                          aria-hidden="true"
+                          className={clsx(
+                            "absolute bottom-[4px] left-1.5 right-1.5",
+                            "h-[2px] rounded-full bg-brand-green",
+                            "origin-center transition-transform duration-300 ease-premium",
+                            "xl:left-2.5 xl:right-2.5",
+                            isActive
+                              ? "scale-x-100"
+                              : "scale-x-0 group-hover:scale-x-100"
+                          )}
+                        />
                       </Link>
 
+                      {/* DROPDOWN TOGGLE */}
                       {hasChildren && (
                         <button
                           type="button"
                           aria-label={`Toggle ${item.label} submenu`}
-                          aria-expanded={isDropdownOpen}
+                          aria-expanded={isOpen}
+                          aria-controls={dropdownId}
                           aria-haspopup="true"
                           onClick={() => {
                             setOpenDropdown(
-                              isDropdownOpen ? null : item.label
+                              isOpen ? null : item.label
                             );
                           }}
                           className={clsx(
-                            "mr-1 flex h-7 w-5 items-center justify-center rounded-full",
-                            "text-slate-300 transition-all duration-200",
-                            "hover:bg-white/10 hover:text-white",
-                            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400",
-                            isDropdownOpen && "text-sky-300"
+                            "mr-0.5 flex h-9 w-4 items-center justify-center",
+                            "text-brand-body",
+                            "transition-colors duration-300",
+                            "hover:text-brand-blue",
+                            "focus-visible:outline-2",
+                            "focus-visible:outline-brand-green",
+                            isOpen && "text-brand-blue"
                           )}
                         >
-                          <svg
-                            viewBox="0 0 12 12"
-                            fill="none"
-                            stroke="currentColor"
-                            className={clsx(
-                              "h-3 w-3 transition-transform duration-200",
-                              isDropdownOpen && "rotate-180"
-                            )}
-                            aria-hidden="true"
-                          >
-                            <path
-                              d="M2.5 4.5L6 8L9.5 4.5"
-                              strokeWidth="1.6"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
+                          <ChevronDownIcon open={isOpen} />
                         </button>
                       )}
                     </div>
 
-                    {/* Premium dropdown */}
+                    {/* ======================================
+                        MINIMAL PREMIUM DROPDOWN
+                    ====================================== */}
+
                     {hasChildren && (
                       <div
+                        id={dropdownId}
+                        aria-hidden={!isOpen}
                         className={clsx(
                           "absolute left-1/2 top-full z-50",
-                          "w-64 -translate-x-1/2 pt-3",
-                          "transition-[opacity,transform,visibility] duration-200",
-                          isDropdownOpen
+                          "w-[282px] -translate-x-1/2 pt-3",
+                          "transition-[opacity,transform,visibility] duration-300 ease-premium",
+                          "motion-reduce:transform-none",
+                          isOpen
                             ? "visible translate-y-0 opacity-100"
                             : "pointer-events-none invisible translate-y-2 opacity-0"
                         )}
                       >
                         <div
-                          className={clsx(
-                            "overflow-hidden rounded-2xl",
-                            "border border-white/15",
-                            "bg-[#091b37]/98",
-                            "p-2",
-                            "shadow-[0_25px_60px_rgba(0,0,0,0.38)]",
-                            "backdrop-blur-2xl"
-                          )}
+                          className="
+                            overflow-hidden
+                            rounded-xl
+                            border
+                            border-brand-border
+                            bg-white
+                            p-2
+                            shadow-[0_22px_60px_rgba(16,43,78,0.13)]
+                          "
                         >
-                          <div className="mb-1 h-px w-full bg-gradient-to-r from-transparent via-sky-400/30 to-transparent" />
+                          {/* DROPDOWN HEADING */}
+                          <div className="px-3 pb-3 pt-2">
+                            <p
+                              className="
+                                text-[10px]
+                                font-bold
+                                uppercase
+                                tracking-[0.16em]
+                                text-brand-green
+                              "
+                            >
+                              Explore
+                            </p>
 
-                          {item.children?.map((child) => {
-                            const isChildActive =
-                              pathname === child.href;
+                            <p
+                              className="
+                                mt-1
+                                font-heading
+                                text-sm
+                                font-semibold
+                                text-brand-navy
+                              "
+                            >
+                              {item.label}
+                            </p>
+                          </div>
 
-                            return (
-                              <Link
-                                key={child.href}
-                                href={child.href}
-                                onClick={() => setOpenDropdown(null)}
-                                aria-current={
-                                  isChildActive ? "page" : undefined
-                                }
-                                className={clsx(
-                                  "group/child flex flex-col",
-                                  "rounded-xl px-3 py-2.5",
-                                  "transition-colors duration-200",
-                                  "focus-visible:outline-none",
-                                  "focus-visible:ring-2 focus-visible:ring-sky-400",
-                                  isChildActive
-                                    ? "bg-sky-500/15 text-white"
-                                    : "text-slate-200 hover:bg-white/[0.08]"
-                                )}
-                              >
-                                <span
+                          <div className="mx-3 h-px bg-brand-border" />
+
+                          {/* DROPDOWN LINKS */}
+                          <div className="py-1">
+                            {item.children?.map((child) => {
+                              const childActive =
+                                pathname === child.href ||
+                                (
+                                  child.href !== "/" &&
+                                  pathname?.startsWith(
+                                    `${child.href}/`
+                                  )
+                                );
+
+                              return (
+                                <Link
+                                  key={child.href}
+                                  href={child.href}
+                                  tabIndex={
+                                    isOpen ? 0 : -1
+                                  }
+                                  aria-current={
+                                    childActive
+                                      ? "page"
+                                      : undefined
+                                  }
+                                  onClick={() =>
+                                    setOpenDropdown(null)
+                                  }
                                   className={clsx(
-                                    "text-xs font-semibold tracking-wide",
-                                    "transition-colors duration-200",
-                                    isChildActive
-                                      ? "text-sky-300"
-                                      : "text-white group-hover/child:text-sky-300"
+                                    "group/child flex items-center justify-between gap-3",
+                                    "rounded-lg px-3 py-3",
+                                    "transition-[background-color,color] duration-300",
+                                    "focus-visible:outline-2",
+                                    "focus-visible:outline-brand-green",
+                                    childActive
+                                      ? "bg-[#EFF6FB] text-brand-blue"
+                                      : "text-brand-navy hover:bg-[#F6F9FC] hover:text-brand-blue"
                                   )}
                                 >
-                                  {child.label}
-                                </span>
+                                  {/* LINK CONTENT */}
+                                  <span className="min-w-0 flex-1">
+                                    <span
+                                      className="
+                                        block
+                                        text-[12px]
+                                        font-semibold
+                                        leading-5
+                                      "
+                                    >
+                                      {child.label}
+                                    </span>
 
-                                {child.description && (
-                                  <span className="mt-1 line-clamp-2 text-[11px] leading-relaxed text-slate-400 group-hover/child:text-slate-300">
-                                    {child.description}
+                                    {child.description && (
+                                      <span
+                                        className="
+                                          mt-1
+                                          block
+                                          text-[11px]
+                                          leading-[1.6]
+                                          text-brand-body
+                                        "
+                                      >
+                                        {child.description}
+                                      </span>
+                                    )}
                                   </span>
-                                )}
-                              </Link>
-                            );
-                          })}
+
+                                  {/* SUBTLE SVG ARROW */}
+                                  <span
+                                    className={clsx(
+                                      "shrink-0 text-brand-green",
+                                      "transition-[opacity,transform] duration-300 ease-premium",
+                                      "group-hover/child:translate-x-0.5",
+                                      "group-focus-visible/child:opacity-100",
+                                      childActive
+                                        ? "opacity-100"
+                                        : "opacity-0 group-hover/child:opacity-100"
+                                    )}
+                                  >
+                                    <ArrowUpRightIcon className="h-3.5 w-3.5" />
+                                  </span>
+                                </Link>
+                              );
+                            })}
+                          </div>
                         </div>
                       </div>
                     )}
@@ -436,101 +777,172 @@ export function Header() {
             </ul>
           </nav>
 
-          {/* Desktop CTAs */}
-          <div className="hidden shrink-0 items-center justify-end gap-2 lg:flex">
-            <Button
+          {/* ==============================================
+              DESKTOP CTA BUTTONS
+          ============================================== */}
+
+          <div
+            className="
+              hidden
+              shrink-0
+              items-center
+              gap-2
+              lg:flex
+            "
+          >
+            {/* PRIMARY CTA */}
+            <Link
               href={event.cta.bookStand}
-              className={clsx(
-                "inline-flex items-center justify-center",
-                "rounded-full",
-                "bg-gradient-to-r from-[#1674c8] via-[#218de0] to-[#38a5eb]",
-                "px-3.5 py-2.5 xl:px-5",
-                "text-[10px] font-bold uppercase xl:text-[11px]",
-                "tracking-wide whitespace-nowrap text-white",
-                "shadow-[0_4px_18px_rgba(28,125,207,0.3)]",
-                "transition-all duration-300",
-                "hover:-translate-y-0.5",
-                "hover:shadow-[0_8px_28px_rgba(28,125,207,0.48)]",
-                "active:translate-y-0"
-              )}
+              className="
+                group
+                inline-flex
+                min-h-10
+                items-center
+                justify-center
+                gap-2
+                whitespace-nowrap
+                rounded-lg
+                bg-brand-blue
+                px-3
+                py-2.5
+                font-sans
+                text-[10px]
+                font-bold
+                text-white
+                shadow-[0_5px_16px_rgba(23,105,164,0.16)]
+                transition-[background-color,transform,box-shadow]
+                duration-300
+                ease-premium
+                hover:-translate-y-0.5
+                hover:bg-brand-blue-dark
+                hover:shadow-[0_12px_26px_rgba(23,105,164,0.2)]
+                focus-visible:outline-2
+                focus-visible:outline-offset-2
+                focus-visible:outline-brand-green
+                motion-reduce:transform-none
+                xl:px-4
+                xl:text-[11px]
+              "
             >
               Book a Stand
-            </Button>
 
-            <Button
+              <span
+                className="
+                  transition-transform
+                  duration-300
+                  ease-premium
+                  group-hover:translate-x-0.5
+                  group-hover:-translate-y-0.5
+                  motion-reduce:transform-none
+                "
+              >
+                <ArrowUpRightIcon />
+              </span>
+            </Link>
+
+            {/* SECONDARY CTA */}
+            <Link
               href={event.cta.registerVisit}
-              variant="secondary"
-              className={clsx(
-                "inline-flex items-center justify-center",
-                "rounded-full",
-                "border border-white/20",
-                "bg-white/[0.08]",
-                "px-3.5 py-2.5 xl:px-5",
-                "text-[10px] font-bold uppercase xl:text-[11px]",
-                "tracking-wide whitespace-nowrap text-white",
-                "backdrop-blur-xl",
-                "transition-all duration-300",
-                "hover:-translate-y-0.5",
-                "hover:border-emerald-400/50",
-                "hover:bg-white/[0.14]",
-                "hover:shadow-[0_8px_24px_rgba(16,185,129,0.18)]",
-                "active:translate-y-0"
-              )}
+              className="
+                group
+                inline-flex
+                min-h-10
+                items-center
+                justify-center
+                gap-2
+                whitespace-nowrap
+                rounded-lg
+                border
+                border-brand-border
+                bg-white
+                px-3
+                py-2.5
+                font-sans
+                text-[10px]
+                font-bold
+                text-brand-navy
+                transition-[border-color,color,transform,box-shadow]
+                duration-300
+                ease-premium
+                hover:-translate-y-0.5
+                hover:border-brand-green
+                hover:text-brand-blue
+                hover:shadow-[0_8px_22px_rgba(16,43,78,0.07)]
+                focus-visible:outline-2
+                focus-visible:outline-offset-2
+                focus-visible:outline-brand-green
+                motion-reduce:transform-none
+                xl:px-4
+                xl:text-[11px]
+              "
             >
               Register to Visit
-            </Button>
+
+              <span
+                className="
+                  transition-transform
+                  duration-300
+                  ease-premium
+                  group-hover:translate-x-1
+                  motion-reduce:transform-none
+                "
+              >
+                <ArrowRightIcon />
+              </span>
+            </Link>
           </div>
 
-          {/* Mobile menu toggle */}
+          {/* ==============================================
+              MOBILE / TABLET MENU TOGGLE
+          ============================================== */}
+
           <button
             type="button"
-            onClick={() => setMobileOpen((value) => !value)}
+            onClick={() => {
+              setMobileOpen((current) => !current);
+            }}
             aria-expanded={mobileOpen}
             aria-controls="mobile-menu"
-            aria-label={mobileOpen ? "Close menu" : "Open menu"}
-            className={clsx(
-              "relative flex h-11 w-11 shrink-0 items-center justify-center",
-              "rounded-xl",
-              "border border-white/20",
-              "bg-white/[0.08]",
-              "text-white",
-              "backdrop-blur-xl",
-              "transition-all duration-200",
-              "hover:border-white/30 hover:bg-white/[0.14]",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400",
-              "lg:hidden"
-            )}
+            aria-label={
+              mobileOpen
+                ? "Close navigation menu"
+                : "Open navigation menu"
+            }
+            className="
+              flex
+              h-11
+              w-11
+              shrink-0
+              items-center
+              justify-center
+              rounded-lg
+              border
+              border-brand-border
+              bg-white
+              text-brand-navy
+              transition-[background-color,border-color,color]
+              duration-300
+              ease-premium
+              hover:border-brand-blue/40
+              hover:bg-brand-light
+              hover:text-brand-blue
+              focus-visible:outline-2
+              focus-visible:outline-offset-2
+              focus-visible:outline-brand-green
+              lg:hidden
+            "
           >
-            <span className="relative block h-4 w-5">
-              <span
-                className={clsx(
-                  "absolute left-0 top-0 h-0.5 w-5 rounded-full bg-white",
-                  "transition-all duration-300",
-                  mobileOpen && "top-[7px] rotate-45"
-                )}
-              />
-
-              <span
-                className={clsx(
-                  "absolute left-0 top-[7px] h-0.5 w-5 rounded-full bg-white",
-                  "transition-all duration-200",
-                  mobileOpen && "scale-x-0 opacity-0"
-                )}
-              />
-
-              <span
-                className={clsx(
-                  "absolute left-0 top-[14px] h-0.5 w-5 rounded-full bg-white",
-                  "transition-all duration-300",
-                  mobileOpen && "top-[7px] -rotate-45"
-                )}
-              />
-            </span>
+            <MenuIcon open={mobileOpen} />
           </button>
         </Container>
       </div>
 
-      {/* Existing mobile menu component */}
+      {/* ===================================================
+          03. EXISTING MOBILE MENU
+
+          Keep same props and current functionality.
+      =================================================== */}
+
       <MobileMenu
         open={mobileOpen}
         onClose={() => setMobileOpen(false)}

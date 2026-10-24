@@ -34,23 +34,7 @@ export function StatCard({ fact }: { fact: MarketFact }) {
         )}
       </div>
 
-      <div className="mt-4 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-400">
-        <span className="truncate pr-2 font-medium">
-          {fact.sourceUrl ? (
-            <a
-              href={fact.sourceUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="transition-colors hover:text-brand-blue hover:underline"
-            >
-              {fact.sourceName}
-            </a>
-          ) : (
-            fact.sourceName
-          )}
-        </span>
-        <span className="font-semibold text-slate-400">Source</span>
-      </div>
+     
     </div>
   );
 }

@@ -1,285 +1,588 @@
+
 "use client";
 
+import type { ReactNode } from "react";
 import Link from "next/link";
-import { motion, type Variants } from "framer-motion";
+import {
+  motion,
+  useReducedMotion,
+  type Variants,
+} from "framer-motion";
+
 import { event } from "@/config/event";
 import { Container } from "@/components/ui/Container";
-import { visitorGroupIconMap } from "@/components/icons/MiscIcons";
 import { visitorGroups } from "@/data/visitorProfile";
+import { visitorGroupIconMap } from "@/components/icons/MiscIcons";
 
-const containerVariants: Variants = {
-  hidden: { opacity: 0 },
+/* ==========================================
+   MOTION SYSTEM
+========================================== */
+
+const EASE = [0.22, 1, 0.36, 1] as const;
+
+const GROUP: Variants = {
+  hidden: {},
   visible: {
-    opacity: 1,
     transition: {
-      staggerChildren: 0.08,
+      staggerChildren: 0.075,
       delayChildren: 0.05,
     },
   },
 };
 
-const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 16, filter: "blur(4px)" },
+const REVEAL: Variants = {
+  hidden: {
+    opacity: 0,
+    y: 20,
+  },
   visible: {
     opacity: 1,
     y: 0,
-    filter: "blur(0px)",
     transition: {
-      duration: 0.55,
-      ease: [0.16, 1, 0.3, 1],
+      duration: 0.75,
+      ease: EASE,
     },
   },
 };
 
-// Exact 6 Objectives directly from Brochure Page 03 ("Why Visit Uganda Buildcon?")
+const WORD_GROUP: Variants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.065,
+      delayChildren: 0.05,
+    },
+  },
+};
+
+const WORD: Variants = {
+  hidden: {
+    opacity: 0,
+    y: "100%",
+  },
+  visible: {
+    opacity: 1,
+    y: "0%",
+    transition: {
+      duration: 0.8,
+      ease: EASE,
+    },
+  },
+};
+
+/* ==========================================
+   ORIGINAL BROCHURE OBJECTIVES
+========================================== */
+
 const WHY_VISIT_OBJECTIVES = [
   {
     title: "Source New Products",
-    desc: "Discover building materials, machinery, heavy equipment and construction technologies from participating global suppliers.",
-    icon: "M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10",
+    desc:
+      "Discover building materials, machinery, heavy equipment and construction technologies from participating suppliers.",
+    icon:
+      "M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10",
   },
   {
     title: "Compare Products & Suppliers",
-    desc: "Evaluate alternative products, systems, warranties, and competitive pricing structures efficiently in one central venue.",
-    icon: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z",
+    desc:
+      "Evaluate alternative products, systems and specifications, and discuss pricing and supply arrangements directly with exhibitors.",
+    icon:
+      "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z",
   },
   {
     title: "Solve Current Requirements",
-    desc: "Meet suppliers directly relevant to ongoing and upcoming building projects, municipal tenders, and distribution pipelines.",
-    icon: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z",
+    desc:
+      "Explore products and supplier capabilities relevant to current construction projects, procurement needs and future developments.",
+    icon:
+      "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z",
   },
   {
     title: "Meet Manufacturers Directly",
-    desc: "Cut out middlemen by engaging directly with factory leadership, certified exporters, and technical engineers.",
-    icon: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z",
+    desc:
+      "Speak with manufacturers, exporters and technical representatives about product performance, specifications and availability.",
+    icon:
+      "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z",
   },
   {
     title: "Discover New Brands",
-    desc: "Identify emerging manufacturers and innovative construction brands seeking entry and distribution in the Ugandan market.",
-    icon: "M13 10V3L4 14h7v7l9-11h-7z",
+    desc:
+      "Explore emerging manufacturers, building product brands and innovative solutions relevant to the Ugandan construction market.",
+    icon:
+      "M13 10V3L4 14h7v7l9-11h-7z",
   },
   {
     title: "Develop Supplier Relationships",
-    desc: "Build direct corporate business contacts for current procurement needs, long-term supply security, and future projects.",
-    icon: "M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z",
+    desc:
+      "Build direct business connections for current sourcing requirements, longer-term supplier relationships and upcoming projects.",
+    icon:
+      "M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z",
   },
-];
+] as const;
 
-export function WhoShouldVisitClientView() {
+/* ==========================================
+   SHARED UI
+========================================== */
+
+function SectionLabel({
+  children,
+}: {
+  children: ReactNode;
+}) {
   return (
-    <div className="relative overflow-hidden py-14 sm:py-20 text-brand-dark">
-      {/* Background Architectural Vector Grid */}
-      <div className="pointer-events-none absolute inset-0 -z-10 select-none opacity-[0.035]">
-        <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="visitors-grid" width="36" height="36" patternUnits="userSpaceOnUse">
-              <path d="M 36 0 L 0 0 0 36" fill="none" stroke="#0f2346" strokeWidth="0.8" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#visitors-grid)" />
-        </svg>
+    <div className="flex items-center gap-3">
+      <span
+        aria-hidden="true"
+        className="h-[2px] w-8 shrink-0 bg-[#28A45A]"
+      />
+
+      <span className="text-[11px] font-bold uppercase leading-[1.5] tracking-[0.13em] text-[#1769A4]">
+        {children}
+      </span>
+    </div>
+  );
+}
+
+function ArrowIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.7}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-4 w-4 shrink-0"
+    >
+      <path d="M5 12h14m-6-6 6 6-6 6" />
+    </svg>
+  );
+}
+
+function AnimatedWords({
+  text,
+  className = "",
+}: {
+  text: string;
+  className?: string;
+}) {
+  const words = text.trim().split(/\s+/);
+
+  return (
+    <span className={className}>
+      {words.map((word, index) => (
+        <span
+          key={`${word}-${index}`}
+          className="inline-block overflow-hidden align-bottom"
+        >
+          <motion.span
+            variants={WORD}
+            className="inline-block"
+          >
+            {word}
+          </motion.span>
+
+          {index < words.length - 1 ? "\u00A0" : null}
+        </span>
+      ))}
+    </span>
+  );
+}
+
+/* ==========================================
+   EXISTING ARCHITECTURAL SVG GRID
+========================================== */
+
+function ArchitecturalGrid() {
+  const reduced = useReducedMotion() === true;
+
+  return (
+    <svg
+      aria-hidden="true"
+      focusable="false"
+      viewBox="0 0 720 360"
+      fill="none"
+      preserveAspectRatio="xMidYMid slice"
+      className="h-full w-full"
+    >
+      <defs>
+        <pattern
+          id="who-should-visit-grid"
+          width="36"
+          height="36"
+          patternUnits="userSpaceOnUse"
+        >
+          <path
+            d="M36 0H0V36"
+            stroke="#1769A4"
+            strokeOpacity=".13"
+            strokeWidth=".8"
+          />
+        </pattern>
+      </defs>
+
+      <rect
+        width="720"
+        height="360"
+        fill="url(#who-should-visit-grid)"
+      />
+
+      <motion.path
+        d="M0 280H185V210H340V125H720"
+        fill="none"
+        stroke="#1769A4"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        initial={false}
+        animate={
+          reduced
+            ? undefined
+            : {
+                pathLength: [0, 1, 1],
+                opacity: [0, 0.6, 0],
+              }
+        }
+        transition={{
+          duration: 14,
+          repeat: Infinity,
+          repeatDelay: 2,
+          ease: "easeInOut",
+        }}
+      />
+
+      <motion.path
+        d="M75 360V265H280V185H510V80H720"
+        fill="none"
+        stroke="#28A45A"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        initial={false}
+        animate={
+          reduced
+            ? undefined
+            : {
+                pathLength: [0, 1, 1],
+                opacity: [0, 0.65, 0],
+              }
+        }
+        transition={{
+          duration: 16,
+          repeat: Infinity,
+          repeatDelay: 1.5,
+          ease: "easeInOut",
+        }}
+      />
+    </svg>
+  );
+}
+
+/* ==========================================
+   VISITOR PROFILE CARD
+========================================== */
+
+function VisitorGroupCard({
+  group,
+  index,
+}: {
+  group: (typeof visitorGroups)[number];
+  index: number;
+}) {
+  const Icon = visitorGroupIconMap[group.slug];
+  const blue = index % 2 === 0;
+
+  return (
+    <motion.article
+      id={group.slug}
+      variants={REVEAL}
+      className="group relative flex h-full min-w-0 scroll-mt-28 flex-col overflow-hidden rounded-xl border border-[#E1E8EF] bg-white p-6 transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-1 hover:border-[#1769A4]/30 hover:shadow-[0_14px_35px_rgba(16,35,55,0.05)] motion-reduce:transform-none sm:p-7"
+    >
+      <div
+        className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-lg transition-colors duration-300 ${
+          blue
+            ? "bg-[#1769A4]/[0.08] text-[#1769A4] group-hover:bg-[#1769A4] group-hover:text-white"
+            : "bg-[#28A45A]/[0.08] text-[#28A45A] group-hover:bg-[#28A45A] group-hover:text-white"
+        }`}
+      >
+        {Icon ? (
+          <Icon className="h-[21px] w-[21px]" />
+        ) : (
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={1.7}
+            className="h-[21px] w-[21px]"
+          >
+            <path d="M3 21V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v16M1 21h22M8 8h3m-3 4h3m2-4h3m-3 4h3" />
+          </svg>
+        )}
       </div>
 
-      <Container className="relative z-10 w-full">
-        {/* ========================================================= */}
-        {/* Header Block 1: Balanced Titles & Direct CTA              */}
-        {/* ========================================================= */}
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between pb-8 border-b border-slate-200/80">
-          <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 rounded-full border border-brand-blue/20 bg-brand-blue/[0.06] px-4 py-1">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-blue opacity-75" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-blue" />
-              </span>
-              <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-brand-blue">
-                Verified Trade Visitor Profile
-              </span>
-            </div>
+      <h3 className="mt-5 font-heading text-[18px] font-bold leading-[1.35] tracking-[-0.025em] text-[#172536] transition-colors duration-300 group-hover:text-[#1769A4]">
+        {group.name}
+      </h3>
 
-            <h2 className="mt-4 text-2xl sm:text-4xl font-extrabold tracking-[-0.03em] leading-[1.15] text-brand-dark">
-              Core Buying Groups &amp;{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue via-sky-500 to-brand-green">
-                Specifier Categories
-              </span>
-            </h2>
+      <ul className="mt-4 flex flex-wrap items-start gap-2">
+        {group.roles.map((role) => (
+          <li
+            key={role}
+            className="rounded-md border border-[#E8EDF2] bg-[#F8FAFB] px-3 py-1.5 text-[12px] font-medium leading-[1.55] text-[#607083]"
+          >
+            {role}
+          </li>
+        ))}
+      </ul>
 
-            <p className="mt-2.5 text-xs sm:text-sm leading-[1.7] text-slate-500 font-normal">
-              Designed specifically for professionals responsible for procurement, design, project execution, and regional distribution.
-            </p>
-          </div>
+      <span
+        aria-hidden="true"
+        className={`absolute bottom-0 left-0 h-[2px] w-full origin-left scale-x-0 transition-transform duration-500 group-hover:scale-x-100 ${
+          blue ? "bg-[#1769A4]" : "bg-[#28A45A]"
+        }`}
+      />
+    </motion.article>
+  );
+}
 
-          <div className="shrink-0">
-            <Link
-              href={event.cta.registerVisit}
-              className="inline-flex items-center justify-center rounded-full bg-brand-blue px-6 py-3 text-xs font-semibold uppercase tracking-wider text-white shadow-[0_4px_16px_rgba(31,111,174,0.25)] transition-all duration-300 hover:bg-brand-blue-dark hover:shadow-[0_6px_22px_rgba(31,111,174,0.35)] hover:-translate-y-0.5 active:translate-y-0"
-            >
-              Get Visitor Pass →
-            </Link>
-          </div>
+/* ==========================================
+   WHY VISIT OBJECTIVE
+========================================== */
+
+function ObjectiveCard({
+  title,
+  desc,
+  icon,
+}: (typeof WHY_VISIT_OBJECTIVES)[number]) {
+  return (
+    <motion.article
+      variants={REVEAL}
+      className="group flex h-full min-w-0 flex-col border-b border-[#DEE6ED] py-5 transition-colors duration-300 sm:py-6"
+    >
+      <div className="flex items-start gap-4">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#1769A4]/[0.075] text-[#1769A4] transition-colors duration-300 group-hover:bg-[#1769A4] group-hover:text-white">
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={1.65}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="h-5 w-5"
+          >
+            <path d={icon} />
+          </svg>
         </div>
 
-        {/* ========================================================= */}
-        {/* Section 1: 5 Core Buyer Groups (Spacious Layout)          */}
-        {/* ========================================================= */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-40px" }}
-          className="mt-8 sm:mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
+        <div className="min-w-0">
+          <h3 className="font-heading text-[16px] font-bold leading-[1.4] tracking-[-0.02em] text-[#172536] transition-colors group-hover:text-[#1769A4] sm:text-[17px]">
+            {title}
+          </h3>
+
+          <p className="mt-2 text-[13px] leading-[1.8] text-[#68788A]">
+            {desc}
+          </p>
+        </div>
+      </div>
+    </motion.article>
+  );
+}
+
+/* ==========================================
+   MAIN COMPONENT
+========================================== */
+
+export function WhoShouldVisitClientView() {
+  const reduced = useReducedMotion() === true;
+  const initial = reduced ? false : "hidden";
+
+  return (
+    <div className="overflow-hidden bg-white text-[#111820]">
+      {/* =====================================
+          VISITOR PROFILES
+      ===================================== */}
+
+      <section
+        aria-labelledby="visitor-audiences-heading"
+        className="relative isolate overflow-hidden py-14 sm:py-16 lg:py-20"
+      >
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-40 -top-16 -z-10 h-[360px] w-[680px] opacity-40"
         >
-          {visitorGroups.map((group, index) => {
-            const Icon = visitorGroupIconMap[group.slug];
-            const isBlue = index % 2 === 0;
+          <ArchitecturalGrid />
+        </div>
 
-            return (
-              <motion.div
-                key={group.slug}
-                variants={itemVariants}
-                className="group relative flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-white/95 p-6 sm:p-7 shadow-[0_2px_12px_rgb(0,0,0,0.02)] backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-brand-blue/40 hover:shadow-xl hover:shadow-brand-blue/5"
-              >
-                <div>
-                  {/* Top Bar */}
-                  <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-                    <div
-                      className={`flex h-11 w-11 items-center justify-center rounded-xl transition-colors ${
-                        isBlue
-                          ? "bg-brand-blue/[0.08] text-brand-blue group-hover:bg-brand-blue group-hover:text-white"
-                          : "bg-brand-green/[0.08] text-brand-green group-hover:bg-brand-green group-hover:text-white"
-                      }`}
-                    >
-                      {Icon ? (
-                        <Icon className="h-5 w-5" />
-                      ) : (
-                        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5" />
-                        </svg>
-                      )}
-                    </div>
-
-                    <span className="rounded-full border border-slate-200/80 bg-slate-50 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
-                      0{index + 1}
-                    </span>
-                  </div>
-
-                  {/* Group Name */}
-                  <h3 className="mt-5 text-base sm:text-lg font-bold tracking-tight text-brand-dark group-hover:text-brand-blue transition-colors">
-                    {group.name}
-                  </h3>
-
-                  {/* Clean Role Pill Grid */}
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {group.roles.map((role) => (
-                      <span
-                        key={role}
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/70 bg-slate-50/80 px-2.5 py-1 text-xs font-medium text-slate-700 transition-colors group-hover:border-slate-300"
-                      >
-                        <span className="h-1.5 w-1.5 rounded-full bg-brand-green shrink-0" />
-                        <span>{role}</span>
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="mt-6 pt-3.5 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-brand-blue">
-                  <span>Target Audience</span>
-                  <span className="transition-transform group-hover:translate-x-1">→</span>
-                </div>
-              </motion.div>
-            );
-          })}
-        </motion.div>
-
-        {/* ========================================================= */}
-        {/* Section 2: Why Visit? (Exact 6 Objectives from Brochure)  */}
-        {/* ========================================================= */}
-        <div className="mt-16 sm:mt-20">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between pb-6 border-b border-slate-200/80">
-            <div>
-              <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-brand-green">
-                Strategic Sourcing
-              </span>
-              <h3 className="mt-1.5 text-xl sm:text-3xl font-extrabold tracking-tight text-brand-dark">
-                Why Visit Uganda Buildcon?
-              </h3>
-            </div>
-            <p className="text-xs text-slate-500 max-w-md font-normal leading-relaxed">
-              Evaluating manufacturers and testing equipment face-to-face in Kampala.
-            </p>
-          </div>
-
+        <Container className="relative z-10">
           <motion.div
-            variants={containerVariants}
-            initial="hidden"
+            variants={GROUP}
+            initial={initial}
             whileInView="visible"
-            viewport={{ once: true, margin: "-40px" }}
-            className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+            viewport={{
+              once: true,
+              amount: 0.12,
+            }}
+            className="flex flex-col gap-6 border-b border-[#E5EAF0] pb-8 lg:flex-row lg:items-end lg:justify-between"
           >
-            {WHY_VISIT_OBJECTIVES.map((item, idx) => (
-              <motion.div
-                key={item.title}
-                variants={itemVariants}
-                className="group relative flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-white p-6 sm:p-7 shadow-[0_2px_10px_rgb(0,0,0,0.02)] transition-all duration-300 hover:border-brand-blue/40 hover:shadow-xl hover:-translate-y-1"
-              >
-                <div>
-                  <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-blue/[0.08] text-brand-blue group-hover:bg-brand-blue group-hover:text-white transition-colors">
-                      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d={item.icon} />
-                      </svg>
-                    </div>
-
-                    <span className="text-[10px] font-mono font-bold text-slate-300 group-hover:text-slate-500 transition-colors">
-                      0{idx + 1}
-                    </span>
-                  </div>
-
-                  <h4 className="mt-5 text-base font-bold tracking-tight text-brand-dark group-hover:text-brand-blue transition-colors">
-                    {item.title}
-                  </h4>
-
-                  <p className="mt-2.5 text-xs sm:text-[13px] leading-[1.75] text-slate-600 font-normal">
-                    {item.desc}
-                  </p>
-                </div>
-
-                <div className="mt-6 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-brand-blue">
-                  <span>Visitor Value</span>
-                  <span className="transition-transform group-hover:translate-x-1">→</span>
-                </div>
+            <div className="max-w-[790px]">
+              <motion.div variants={REVEAL}>
+                <SectionLabel>
+                  Visitor Profiles
+                </SectionLabel>
               </motion.div>
+
+              <motion.h2
+                id="visitor-audiences-heading"
+                variants={WORD_GROUP}
+                aria-label="Who Should Visit Uganda Buildcon?"
+                className="mt-5 font-heading text-[clamp(2rem,3.5vw,3.55rem)] font-extrabold leading-[1.13] tracking-[-0.045em]"
+              >
+                <span aria-hidden="true">
+                  <AnimatedWords text="Who Should Visit" />
+                  {" "}
+                  <AnimatedWords
+                    text="Uganda Buildcon?"
+                    className="text-[#1769A4]"
+                  />
+                </span>
+              </motion.h2>
+
+              <motion.p
+                variants={REVEAL}
+                className="mt-5 max-w-[690px] text-[14px] leading-[1.85] tracking-[-0.005em] text-[#607083] sm:text-[15px]"
+              >
+                The exhibition welcomes professionals
+                involved in designing, constructing,
+                financing, purchasing and supplying
+                building projects. Explore the audience
+                groups that can benefit from visiting{" "}
+                {event.shortName}.
+              </motion.p>
+            </div>
+
+            <motion.div variants={REVEAL}>
+              <Link
+                href={event.cta.registerVisit}
+                className="group inline-flex min-h-11 items-center justify-center gap-3 rounded-lg bg-[#1769A4] px-6 py-3 text-[13px] font-bold text-white transition-[background-color,transform] duration-300 hover:-translate-y-0.5 hover:bg-[#105685] focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#28A45A] motion-reduce:transform-none"
+              >
+                Register to Visit
+
+                <span className="transition-transform duration-300 group-hover:translate-x-1">
+                  <ArrowIcon />
+                </span>
+              </Link>
+            </motion.div>
+          </motion.div>
+
+          {/* EXISTING VISITOR GROUPS */}
+          <motion.div
+            variants={GROUP}
+            initial={initial}
+            whileInView="visible"
+            viewport={{
+              once: true,
+              amount: 0.06,
+            }}
+            className="mt-8 grid items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3"
+          >
+            {visitorGroups.map((group, index) => (
+              <VisitorGroupCard
+                key={group.slug}
+                group={group}
+                index={index}
+              />
             ))}
           </motion.div>
-        </div>
+        </Container>
+      </section>
 
-        {/* ========================================================= */}
-        {/* Bottom Registration Action Ribbon                         */}
-        {/* ========================================================= */}
-        <div className="mt-12 flex flex-col sm:flex-row items-center justify-between gap-5 rounded-2xl border border-brand-blue/20 bg-gradient-to-r from-brand-blue/[0.04] via-white to-brand-green/[0.04] p-6 shadow-sm">
-          <div className="flex items-center gap-3.5">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-green/10 text-brand-green">
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <div>
-              <h4 className="text-sm sm:text-base font-bold text-brand-dark">
-                Trade visitor badge registration is now active
-              </h4>
-              <p className="text-xs text-slate-500 font-normal mt-0.5">
-                Join industry professionals from {event.dates.display} at {event.venue.fullLocation}.
-              </p>
-            </div>
+      {/* =====================================
+          REASONS TO VISIT
+      ===================================== */}
+
+      <section
+        aria-labelledby="visitor-reasons-heading"
+        className="border-t border-[#E5EAF0] bg-[#F8FAFB] py-14 sm:py-16 lg:py-20"
+      >
+        <Container>
+          <div className="grid gap-9 lg:grid-cols-[minmax(0,0.75fr)_minmax(0,1.25fr)] lg:gap-16">
+            {/* EDITORIAL COLUMN */}
+            <motion.div
+              variants={GROUP}
+              initial={initial}
+              whileInView="visible"
+              viewport={{
+                once: true,
+                amount: 0.15,
+              }}
+            >
+              <motion.div variants={REVEAL}>
+                <SectionLabel>
+                  Why Attend
+                </SectionLabel>
+              </motion.div>
+
+              <motion.h2
+                id="visitor-reasons-heading"
+                variants={REVEAL}
+                className="mt-5 font-heading text-[clamp(1.9rem,3vw,3rem)] font-bold leading-[1.15] tracking-[-0.045em]"
+              >
+                Discover Products.{" "}
+                <span className="text-[#1769A4]">
+                  Build Connections.
+                </span>
+              </motion.h2>
+
+              <motion.p
+                variants={REVEAL}
+                className="mt-5 max-w-[430px] text-[14px] leading-[1.85] text-[#607083]"
+              >
+                From comparing construction materials
+                to meeting new suppliers, the exhibition
+                provides opportunities for practical
+                product discovery and industry engagement.
+              </motion.p>
+
+              <motion.div
+                variants={REVEAL}
+                className="mt-6"
+              >
+                <Link
+                  href="/exhibition-profile"
+                  className="group inline-flex items-center gap-2 text-[13px] font-bold text-[#1769A4] transition-colors hover:text-[#28A45A]"
+                >
+                  Explore Exhibition Products
+
+                  <span className="transition-transform duration-300 group-hover:translate-x-1">
+                    <ArrowIcon />
+                  </span>
+                </Link>
+              </motion.div>
+            </motion.div>
+
+            {/* BROCHURE VISITOR OBJECTIVES */}
+            <motion.div
+              variants={GROUP}
+              initial={initial}
+              whileInView="visible"
+              viewport={{
+                once: true,
+                amount: 0.1,
+              }}
+              className="grid content-start gap-x-7 sm:grid-cols-2"
+            >
+              {WHY_VISIT_OBJECTIVES.map((item) => (
+                <ObjectiveCard
+                  key={item.title}
+                  {...item}
+                />
+              ))}
+            </motion.div>
           </div>
-
-          <Link
-            href={event.cta.registerVisit}
-            className="shrink-0 inline-flex items-center justify-center rounded-full bg-brand-blue px-6 py-2.5 text-xs font-semibold uppercase tracking-wider text-white shadow-md hover:bg-brand-blue-dark transition-all duration-200"
-          >
-            Register for Free Pass
-          </Link>
-        </div>
-      </Container>
+        </Container>
+      </section>
     </div>
   );
 }

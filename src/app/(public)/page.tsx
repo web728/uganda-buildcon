@@ -1,5 +1,6 @@
 
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { event } from "@/config/event";
 import { siteUrl } from "@/lib/utils/siteUrl";
@@ -23,46 +24,38 @@ import { PartnersSection } from "@/components/sections/home/PartnersSection";
 import { NewsSection } from "@/components/sections/home/NewsSection";
 import { FinalCtaSection } from "@/components/sections/home/FinalCtaSection";
 
-/**
- * Homepage rendering
- *
- * Keep dynamic rendering if the published exhibitor
- * directory must reflect database changes immediately.
- *
- * For better caching, consider ISR after confirming
- * getPublishedExhibitors() supports caching safely.
- */
+/* ==========================================
+   HOMEPAGE — SEO CONFIG
+========================================== */
+
 export const dynamic = "force-dynamic";
 
-/**
- * Canonical website configuration
- */
 const BASE_URL = siteUrl.replace(/\/+$/, "");
+const HOME_URL = `${BASE_URL}/`;
 
 const EVENT_YEAR = event.dates.start.slice(0, 4);
 
-const HOME_URL = `${BASE_URL}/`;
+const EVENT_NAME = event.name.includes(EVENT_YEAR)
+  ? event.name
+  : `${event.name} ${EVENT_YEAR}`;
 
-const OG_IMAGE = `${BASE_URL}/images/og/og-default.jpg`;
+const OG_IMAGE =
+  `${BASE_URL}/images/og/og-default.jpg`;
 
 const HOME_TITLE =
-  `Uganda Buildcon ${EVENT_YEAR} | ` +
-  `Building & Construction Expo Uganda`;
+  `${EVENT_NAME} | ${event.editionLabel}`;
 
 const HOME_DESCRIPTION =
-  `Explore Uganda Buildcon ${EVENT_YEAR}, a leading ` +
-  `building and construction B2B trade exhibition ` +
-  `in Kampala. ${event.dates.display} at ` +
-  `${event.venue.fullLocation}. Discover building ` +
-  `materials, machinery, architecture, interiors ` +
-  `and engineering solutions. Register to visit.`;
+  `Join ${EVENT_NAME}, ${event.dates.display} ` +
+  `at ${event.venue.fullLocation}. ` +
+  `Explore building materials, construction machinery, ` +
+  `engineering solutions and B2B trade opportunities ` +
+  `across Uganda and East Africa.`;
 
-/**
- * Homepage SEO metadata
- *
- * Global robots, verification, fonts and site-wide
- * organization/event schema come from RootLayout.
- */
+/* ==========================================
+   HOMEPAGE METADATA
+========================================== */
+
 export const metadata: Metadata = {
   title: {
     absolute: HOME_TITLE,
@@ -70,50 +63,41 @@ export const metadata: Metadata = {
 
   description: HOME_DESCRIPTION,
 
+  applicationName: event.shortName,
+
   keywords: [
     "Uganda Buildcon",
     `Uganda Buildcon ${EVENT_YEAR}`,
-    `Uganda Buildcon International Expo ${EVENT_YEAR}`,
-    "Uganda construction expo",
-    "Construction exhibition Uganda",
-    "Construction expo Kampala",
-    "Building materials exhibition Uganda",
-    "Construction machinery exhibition",
-    "Building and construction trade show",
-    "East Africa construction expo",
-    "Architecture exhibition Uganda",
-    "Interior design exhibition Kampala",
-    "Construction equipment trade fair",
-    "UMA Show Grounds Kampala",
-    "Uganda building industry exhibition",
+    EVENT_NAME,
+    "Uganda Buildcon International Expo",
+    "Construction Expo Uganda",
+    "Building and Construction Expo Kampala",
+    "Building Materials Exhibition Uganda",
+    "Construction Machinery Exhibition Uganda",
+    "Construction Trade Show Uganda",
+    "Construction Equipment Expo East Africa",
   ],
 
   alternates: {
     canonical: HOME_URL,
-    languages: {
-      "en-UG": HOME_URL,
-      "x-default": HOME_URL,
-    },
   },
 
   openGraph: {
     type: "website",
     locale: "en_UG",
     url: HOME_URL,
-    siteName: event.name,
-
+    siteName: event.shortName,
     title: HOME_TITLE,
     description: HOME_DESCRIPTION,
-
     images: [
       {
         url: OG_IMAGE,
         width: 1200,
         height: 630,
-        type: "image/jpeg",
         alt:
-          `${event.name} ${EVENT_YEAR} — ` +
-          `${event.dates.display}, ${event.venue.fullLocation}`,
+          `${EVENT_NAME} — ` +
+          `${event.dates.display}, ` +
+          event.venue.fullLocation,
       },
     ],
   },
@@ -128,85 +112,168 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
-
     googleBot: {
       index: true,
       follow: true,
-      "max-video-preview": -1,
       "max-image-preview": "large",
       "max-snippet": -1,
+      "max-video-preview": -1,
     },
-  },
-
-  other: {
-    "geo.region": "UG-102",
-    "geo.placename": "Kampala, Uganda",
   },
 };
 
-/**
- * Homepage
- *
- * Server Component:
- * - SEO-friendly server-rendered structure
- * - Dynamic published exhibitor data
- * - No unnecessary client-side JavaScript
- * - Preserves all existing homepage sections
- */
-export default async function HomePage() {
-  let exhibitors: ExhibitorSummary[] = [];
+/* ==========================================
+   PAGE-SPECIFIC STRUCTURED DATA
 
+   Organization, WebSite, Event and Place
+   already exist in root layout.
+
+   Keep their IDs consistent.
+========================================== */
+
+const homepageJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": `${HOME_URL}#webpage`,
+  url: HOME_URL,
+  name: HOME_TITLE,
+  description: HOME_DESCRIPTION,
+  inLanguage: "en-UG",
+  isPartOf: {
+    "@id": `${HOME_URL}#website`,
+  },
+  about: {
+    "@id": `${HOME_URL}#event`,
+  },
+  primaryImageOfPage: {
+    "@type": "ImageObject",
+    url: OG_IMAGE,
+  },
+};
+
+/* ==========================================
+   SAFE JSON-LD
+========================================== */
+
+function serializeJsonLd(value: unknown): string {
+  return JSON.stringify(value).replace(/</g, "\\u003c");
+}
+
+/* ==========================================
+   EXHIBITOR DATA
+
+   Keep current server fetching behaviour.
+========================================== */
+
+async function loadHomepageExhibitors(): Promise<
+  ExhibitorSummary[]
+> {
   try {
-    exhibitors = await getPublishedExhibitors();
+    return await getPublishedExhibitors();
   } catch (error) {
     console.error(
-      "[HomePage] Failed to fetch published exhibitors:",
+      "[Uganda Buildcon Home] Exhibitor fetch failed:",
       error
     );
+    return [];
   }
+}
+
+/* ==========================================
+   MAIN HOMEPAGE
+========================================== */
+
+export default async function HomePage() {
+  const exhibitors = await loadHomepageExhibitors();
+
+  // Preserve for when directory preview is re-enabled.
+  void exhibitors;
 
   return (
     <>
-      {/* 01 — Hero / Primary H1 */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: serializeJsonLd(homepageJsonLd),
+        }}
+      />
+
+      {/* 01. Hero: existing primary H1 */}
       <HeroSection />
 
-      {/* 02 — Previous edition statistics */}
-      <HeroStatsSection />
+      {/* 02. Statistics */}
+      <div className="relative animate-premium-in">
+        <HeroStatsSection />
+      </div>
 
-      {/* 03 — Event introduction */}
-      <IntroSection />
+      {/* 03. Introduction */}
+      <div className="relative animate-premium-up">
+        <IntroSection />
+      </div>
 
-      {/* 04 — Uganda construction market */}
+      {/* 04. Uganda Market */}
       <WhyUgandaSection />
 
-      {/* 05 — Exhibition sectors */}
+      {/* 05. Exhibition Profile */}
       <ExhibitionProfileSection />
 
-      {/* 06 — Exhibitor benefits */}
+      {/* 06. Why Exhibit */}
       <WhyExhibitSection />
 
-      {/* 07 — Visitors and decision-makers */}
-      <WhoWillYouMeetSection />
-
-      {/* 08 — Previous edition highlights */}
-      <PreviousEditionSection />
-
-      {/* 09 — Published exhibitor directory */}
+      {/* Optional sections — unchanged */}
+      {/* <WhoWillYouMeetSection /> */}
+      {/* <PreviousEditionSection /> */}
+      {/*
       <ExhibitorDirectoryPreviewSection
         exhibitors={exhibitors}
       />
+      */}
 
-      {/* 10 — Venue and location */}
+      {/* 07. Venue */}
       <VenueSection />
 
-      {/* 11 — Organisers and partners */}
+      {/* 08. Partners */}
       <PartnersSection />
 
-      {/* 12 — Latest expo news */}
-      <NewsSection />
+      {/* <NewsSection /> */}
 
-      {/* 13 — Final conversion CTA */}
-      <FinalCtaSection />
+      {/* 09. Final CTA */}
+      <div className="relative animate-premium-up">
+        <FinalCtaSection />
+      </div>
+
+      {/* Existing-page internal links for Google navigation */}
+      <nav
+        aria-label="Explore Uganda Buildcon"
+        className="border-t border-slate-200 bg-white"
+      >
+        <div className="mx-auto flex max-w-7xl flex-wrap justify-center gap-x-7 gap-y-3 px-5 py-5">
+          {[
+            { href: "/about", label: "About the Expo" },
+            {
+              href: "/exhibition-profile",
+              label: "Exhibitor Profile",
+            },
+            { href: "/exhibit", label: "Why Exhibit" },
+            {
+              href: "/plan-your-visit",
+              label: "Plan Your Visit",
+            },
+            {
+              href: event.cta.registerVisit,
+              label: "Register to Visit",
+            },
+          ].map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="text-xs font-semibold text-[#1769A4] transition-colors hover:text-[#28A45A]"
+            >
+              {item.label}
+            </Link>
+          ))}
+        </div>
+      </nav>
     </>
   );
 }

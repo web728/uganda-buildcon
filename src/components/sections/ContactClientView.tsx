@@ -1,244 +1,476 @@
+
 "use client";
 
-import Link from "next/link";
-import { motion, type Variants } from "framer-motion";
+import {
+  motion,
+  useReducedMotion,
+  type Variants,
+} from "framer-motion";
+
 import { event } from "@/config/event";
 import { Container } from "@/components/ui/Container";
 import { ContactForm } from "@/components/forms/ContactForm";
 
-const containerVariants: Variants = {
-  hidden: { opacity: 0 },
+const EASE = [0.22, 1, 0.36, 1] as const;
+
+const GROUP: Variants = {
+  hidden: {},
   visible: {
-    opacity: 1,
     transition: {
-      staggerChildren: 0.1,
+      staggerChildren: 0.08,
       delayChildren: 0.05,
     },
   },
 };
 
-const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 16, filter: "blur(4px)" },
+const REVEAL: Variants = {
+  hidden: {
+    opacity: 0,
+    y: 20,
+  },
   visible: {
     opacity: 1,
     y: 0,
-    filter: "blur(0px)",
     transition: {
-      duration: 0.5,
-      ease: [0.16, 1, 0.3, 1],
+      duration: 0.7,
+      ease: EASE,
     },
   },
 };
 
-const CONTACT_PERSONS = [
-  {
-    company: "Futurex Group",
-    location: "New Delhi",
-    person: event.contact.futurex,
-    isBlue: true,
+const WORD_GROUP: Variants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.07,
+    },
   },
-  {
-    company: "ETSIPL",
-    location: "Navi Mumbai",
-    person: event.contact.etsipl,
-    isBlue: false,
-  },
-  {
-    company: "Futurex Group",
-    location: "New Delhi",
-    person: event.contact.futurexSales,
-    isBlue: true,
-  },
-];
+};
 
-export function ContactClientView() {
+const WORD: Variants = {
+  hidden: {
+    opacity: 0,
+    y: "105%",
+  },
+  visible: {
+    opacity: 1,
+    y: "0%",
+    transition: {
+      duration: 0.8,
+      ease: EASE,
+    },
+  },
+};
+
+/* ==========================================
+   SINGLE SOURCE OF TRUTH
+
+   Exactly three official representatives.
+   No duplicate compatibility aliases.
+========================================== */
+
+const CONTACTS = [
+  event.contact.futurex,
+  event.contact.etsipl,
+  event.contact.futurexSales,
+] as const;
+
+/* ==========================================
+   SHARED ELEMENTS
+========================================== */
+
+function SectionLabel({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <div className="relative overflow-hidden bg-slate-50/50 py-16 sm:py-24 text-brand-dark selection:bg-brand-blue selection:text-white">
-      {/* Background Architectural Grid Pattern */}
-      <div className="pointer-events-none absolute inset-0 -z-10 select-none opacity-[0.03]">
-        <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="contact-page-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#0f2346" strokeWidth="1" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#contact-page-grid)" />
-        </svg>
+    <div className="flex items-center gap-3">
+      <span
+        aria-hidden="true"
+        className="h-[2px] w-8 shrink-0 bg-[#28A45A]"
+      />
+
+      <span className="text-[11px] font-bold uppercase leading-[1.5] tracking-[0.12em] text-[#1769A4]">
+        {children}
+      </span>
+    </div>
+  );
+}
+
+function AnimatedWords({
+  text,
+  className = "",
+}: {
+  text: string;
+  className?: string;
+}) {
+  const words = text.trim().split(/\s+/);
+
+  return (
+    <span className={className}>
+      {words.map((word, index) => (
+        <span
+          key={`${word}-${index}`}
+          className="inline-block overflow-hidden align-bottom"
+        >
+          <motion.span
+            variants={WORD}
+            className="inline-block"
+          >
+            {word}
+          </motion.span>
+
+          {index < words.length - 1 ? "\u00A0" : null}
+        </span>
+      ))}
+    </span>
+  );
+}
+
+function PhoneIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.7}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-4 w-4"
+    >
+      <path d="M22 16.92v3a2 2 0 01-2.18 2A19.8 19.8 0 012.09 4.18 2 2 0 014.08 2h3a2 2 0 012 1.72l.5 2.97a2 2 0 01-.57 1.79L7.1 10.4a16 16 0 006.5 6.5l1.92-1.91a2 2 0 011.79-.57l2.97.5A2 2 0 0122 16.92z" />
+    </svg>
+  );
+}
+
+function EmailIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.7}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-4 w-4"
+    >
+      <rect
+        x="3"
+        y="5"
+        width="18"
+        height="14"
+        rx="2"
+      />
+      <path d="m3 7 9 6 9-6" />
+    </svg>
+  );
+}
+
+/* ==========================================
+   ORIGINAL ARCHITECTURAL GRID
+========================================== */
+
+function ArchitecturalGrid() {
+  const reduced = useReducedMotion() === true;
+
+  return (
+    <svg
+      aria-hidden="true"
+      focusable="false"
+      viewBox="0 0 720 360"
+      fill="none"
+      preserveAspectRatio="xMidYMid slice"
+      className="h-full w-full"
+    >
+      <defs>
+        <pattern
+          id="contact-premium-grid"
+          width="40"
+          height="40"
+          patternUnits="userSpaceOnUse"
+        >
+          <path
+            d="M40 0H0V40"
+            stroke="#1769A4"
+            strokeOpacity=".13"
+            strokeWidth=".8"
+          />
+        </pattern>
+      </defs>
+
+      <rect
+        width="720"
+        height="360"
+        fill="url(#contact-premium-grid)"
+      />
+
+      <motion.path
+        d="M0 280H185V210H340V125H720"
+        stroke="#1769A4"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+        initial={false}
+        animate={
+          reduced
+            ? undefined
+            : {
+                pathLength: [0, 1, 1],
+                opacity: [0, 0.55, 0],
+              }
+        }
+        transition={{
+          duration: 14,
+          repeat: Infinity,
+          repeatDelay: 2,
+          ease: "easeInOut",
+        }}
+      />
+
+      <motion.path
+        d="M75 355V260H275V180H510V85H720"
+        stroke="#28A45A"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+        initial={false}
+        animate={
+          reduced
+            ? undefined
+            : {
+                pathLength: [0, 1, 1],
+                opacity: [0, 0.55, 0],
+              }
+        }
+        transition={{
+          duration: 16,
+          repeat: Infinity,
+          repeatDelay: 2,
+          ease: "easeInOut",
+        }}
+      />
+    </svg>
+  );
+}
+
+/* ==========================================
+   OFFICIAL CONTACT CARD
+========================================== */
+
+function ContactCard({
+  contact,
+}: {
+  contact: (typeof CONTACTS)[number];
+}) {
+  const phoneHref = contact.phone.replace(
+    /[^\d+]/g,
+    ""
+  );
+
+  return (
+    <motion.article
+      variants={REVEAL}
+      className="group relative flex h-full min-w-0 flex-col overflow-hidden rounded-xl border border-[#E1E8EF] bg-white p-5 transition-[border-color,box-shadow] duration-300 hover:border-[#1769A4]/30 hover:shadow-[0_12px_30px_rgba(16,35,55,0.04)] sm:p-6"
+    >
+      <span
+        aria-hidden="true"
+        className="absolute left-0 top-0 h-full w-[3px] origin-top scale-y-0 bg-[#28A45A] transition-transform duration-500 group-hover:scale-y-100"
+      />
+
+      <div className="min-w-0">
+     
+        <h3 className="mt-2 font-heading text-[17px] font-bold leading-[1.4] tracking-[-0.025em] text-[#172536] sm:text-[18px]">
+          {contact.name}
+        </h3>
       </div>
 
-      {/* Ambient Gradient Glows */}
-      <div className="pointer-events-none absolute -top-40 -left-40 -z-10 h-96 w-96 rounded-full bg-brand-blue/10 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-40 -right-40 -z-10 h-96 w-96 rounded-full bg-brand-green/10 blur-3xl" />
+      <div className="mt-5 flex flex-col gap-3 border-t border-[#E9EEF2] pt-4">
+        <a
+          href={`tel:${phoneHref}`}
+          aria-label={`Call ${contact.name} at ${contact.phone}`}
+          className="group/link inline-flex min-h-8 min-w-0 items-center gap-2.5 text-[12px] font-medium leading-[1.5] text-[#607083] transition-colors hover:text-[#1769A4] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1769A4] sm:text-[13px]"
+        >
+          <span className="shrink-0 text-[#1769A4]">
+            <PhoneIcon />
+          </span>
 
-      <Container className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Top Header Block */}
-        <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between pb-10 border-b border-slate-200/80">
-          <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2.5 rounded-full border border-brand-blue/20 bg-brand-blue/[0.06] px-4 py-1.5 backdrop-blur-md">
-              <span className="relative flex h-2.5 w-2.5">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-blue opacity-75" />
-                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-brand-blue" />
+          <span className="tabular-nums">
+            {contact.phone}
+          </span>
+        </a>
+
+        <a
+          href={`mailto:${contact.email}`}
+          aria-label={`Email ${contact.name} at ${contact.email}`}
+          className="group/link inline-flex min-h-8 min-w-0 items-start gap-2.5 text-[12px] font-medium leading-[1.6] text-[#607083] transition-colors hover:text-[#1769A4] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1769A4]"
+        >
+          <span className="mt-0.5 shrink-0 text-[#1769A4]">
+            <EmailIcon />
+          </span>
+
+          <span className="min-w-0 break-all">
+            {contact.email}
+          </span>
+        </a>
+      </div>
+    </motion.article>
+  );
+}
+
+/* ==========================================
+   MAIN COMPONENT
+========================================== */
+
+export function ContactClientView() {
+  const reduced = useReducedMotion() === true;
+  const initial = reduced ? false : "hidden";
+
+  return (
+    <div className="overflow-hidden bg-white text-[#111820]">
+      {/* CONTACT FORM SECTION */}
+      <section
+        aria-labelledby="contact-form-heading"
+        className="relative isolate overflow-hidden py-14 sm:py-16 lg:py-20"
+      >
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-40 -top-20 -z-10 h-[360px] w-[680px] opacity-40"
+        >
+          <ArchitecturalGrid />
+        </div>
+
+        <Container className="relative z-10">
+          {/* HEADER */}
+          <motion.div
+            variants={GROUP}
+            initial={initial}
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.15 }}
+            className="mx-auto max-w-[850px] text-center"
+          >
+            <motion.div
+              variants={REVEAL}
+              className="flex justify-center"
+            >
+              <SectionLabel>
+                Contact Our Team
+              </SectionLabel>
+            </motion.div>
+
+            <motion.h2
+              id="contact-form-heading"
+              variants={WORD_GROUP}
+              aria-label="Let's Start a Conversation"
+              className="mt-5 font-heading text-[clamp(2rem,3.5vw,3.5rem)] font-extrabold leading-[1.12] tracking-[-0.045em]"
+            >
+              <span aria-hidden="true">
+                <AnimatedWords text="Let's Start a" />
+                {" "}
+                <AnimatedWords
+                  text="Conversation."
+                  className="text-[#1769A4]"
+                />
               </span>
-              <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-brand-blue">
-                Contact Directory
-              </span>
+            </motion.h2>
+
+            <motion.p
+              variants={REVEAL}
+              className="mx-auto mt-5 max-w-[620px] text-[14px] leading-[1.85] text-[#607083] sm:text-[15px]"
+            >
+              Have a question about exhibiting, visitor
+              participation or partnership opportunities?
+              Send your enquiry to the organising team.
+            </motion.p>
+          </motion.div>
+
+          {/* EXISTING FUNCTIONAL FORM */}
+          <motion.div
+            initial={
+              reduced
+                ? false
+                : { opacity: 0, y: 22 }
+            }
+            whileInView={{
+              opacity: 1,
+              y: 0,
+            }}
+            viewport={{
+              once: true,
+              amount: 0.08,
+            }}
+            transition={{
+              duration: 0.8,
+              ease: EASE,
+            }}
+            className="mx-auto mt-9 max-w-[860px] rounded-xl border border-[#E1E8EF] bg-white p-5 shadow-[0_18px_50px_rgba(16,35,55,0.045)] sm:mt-11 sm:p-8 lg:p-10"
+          >
+            <ContactForm />
+          </motion.div>
+        </Container>
+      </section>
+
+      {/* OFFICIAL CONTACT DIRECTORY */}
+      <section
+        aria-labelledby="official-contacts-heading"
+        className="border-t border-[#E5EAF0] bg-[#F8FAFB] py-12 sm:py-14 lg:py-16"
+      >
+        <Container>
+          <motion.div
+            variants={GROUP}
+            initial={initial}
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.15 }}
+            className="flex flex-col gap-4 border-b border-[#E1E8EF] pb-6 sm:flex-row sm:items-end sm:justify-between"
+          >
+            <div>
+              <motion.div variants={REVEAL}>
+                <SectionLabel>
+                  Direct Assistance
+                </SectionLabel>
+              </motion.div>
+
+              <motion.h2
+                id="official-contacts-heading"
+                variants={REVEAL}
+                className="mt-3 font-heading text-[clamp(1.6rem,2.6vw,2.5rem)] font-bold leading-[1.2] tracking-[-0.035em] text-[#111820]"
+              >
+                Speak with Our{" "}
+                <span className="text-[#1769A4]">
+                  Organising Team.
+                </span>
+              </motion.h2>
             </div>
 
-            <h2 className="mt-4 text-3xl sm:text-5xl font-extrabold tracking-tight leading-[1.12] text-brand-dark">
-              Connect with Our{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue via-sky-500 to-brand-green">
-                Team
-              </span>
-            </h2>
-
-            <p className="mt-3 text-sm sm:text-base leading-relaxed text-slate-600 font-normal">
-              For exhibition space bookings, country pavilions, sponsorship packages, or general event enquiries.
-            </p>
-          </div>
-
-          {/* Schedule Badge Card */}
-          <div className="shrink-0 rounded-2xl border border-slate-200/90 bg-white/80 p-5 shadow-sm backdrop-blur-md text-left sm:text-right">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 block">
-              Event Schedule
-            </span>
-            <span className="mt-1 text-sm sm:text-base font-extrabold text-brand-dark block">
-              {event.dates.display}
-            </span>
-            <span className="mt-0.5 text-xs text-slate-500 font-medium block">
-              {event.venue.fullLocation}
-            </span>
-          </div>
-        </div>
-
-        {/* Section 1: Contact Form (Now on Top) */}
-        <div className="mt-12 sm:mt-16 rounded-3xl border border-slate-200/90 bg-white p-8 sm:p-12 shadow-xl shadow-slate-200/50 max-w-4xl mx-auto">
-          <div className="text-center pb-8 border-b border-slate-100 max-w-xl mx-auto">
-            <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-brand-dark">
-              Send Us a Message
-            </h3>
-            <p className="mt-2 text-xs sm:text-sm text-slate-500 font-normal leading-relaxed">
-              Fill out the enquiry form below and our team will get back to you shortly.
-            </p>
-          </div>
-
-          <div className="mt-8">
-            <ContactForm />
-          </div>
-        </div>
-
-        {/* Section 2: Direct Team Contact Cards (Below Form) */}
-        <div className="mt-16 sm:mt-20 max-w-5xl mx-auto">
-          <div className="text-center pb-6">
-            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-blue">
-              Direct Assistance
-            </span>
-            <h3 className="mt-1.5 text-xl sm:text-2xl font-extrabold tracking-tight text-brand-dark">
-              Or Speak Directly with Our Organising Team
-            </h3>
-          </div>
+            <motion.p
+              variants={REVEAL}
+              className="max-w-[340px] text-[12px] leading-[1.75] text-[#68788A] sm:text-[13px]"
+            >
+              Contact our official representatives
+              directly for event-related assistance.
+            </motion.p>
+          </motion.div>
 
           <motion.div
-            variants={containerVariants}
-            initial="hidden"
+            variants={GROUP}
+            initial={initial}
             whileInView="visible"
-            viewport={{ once: true, margin: "-40px" }}
-            className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+            viewport={{ once: true, amount: 0.1 }}
+            className="mt-6 grid items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3"
           >
-            {CONTACT_PERSONS.map((item) => {
-              const cleanPhone = item.person.phone.replace(/[^0-9+]/g, "");
-
-              return (
-                <motion.div
-                  key={item.person.email}
-                  variants={itemVariants}
-                  className="group relative flex flex-col justify-between rounded-3xl border border-slate-200/90 bg-white p-7 shadow-[0_4px_20px_rgba(0,0,0,0.03)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-brand-blue/40 hover:shadow-xl"
-                >
-                  <div>
-                    <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-                      <span
-                        className={`rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${
-                          item.isBlue
-                            ? "bg-brand-blue/10 text-brand-blue"
-                            : "bg-brand-green/10 text-brand-green"
-                        }`}
-                      >
-                        {item.company}
-                      </span>
-                      <span className="text-xs font-medium text-slate-400">
-                        {item.location}
-                      </span>
-                    </div>
-
-                    <h3 className="mt-5 text-xl font-bold tracking-tight text-brand-dark group-hover:text-brand-blue transition-colors">
-                      {item.person.name}
-                    </h3>
-                  </div>
-
-                  <div className="mt-6 pt-5 border-t border-slate-100 flex flex-col gap-2.5 text-xs">
-                    <a
-                      href={`tel:${cleanPhone}`}
-                      className="inline-flex items-center gap-3 rounded-xl border border-slate-200/80 bg-slate-50/60 px-4 py-2.5 font-semibold text-slate-700 transition-all hover:border-brand-green/50 hover:bg-white hover:text-brand-green hover:shadow-sm"
-                    >
-                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-brand-green">
-                        <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                        </svg>
-                      </span>
-                      <span className="tabular-nums">{item.person.phone}</span>
-                    </a>
-
-                    <a
-                      href={`mailto:${item.person.email}`}
-                      className="inline-flex items-center gap-3 rounded-xl border border-slate-200/80 bg-slate-50/60 px-4 py-2.5 font-semibold text-slate-700 transition-all hover:border-brand-blue/50 hover:bg-white hover:text-brand-blue hover:shadow-sm"
-                    >
-                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-sky-50 text-brand-blue">
-                        <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                        </svg>
-                      </span>
-                      <span className="truncate">{item.person.email}</span>
-                    </a>
-                  </div>
-                </motion.div>
-              );
-            })}
+            {CONTACTS.map((contact) => (
+              <ContactCard
+                key={contact.email}
+                contact={contact}
+              />
+            ))}
           </motion.div>
-        </div>
-
-        {/* Bottom Booking Action Ribbon */}
-        <div className="mt-14 flex flex-col sm:flex-row items-center justify-between gap-6 rounded-3xl border border-brand-blue/20 bg-gradient-to-r from-brand-blue/[0.05] via-white to-brand-green/[0.05] p-7 shadow-lg shadow-brand-blue/5">
-          <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-brand-green/10 text-brand-green shadow-inner">
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <div>
-              <h4 className="text-base sm:text-lg font-bold text-brand-dark">
-                Planning to participate as an exhibitor or trade delegate?
-              </h4>
-              <p className="text-xs sm:text-sm text-slate-500 font-normal mt-0.5">
-                Held from {event.dates.display} at {event.venue.name}, {event.venue.city}.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 shrink-0 w-full sm:w-auto">
-            <Link
-              href={event.cta.bookStand}
-              className="flex-1 sm:flex-none inline-flex items-center justify-center rounded-full bg-brand-blue px-7 py-3 text-xs font-bold uppercase tracking-wider text-white shadow-md shadow-brand-blue/20 hover:bg-brand-blue-dark hover:shadow-lg transition-all duration-200"
-            >
-              Book Stand Space
-            </Link>
-            <Link
-              href={event.cta.registerVisit}
-              className="flex-1 sm:flex-none inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-6 py-3 text-xs font-bold text-slate-700 hover:border-brand-blue hover:text-brand-blue hover:bg-slate-50 transition-all duration-200"
-            >
-              Visitor Pass
-            </Link>
-          </div>
-        </div>
-      </Container>
+        </Container>
+      </section>
     </div>
   );
 }

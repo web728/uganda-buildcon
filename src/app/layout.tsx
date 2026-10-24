@@ -1,6 +1,9 @@
 
 import type { Metadata, Viewport } from "next";
-import { Inter, Manrope } from "next/font/google";
+import type { ReactNode } from "react";
+
+
+import { DM_Sans, Sora } from "next/font/google";
 
 import "./globals.css";
 
@@ -10,98 +13,164 @@ import { Analytics } from "@/components/ui/Analytics";
 import { InitialSiteLoader } from "@/components/ui/InitialSiteLoader";
 import { siteUrl } from "@/lib/utils/siteUrl";
 
-const inter = Inter({
+/* ==========================================
+   PREMIUM NEXT.JS FONTS
+========================================== */
+
+const dmSans = DM_Sans({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-dm-sans",
   display: "swap",
   preload: true,
   fallback: ["Arial", "sans-serif"],
 });
 
-const manrope = Manrope({
+const sora = Sora({
   subsets: ["latin"],
-  variable: "--font-manrope",
+  variable: "--font-sora",
   display: "swap",
   preload: true,
   fallback: ["Arial", "sans-serif"],
 });
+
+/* ==========================================
+   CENTRAL SEO CONFIGURATION
+========================================== */
 
 const SITE_URL = siteUrl.replace(/\/+$/, "");
+
 const SITE_NAME = event.name;
+const SHORT_NAME = event.shortName;
+
 const EVENT_YEAR = event.dates.start.slice(0, 4);
 
-const pageTitle =
-  `${SITE_NAME} ${EVENT_YEAR} | ` +
-  `Construction Expo in Kampala`;
+const EVENT_NAME =
+  SITE_NAME.includes(EVENT_YEAR)
+    ? SITE_NAME
+    : `${SITE_NAME} ${EVENT_YEAR}`;
 
-const pageDescription =
-  `Discover Uganda Buildcon International Expo ${EVENT_YEAR}, ` +
-  `taking place ${event.dates.display} at ` +
-  `${event.venue.fullLocation}. Explore construction ` +
-  `machinery, building materials, architecture, ` +
-  `interiors, engineering solutions and B2B networking.`;
+const PAGE_TITLE =
+  `Uganda Buildcon ${EVENT_YEAR} | ` +
+  "Building & Construction Expo Kampala";
 
-const ogImage = `${SITE_URL}/images/og/og-default.jpg`;
-const logoUrl = `${SITE_URL}/logos/uganda-buildcon-logo.png`;
+const PAGE_DESCRIPTION =
+  `Explore ${EVENT_NAME}, ` +
+  `${event.dates.display} at ${event.venue.fullLocation}. ` +
+  "Discover building materials, construction machinery, " +
+  "architecture, engineering and industry networking " +
+  "opportunities in Uganda and East Africa.";
+
+const OG_IMAGE =
+  `${SITE_URL}/images/og/og-default.jpg`;
+
+const LOGO_URL =
+  `${SITE_URL}/logos/uganda-buildcon-logo.png`;
+
+const ORGANIZATION_ID =
+  `${SITE_URL}/#organization`;
+
+const WEBSITE_ID =
+  `${SITE_URL}/#website`;
+
+const EVENT_ID =
+  `${SITE_URL}/#event`;
+
+const VENUE_ID =
+  `${SITE_URL}/#venue`;
+
+/* ==========================================
+   URL HELPERS
+========================================== */
+
+function absoluteUrl(path: string): string {
+  return new URL(path, `${SITE_URL}/`).toString();
+}
+
+function isValidExternalUrl(
+  value: unknown
+): value is string {
+  if (typeof value !== "string") {
+    return false;
+  }
+
+  try {
+    const url = new URL(value);
+
+    return (
+      url.protocol === "https:" ||
+      url.protocol === "http:"
+    );
+  } catch {
+    return false;
+  }
+}
+
+/* ==========================================
+   VIEWPORT
+========================================== */
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#123472",
+  viewportFit: "cover",
+  themeColor: "#102b4e",
   colorScheme: "light",
 };
+
+/* ==========================================
+   GLOBAL SEO METADATA
+========================================== */
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
 
   title: {
-    default: pageTitle,
-    template: `%s | ${event.shortName} ${EVENT_YEAR}`,
+    default: PAGE_TITLE,
+    template: `%s | ${SHORT_NAME}`,
   },
 
-  description: pageDescription,
+  description: PAGE_DESCRIPTION,
 
   applicationName: SITE_NAME,
+
+  category: "Business & Trade Exhibitions",
 
   keywords: [
     "Uganda Buildcon",
     `Uganda Buildcon ${EVENT_YEAR}`,
-    `Uganda Buildcon International Expo ${EVENT_YEAR}`,
-    `Uganda construction expo ${EVENT_YEAR}`,
-    "Construction exhibition Uganda",
-    "Construction expo Kampala",
-    "Building materials exhibition Uganda",
-    "Construction machinery exhibition Uganda",
-    "Building and construction trade show",
-    "East Africa construction exhibition",
-    "Architecture and interior design expo Uganda",
-    "Engineering exhibition East Africa",
-    "UMA Show Grounds Kampala",
-    "Construction trade fair Uganda",
-    "Uganda building industry exhibition",
+    "Uganda Buildcon International Expo",
+    `Construction Expo Uganda ${EVENT_YEAR}`,
+    "Building and Construction Expo Kampala",
+    "Building Materials Exhibition Uganda",
+    "Construction Machinery Expo Uganda",
+    "Construction Equipment Exhibition Uganda",
+    "Building Industry Trade Show Uganda",
+    "Construction Trade Fair East Africa",
+    "Architecture Exhibition Uganda",
+    "Engineering Exhibition Kampala",
+    "Infrastructure Industry Exhibition Uganda",
+    "B2B Construction Exhibition Africa",
   ],
 
-  authors: [
-    { name: "Futurex Trade Fair & Events Pvt. Ltd." },
-    { name: "Exhibitions & Trade Services India Pvt. Ltd." },
-  ],
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
 
-  creator: "Uganda Buildcon International Expo",
-  publisher: "Uganda Buildcon International Expo",
+  referrer: "strict-origin-when-cross-origin",
 
-  category: "Business and Trade Exhibitions",
+  formatDetection: {
+    telephone: false,
+    email: false,
+    address: false,
+  },
 
   alternates: {
-    canonical: "/",
-    languages: {
-      "en-UG": "/",
-      "x-default": "/",
-    },
+    canonical: SITE_URL,
   },
 
   robots: {
     index: true,
     follow: true,
+
     googleBot: {
       index: true,
       follow: true,
@@ -111,56 +180,34 @@ export const metadata: Metadata = {
     },
   },
 
-  verification: {
-    ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
-      ? {
-          google:
-            process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
-        }
-      : {}),
-
-    ...(process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION
-      ? {
-          other: {
-            "msvalidate.01":
-              process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION,
-          },
-        }
-      : {}),
-
-    ...(process.env.NEXT_PUBLIC_YANDEX_VERIFICATION
-      ? {
-          yandex:
-            process.env.NEXT_PUBLIC_YANDEX_VERIFICATION,
-        }
-      : {}),
-  },
-
   openGraph: {
     type: "website",
     locale: "en_UG",
-    url: SITE_URL,
     siteName: SITE_NAME,
-    title: pageTitle,
-    description: pageDescription,
+
+    url: SITE_URL,
+    title: PAGE_TITLE,
+    description: PAGE_DESCRIPTION,
+
     images: [
       {
-        url: ogImage,
+        url: OG_IMAGE,
         width: 1200,
         height: 630,
-        alt:
-          `${SITE_NAME} ${EVENT_YEAR} — ` +
-          `${event.dates.display}, ${event.venue.fullLocation}`,
         type: "image/jpeg",
+        alt:
+          `${EVENT_NAME} — ` +
+          `${event.dates.display}, ` +
+          event.venue.fullLocation,
       },
     ],
   },
 
   twitter: {
     card: "summary_large_image",
-    title: pageTitle,
-    description: pageDescription,
-    images: [ogImage],
+    title: PAGE_TITLE,
+    description: PAGE_DESCRIPTION,
+    images: [OG_IMAGE],
   },
 
   icons: {
@@ -185,61 +232,137 @@ export const metadata: Metadata = {
   },
 
   manifest: "/manifest.webmanifest",
+
+  verification: {
+    ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+      ? {
+          google:
+            process.env
+              .NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+        }
+      : {}),
+
+    ...(process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION
+      ? {
+          other: {
+            "msvalidate.01":
+              process.env
+                .NEXT_PUBLIC_BING_SITE_VERIFICATION,
+          },
+        }
+      : {}),
+
+    ...(process.env.NEXT_PUBLIC_YANDEX_VERIFICATION
+      ? {
+          yandex:
+            process.env
+              .NEXT_PUBLIC_YANDEX_VERIFICATION,
+        }
+      : {}),
+  },
 };
 
-function getStructuredData() {
-  const organizationId = `${SITE_URL}/#organization`;
-  const websiteId = `${SITE_URL}/#website`;
-  const eventId = `${SITE_URL}/#event`;
+/* ==========================================
+   STRUCTURED DATA
+========================================== */
 
-  const socialLinks = Object.values(event.social).filter(
-    (url): url is string =>
-      typeof url === "string" &&
-      /^https?:\/\//.test(url)
+function getStructuredData() {
+  const socialLinks = Array.from(
+    new Set(
+      Object.values(event.social).filter(
+        isValidExternalUrl
+      )
+    )
+  );
+
+  const organizers = event.organisers.map(
+    (organizer) => ({
+      "@type": "Organization" as const,
+      name: organizer.name,
+
+      ...(isValidExternalUrl(organizer.url)
+        ? {
+            url: organizer.url,
+          }
+        : {}),
+    })
   );
 
   return {
     "@context": "https://schema.org",
 
     "@graph": [
+      /* ORGANIZATION */
       {
         "@type": "Organization",
-        "@id": organizationId,
+        "@id": ORGANIZATION_ID,
+
         name: SITE_NAME,
-        alternateName: event.shortName,
+        alternateName: SHORT_NAME,
         url: SITE_URL,
+
+        description:
+          "Uganda Buildcon International Expo connects " +
+          "building and construction industry professionals, " +
+          "manufacturers, suppliers and businesses in Uganda " +
+          "and East Africa.",
+
         logo: {
           "@type": "ImageObject",
-          url: logoUrl,
-          contentUrl: logoUrl,
+          "@id": `${SITE_URL}/#logo`,
+          url: LOGO_URL,
+          contentUrl: LOGO_URL,
+          caption: SITE_NAME,
         },
+
         ...(socialLinks.length > 0
-          ? { sameAs: socialLinks }
+          ? {
+              sameAs: socialLinks,
+            }
           : {}),
       },
 
+      /* WEBSITE */
       {
         "@type": "WebSite",
-        "@id": websiteId,
+        "@id": WEBSITE_ID,
+
         url: SITE_URL,
         name: SITE_NAME,
-        description: pageDescription,
+        alternateName: SHORT_NAME,
+        description: PAGE_DESCRIPTION,
         inLanguage: "en-UG",
+
         publisher: {
-          "@id": organizationId,
+          "@id": ORGANIZATION_ID,
         },
       },
 
+      /* VENUE */
+      {
+        "@type": "Place",
+        "@id": VENUE_ID,
+
+        name: event.venue.name,
+
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: event.venue.city,
+          addressCountry: event.venue.countryCode,
+        },
+      },
+
+      /* EXHIBITION EVENT */
       {
         "@type": "Event",
-        "@id": eventId,
+        "@id": EVENT_ID,
 
-        name: `${SITE_NAME} ${EVENT_YEAR}`,
+        name: EVENT_NAME,
 
         alternateName:
-          `${event.editionLabel} ${event.shortName}`,
+          `${event.editionLabel} ${SHORT_NAME}`,
 
-        description: pageDescription,
+        description: PAGE_DESCRIPTION,
 
         startDate: event.dates.start,
         endDate: event.dates.end,
@@ -251,94 +374,120 @@ function getStructuredData() {
           "https://schema.org/EventScheduled",
 
         url: SITE_URL,
+        image: [OG_IMAGE],
 
-        image: [ogImage],
+        inLanguage: "en-UG",
 
         location: {
-          "@type": "Place",
-          name: event.venue.name,
-
-          address: {
-            "@type": "PostalAddress",
-            addressLocality: event.venue.city,
-            addressCountry: event.venue.countryCode,
-          },
+          "@id": VENUE_ID,
         },
 
-        organizer: event.organisers.map((organizer) => ({
-          "@type": "Organization",
-          name: organizer.name,
-          url: organizer.url,
-        })),
+        organizer: organizers,
 
-        isAccessibleForFree: true,
-
-        offers: {
-          "@type": "Offer",
-          name: "Free Trade Visitor Registration",
-          price: 0,
-          priceCurrency: "USD",
-          url: new URL(
-            event.cta.registerVisit,
-            SITE_URL
-          ).toString(),
+        potentialAction: {
+          "@type": "RegisterAction",
+          target: absoluteUrl(
+            event.cta.registerVisit
+          ),
+          name: "Visitor Registration",
         },
-      },
-
-      {
-        "@type": "BreadcrumbList",
-        "@id": `${SITE_URL}/#breadcrumb`,
-        itemListElement: [
-          {
-            "@type": "ListItem",
-            position: 1,
-            name: "Home",
-            item: SITE_URL,
-          },
-        ],
       },
     ],
   };
 }
 
+/* ==========================================
+   SAFE JSON-LD
+========================================== */
+
+function serializeJsonLd(
+  data: ReturnType<typeof getStructuredData>
+): string {
+  return JSON.stringify(data)
+    .replace(/</g, "\\u003c")
+    .replace(/>/g, "\\u003e")
+    .replace(/&/g, "\\u0026")
+    .replace(/\u2028/g, "\\u2028")
+    .replace(/\u2029/g, "\\u2029");
+}
+
+/* ==========================================
+   ROOT LAYOUT
+========================================== */
+
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
-  const jsonLd = JSON.stringify(
-    getStructuredData()
-  ).replace(/</g, "\\u003c");
-
   return (
     <html
       lang="en-UG"
-      className={`${inter.variable} ${manrope.variable} h-full scroll-smooth antialiased`}
+      className={[
+        dmSans.variable,
+        sora.variable,
+        "h-full",
+        "antialiased",
+      ].join(" ")}
       suppressHydrationWarning
     >
       <body
-        className="flex min-h-screen flex-col overflow-x-clip bg-white font-sans text-brand-dark selection:bg-brand-blue selection:text-white"
+        className={[
+          "flex",
+          "min-h-screen",
+          "flex-col",
+          "overflow-x-clip",
+          "bg-white",
+          "font-sans",
+          "text-brand-dark",
+          "selection:bg-brand-blue",
+          "selection:text-white",
+        ].join(" ")}
         suppressHydrationWarning
       >
+        {/* Search-engine structured data */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: jsonLd,
+            __html: serializeJsonLd(
+              getStructuredData()
+            ),
           }}
         />
 
+        {/* Accessible skip link */}
         <a
           href="#main-content"
-          className="sr-only fixed top-3 left-3 z-[9999] rounded-lg bg-brand-navy px-5 py-3 font-semibold text-white shadow-xl focus:not-sr-only focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green"
+          className={[
+            "sr-only",
+            "fixed",
+            "left-4",
+            "top-4",
+            "z-[9999]",
+            "rounded-lg",
+            "bg-brand-navy",
+            "px-5",
+            "py-3",
+            "text-sm",
+            "font-semibold",
+            "text-white",
+            "shadow-xl",
+            "focus:not-sr-only",
+          ].join(" ")}
         >
           Skip to main content
         </a>
 
+        {/* Existing site loader */}
         <InitialSiteLoader />
 
+        {/* Existing page content */}
         {children}
 
+        {/* Existing cookie consent */}
         <CookieConsent />
+
+        {/* Existing analytics */}
         <Analytics />
       </body>
     </html>

@@ -1,127 +1,353 @@
+
 "use client";
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+
+import {
+  AnimatePresence,
+  motion,
+  useReducedMotion,
+} from "framer-motion";
+
+import { event } from "@/config/event";
 import { exhibitionSectors } from "@/data/exhibitionProfile";
 import { sectorIconMap } from "@/components/icons/SectorIcons";
 
-export function ExhibitionProfileExplorer() {
-  const [query, setQuery] = useState("");
-  const [activeSlug, setActiveSlug] = useState<string | null>(null);
+const EASE = [0.22, 1, 0.36, 1] as const;
 
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) {
-      if (activeSlug) return exhibitionSectors.filter((s) => s.slug === activeSlug);
-      return exhibitionSectors;
-    }
+function SearchIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      className="h-5 w-5"
+    >
+      <circle cx="10.8" cy="10.8" r="7.3" />
+      <path d="m16.2 16.2 5 5" />
+    </svg>
+  );
+}
 
-    return exhibitionSectors
-      .map((sector) => {
-        const nameMatch = sector.name.toLowerCase().includes(q);
-        const subMatches = sector.subcategories.filter((s) =>
-          s.toLowerCase().includes(q)
-        );
-        if (nameMatch) return sector;
-        if (subMatches.length > 0) return { ...sector, subcategories: subMatches };
-        return null;
-      })
-      .filter((s): s is (typeof exhibitionSectors)[number] => s !== null);
-  }, [query, activeSlug]);
+function ArrowIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.7}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-4 w-4 shrink-0"
+    >
+      <path d="M5 12h14m-6-6 6 6-6 6" />
+    </svg>
+  );
+}
+
+/* ==========================================
+   ORIGINAL ARCHITECTURAL SVG GRID
+========================================== */
+
+function ArchitecturalGrid() {
+  const reduced = useReducedMotion() === true;
 
   return (
-    <div className="relative w-full">
-      {/* Background Ambient Glows */}
-      <div className="pointer-events-none absolute -top-12 left-1/2 -z-10 h-96 w-full max-w-7xl -translate-x-1/2 bg-gradient-to-tr from-brand-blue/10 via-sky-400/5 to-transparent blur-3xl opacity-70" />
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 720 310"
+      fill="none"
+      preserveAspectRatio="xMidYMid slice"
+      className="h-full w-full"
+    >
+      <defs>
+        <pattern
+          id="exhibition-profile-grid"
+          width="36"
+          height="36"
+          patternUnits="userSpaceOnUse"
+        >
+          <path
+            d="M36 0H0V36"
+            stroke="#1769A4"
+            strokeOpacity=".14"
+            strokeWidth=".8"
+          />
+        </pattern>
+      </defs>
 
-      {/* ========================================================= */}
-      {/* Premium Glass Control Panel                               */}
-      {/* ========================================================= */}
-      <div className="relative mb-12 rounded-3xl border border-slate-200/80 bg-white/70 p-5 sm:p-7 shadow-xl shadow-slate-900/5 backdrop-blur-2xl transition-all">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-          
-          {/* Futuristic Search Input */}
-          <div className="relative w-full lg:max-w-xl">
-            <div className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="11" cy="11" r="8" />
-                <line x1="21" y1="21" x2="16.65" y2="16.65" />
-              </svg>
-            </div>
+      <rect
+        width="720"
+        height="310"
+        fill="url(#exhibition-profile-grid)"
+      />
+
+      <motion.path
+        d="M0 250H210V185H390V100H720"
+        stroke="#1769A4"
+        strokeOpacity=".5"
+        strokeWidth="1.5"
+        initial={false}
+        animate={
+          reduced
+            ? undefined
+            : {
+                pathLength: [0, 1, 1],
+                opacity: [0, 0.7, 0],
+              }
+        }
+        transition={{
+          duration: 12,
+          repeat: Infinity,
+          repeatDelay: 2,
+          ease: "easeInOut",
+        }}
+      />
+
+      <motion.path
+        d="M35 300V225H265V155H510V55H720"
+        stroke="#28A45A"
+        strokeOpacity=".5"
+        strokeWidth="1.5"
+        initial={false}
+        animate={
+          reduced
+            ? undefined
+            : {
+                pathLength: [0, 1, 1],
+                opacity: [0, 0.7, 0],
+              }
+        }
+        transition={{
+          duration: 15,
+          repeat: Infinity,
+          repeatDelay: 1,
+          ease: "easeInOut",
+        }}
+      />
+    </svg>
+  );
+}
+
+/* ==========================================
+   EXHIBITION PROFILE EXPLORER
+========================================== */
+
+export function ExhibitionProfileExplorer() {
+  const [query, setQuery] = useState("");
+  const [activeSlug, setActiveSlug] = useState<
+    string | null
+  >(null);
+
+  const reduced = useReducedMotion() === true;
+
+  const filtered = useMemo(() => {
+    const search = query.trim().toLowerCase();
+
+    return exhibitionSectors.flatMap((sector) => {
+      if (
+        activeSlug &&
+        sector.slug !== activeSlug
+      ) {
+        return [];
+      }
+
+      if (!search) {
+        return [sector];
+      }
+
+      if (sector.name.toLowerCase().includes(search)) {
+        return [sector];
+      }
+
+      const matchingSubcategories =
+        sector.subcategories.filter((subcategory) =>
+          subcategory.toLowerCase().includes(search)
+        );
+
+      if (matchingSubcategories.length === 0) {
+        return [];
+      }
+
+      return [
+        {
+          ...sector,
+          subcategories: matchingSubcategories,
+        },
+      ];
+    });
+  }, [query, activeSlug]);
+
+  const hasFilters = Boolean(query || activeSlug);
+
+  function resetFilters() {
+    setQuery("");
+    setActiveSlug(null);
+  }
+
+  return (
+    <div className="relative isolate w-full">
+      {/* =====================================
+          EDITORIAL HEADING
+      ===================================== */}
+      <div className="relative overflow-hidden border-b border-[#E4EAF0] pb-8 sm:pb-10">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-24 -top-20 -z-10 h-[310px] w-[620px] opacity-35"
+        >
+          <ArchitecturalGrid />
+        </div>
+
+        <motion.div
+          initial={
+            reduced ? false : { opacity: 0, y: 18 }
+          }
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.75, ease: EASE }}
+          className="flex items-center gap-3"
+        >
+          <span className="h-[2px] w-8 bg-[#28A45A]" />
+
+          <span className="text-[11px] font-bold uppercase leading-[1.5] tracking-[0.13em] text-[#1769A4]">
+            Exhibition Sectors
+          </span>
+        </motion.div>
+
+        <motion.h2
+          id="exhibition-profile-heading"
+          initial={
+            reduced ? false : { opacity: 0, y: 22 }
+          }
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{
+            duration: 0.85,
+            delay: 0.08,
+            ease: EASE,
+          }}
+          className="mt-5 max-w-[780px] font-heading text-[clamp(2rem,3.5vw,3.5rem)] font-extrabold leading-[1.13] tracking-[-0.045em] text-[#111820]"
+        >
+          Explore the{" "}
+          <span className="text-[#1769A4]">
+            Exhibition Profile.
+          </span>
+        </motion.h2>
+
+        <motion.p
+          initial={
+            reduced ? false : { opacity: 0, y: 16 }
+          }
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{
+            duration: 0.75,
+            delay: 0.13,
+            ease: EASE,
+          }}
+          className="mt-5 max-w-[700px] text-[14px] leading-[1.85] tracking-[-0.005em] text-[#607083] sm:text-[15px]"
+        >
+          Discover the building materials, construction
+          machinery, engineering solutions, architectural
+          products and technologies represented at{" "}
+          {event.name}. Search by product or browse
+          the sectors below.
+        </motion.p>
+      </div>
+
+      {/* =====================================
+          SEARCH AND SECTOR FILTERS
+      ===================================== */}
+      <div className="mt-8 rounded-xl border border-[#E1E8EF] bg-[#F9FBFC] p-4 sm:p-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="relative w-full sm:max-w-[590px]">
+            <label
+              htmlFor="sector-search"
+              className="sr-only"
+            >
+              Search exhibition sectors and products
+            </label>
+
+            <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#8191A1]">
+              <SearchIcon />
+            </span>
+
             <input
               id="sector-search"
               type="search"
               value={query}
               onChange={(e) => {
                 setQuery(e.target.value);
-                if (activeSlug) setActiveSlug(null);
+                setActiveSlug(null);
               }}
-              placeholder="Search by machinery, materials, steel, or products..."
-              className="w-full rounded-2xl border border-slate-200/90 bg-slate-50/60 py-3.5 pl-12 pr-10 text-xs sm:text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:border-brand-blue focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-blue/10 transition-all duration-200"
+              placeholder="Search materials, machinery, products..."
+              className="h-12 w-full min-w-0 rounded-lg border border-[#DFE6EC] bg-white py-3 pl-12 pr-11 text-[13px] font-medium text-[#172536] outline-none transition-[border-color,box-shadow] placeholder:font-normal placeholder:text-[#9AA6B2] focus:border-[#1769A4] focus:ring-[3px] focus:ring-[#1769A4]/10 sm:text-[14px]"
             />
+
             {query && (
               <button
                 type="button"
+                aria-label="Clear search"
                 onClick={() => setQuery("")}
-                className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full p-1 text-slate-400 hover:bg-slate-200/60 hover:text-slate-700 transition-colors"
+                className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-md text-[#8291A0] hover:bg-[#F0F4F7] hover:text-[#172536] focus-visible:outline-2 focus-visible:outline-[#1769A4]"
               >
-                ✕
+                <span aria-hidden="true">×</span>
               </button>
             )}
           </div>
 
-          {/* Dynamic Category Status */}
-          <div className="flex items-center justify-between gap-4 text-xs font-semibold text-slate-500 lg:justify-end">
-            <span className="inline-flex items-center gap-2 rounded-full bg-slate-100/80 px-3.5 py-1.5 border border-slate-200/60">
-              <span className="h-2 w-2 rounded-full bg-brand-green animate-pulse" />
-              Showing all Sectors
-            </span>
-            {(activeSlug || query) && (
-              <button
-                type="button"
-                onClick={() => {
-                  setActiveSlug(null);
-                  setQuery("");
-                }}
-                className="text-brand-blue hover:text-brand-blue-dark transition-colors font-bold underline underline-offset-4"
-              >
-                Reset All
-              </button>
-            )}
-          </div>
+          {hasFilters && (
+            <button
+              type="button"
+              onClick={resetFilters}
+              className="self-start text-[12px] font-bold text-[#1769A4] underline decoration-[#1769A4]/30 underline-offset-4 hover:text-[#28A45A] sm:self-auto"
+            >
+              Clear filters
+            </button>
+          )}
         </div>
 
-        {/* Clean Horizon Scrollable Sector Chips */}
-        <div className="mt-6 flex items-center gap-2 overflow-x-auto pb-2 pt-3 border-t border-slate-100 scrollbar-none">
+        <div
+          role="group"
+          aria-label="Filter exhibition sectors"
+          className="mt-5 flex gap-2 overflow-x-auto border-t border-[#E5EAF0] pb-2 pt-5"
+        >
           <button
             type="button"
-            onClick={() => {
-              setActiveSlug(null);
-              setQuery("");
-            }}
-            className={`shrink-0 rounded-xl px-4 py-2 text-xs font-semibold transition-all duration-200 cursor-pointer ${
-              activeSlug === null && !query
-                ? "bg-brand-dark text-white shadow-lg shadow-brand-dark/20"
-                : "bg-slate-100/80 text-slate-600 hover:bg-slate-200/80 hover:text-slate-900"
+            aria-pressed={!activeSlug && !query}
+            onClick={resetFilters}
+            className={`min-h-10 shrink-0 whitespace-nowrap rounded-lg px-4 py-2.5 text-[12px] font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1769A4] ${
+              !activeSlug && !query
+                ? "bg-[#1769A4] text-white"
+                : "border border-[#DFE6EC] bg-white text-[#526376] hover:border-[#1769A4]/40 hover:text-[#1769A4]"
             }`}
           >
             All Sectors
           </button>
+
           {exhibitionSectors.map((sector) => {
-            const isSelected = activeSlug === sector.slug;
+            const selected = activeSlug === sector.slug;
+
             return (
               <button
                 key={sector.slug}
                 type="button"
+                aria-pressed={selected}
                 onClick={() => {
                   setQuery("");
-                  setActiveSlug(isSelected ? null : sector.slug);
+                  setActiveSlug(
+                    selected ? null : sector.slug
+                  );
                 }}
-                className={`shrink-0 rounded-xl px-4 py-2 text-xs font-medium transition-all duration-200 cursor-pointer ${
-                  isSelected
-                    ? "bg-brand-blue text-white shadow-lg shadow-brand-blue/25 font-semibold"
-                    : "bg-slate-100/70 text-slate-600 hover:bg-slate-200/70 hover:text-slate-900"
+                className={`min-h-10 shrink-0 whitespace-nowrap rounded-lg px-4 py-2.5 text-[12px] font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1769A4] ${
+                  selected
+                    ? "bg-[#1769A4] text-white"
+                    : "border border-[#DFE6EC] bg-white text-[#526376] hover:border-[#1769A4]/40 hover:text-[#1769A4]"
                 }`}
               >
                 {sector.name}
@@ -131,36 +357,46 @@ export function ExhibitionProfileExplorer() {
         </div>
       </div>
 
-      {/* ========================================================= */}
-      {/* Premium Dynamic Grid Display                              */}
-      {/* ========================================================= */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <AnimatePresence mode="popLayout">
+      {/* =====================================
+          PRODUCT SECTOR GRID
+      ===================================== */}
+      <div
+        role="status"
+        aria-live="polite"
+        className="sr-only"
+      >
+        {filtered.length === 0
+          ? "No matching exhibition sectors."
+          : `Showing ${filtered.length} exhibition sectors.`}
+      </div>
+
+      <div className="mt-8 grid items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <AnimatePresence initial={false} mode="popLayout">
           {filtered.length === 0 ? (
             <motion.div
-              initial={{ opacity: 0, y: 15 }}
+              key="empty-search"
+              initial={
+                reduced ? false : { opacity: 0, y: 12 }
+              }
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="col-span-full rounded-3xl border border-dashed border-slate-200/90 bg-white/80 p-12 text-center backdrop-blur-xl shadow-sm"
+              className="col-span-full rounded-xl border border-dashed border-[#D9E3EB] bg-[#F9FBFC] px-6 py-12 text-center sm:py-16"
             >
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
-                <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
-              <h3 className="mt-4 text-base font-bold text-slate-900">No matching exhibit profiles</h3>
-              <p className="mt-1 text-xs text-slate-500">
-                No sectors matched &quot;{query}&quot;. Try searching for broader terms like &quot;cement&quot;, &quot;pipes&quot;, or &quot;lighting&quot;.
+              <h3 className="font-heading text-[19px] font-bold tracking-[-0.025em] text-[#111820]">
+                No matching sectors found
+              </h3>
+
+              <p className="mx-auto mt-3 max-w-[400px] text-[13px] leading-[1.75] text-[#637486]">
+                Try another material, machinery or product
+                name, or browse the full exhibition profile.
               </p>
+
               <button
                 type="button"
-                onClick={() => {
-                  setQuery("");
-                  setActiveSlug(null);
-                }}
-                className="mt-6 inline-flex items-center rounded-full bg-brand-blue px-6 py-2.5 text-xs font-semibold text-white shadow-lg shadow-brand-blue/20 hover:bg-brand-blue-dark transition-all"
+                onClick={resetFilters}
+                className="mt-6 inline-flex min-h-10 items-center justify-center rounded-lg bg-[#1769A4] px-5 py-2.5 text-[12px] font-bold text-white transition-colors hover:bg-[#105685]"
               >
-                Clear Search & Filters
+                View All Sectors
               </button>
             </motion.div>
           ) : (
@@ -168,69 +404,128 @@ export function ExhibitionProfileExplorer() {
               const Icon = sectorIconMap[sector.slug];
 
               return (
-                <motion.div
-                  layout
+                <motion.article
+                  layout={!reduced}
                   key={sector.slug}
                   id={sector.slug}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={
+                    reduced
+                      ? false
+                      : { opacity: 0, y: 18 }
+                  }
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.96 }}
-                  transition={{ duration: 0.35, delay: index * 0.02 }}
-                  className="group relative flex flex-col justify-between rounded-3xl border border-slate-200/80 bg-white p-6 shadow-sm transition-all duration-300 hover:border-brand-blue/40 hover:shadow-2xl hover:shadow-brand-blue/10 hover:-translate-y-1.5"
+                  exit={
+                    reduced
+                      ? undefined
+                      : { opacity: 0, scale: 0.97 }
+                  }
+                  transition={{
+                    duration: 0.55,
+                    delay: reduced
+                      ? 0
+                      : Math.min(index, 8) * 0.035,
+                    ease: EASE,
+                  }}
+                  className="group relative flex min-w-0 flex-col overflow-hidden rounded-xl border border-[#E1E8EF] bg-white p-5 transition-[border-color,box-shadow] duration-300 hover:border-[#1769A4]/35 hover:shadow-[0_14px_34px_rgba(16,35,55,0.055)] sm:p-6"
                 >
-                  <div>
-                    {/* Header Icon + Sector Index */}
-                    <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-brand-blue/10 text-brand-blue transition-colors duration-300 group-hover:bg-brand-blue group-hover:text-white">
-                        {Icon ? (
-                          <Icon className="h-6 w-6" />
-                        ) : (
-                          <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                          </svg>
-                        )}
-                      </div>
-
-                  
-                    </div>
-
-                    {/* Sector Title */}
-                    <h3 className="mt-4 text-base font-bold tracking-tight text-slate-900 group-hover:text-brand-blue transition-colors">
-                      {sector.name}
-                    </h3>
-
-                    {/* Subcategories */}
-                    <div className="mt-3 flex flex-wrap gap-1.5">
-                      {sector.subcategories.map((sub) => (
-                        <span
-                          key={sub}
-                          className="inline-flex items-center rounded-xl border border-slate-200/60 bg-slate-50 px-2.5 py-1 text-[11px] font-medium text-slate-600 transition-all hover:bg-white hover:text-slate-900 hover:border-slate-300"
+                  <div className="flex items-center justify-between">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#1769A4]/[0.075] text-[#1769A4] transition-colors duration-300 group-hover:bg-[#1769A4] group-hover:text-white">
+                      {Icon ? (
+                        <Icon className="h-6 w-6" />
+                      ) : (
+                        <svg
+                          aria-hidden="true"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth={1.7}
+                          className="h-6 w-6"
                         >
-                          {sub}
-                        </span>
-                      ))}
+                          <path d="M4 21V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v16M2 21h20M9 8h2M9 12h2M15 8h1M15 12h1M9 21v-5h6v5" />
+                        </svg>
+                      )}
                     </div>
+
+                    <span
+                      aria-hidden="true"
+                      className="h-[2px] w-9 bg-[#28A45A]"
+                    />
                   </div>
 
-                  {/* Card Bottom Direct Action */}
-                {/* Card Bottom CTA Button */}
-<div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
-  <Link
-    href="/book-a-stand"
-    className="group/btn relative inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-blue px-4 py-2.5 text-xs font-bold text-white shadow-md shadow-brand-blue/20 transition-all duration-300 hover:bg-brand-blue-dark hover:shadow-lg hover:shadow-brand-blue/30 active:scale-[0.98]"
-  >
-    <span>Book Stand</span>
-    <span className="transition-transform duration-200 group-hover/btn:translate-x-1">
-      →
-    </span>
-  </Link>
-</div>
-                </motion.div>
+                  <h3 className="mt-6 font-heading text-[17px] font-bold leading-[1.4] tracking-[-0.025em] text-[#111820] transition-colors group-hover:text-[#1769A4] sm:text-[18px]">
+                    {sector.name}
+                  </h3>
+
+                  <ul className="mt-4 flex flex-wrap gap-2">
+                    {sector.subcategories.map(
+                      (subcategory) => (
+                        <li
+                          key={subcategory}
+                          className="rounded-md border border-[#E8EDF2] bg-[#F8FAFB] px-3 py-1.5 text-[12px] font-medium leading-[1.55] text-[#617184]"
+                        >
+                          {subcategory}
+                        </li>
+                      )
+                    )}
+                  </ul>
+
+                  <span
+                    aria-hidden="true"
+                    className="absolute bottom-0 left-0 h-[2px] w-full origin-left scale-x-0 bg-[#28A45A] transition-transform duration-500 group-hover:scale-x-100"
+                  />
+                </motion.article>
               );
             })
           )}
         </AnimatePresence>
       </div>
+
+      {/* =====================================
+          SINGLE PARTICIPATION CTA
+      ===================================== */}
+      <motion.div
+        initial={
+          reduced ? false : { opacity: 0, y: 20 }
+        }
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.8, ease: EASE }}
+        className="mt-12 flex flex-col gap-6 border-t border-[#E3E9EF] pt-8 lg:flex-row lg:items-center lg:justify-between"
+      >
+        <div className="max-w-[710px]">
+          <h2 className="font-heading text-[clamp(1.65rem,2.6vw,2.5rem)] font-bold leading-[1.18] tracking-[-0.04em] text-[#111820]">
+            Showcase Your Products at{" "}
+            <span className="text-[#1769A4]">
+              Uganda Buildcon.
+            </span>
+          </h2>
+
+          <p className="mt-3 max-w-[620px] text-[13px] leading-[1.8] text-[#607083] sm:text-[14px]">
+            Explore exhibition participation for{" "}
+            {event.name}, {event.dates.display} at{" "}
+            {event.venue.fullLocation}.
+          </p>
+        </div>
+
+        <div className="flex flex-wrap gap-3">
+          <Link
+            href="/who-should-exhibit"
+            className="inline-flex min-h-11 items-center justify-center rounded-lg border border-[#DCE4EB] bg-white px-5 py-3 text-[13px] font-semibold text-[#1769A4] transition-colors hover:border-[#1769A4]"
+          >
+            Who Should Exhibit
+          </Link>
+
+          <Link
+            href={event.cta.bookStand}
+            className="group inline-flex min-h-11 items-center justify-center gap-3 rounded-lg bg-[#1769A4] px-6 py-3 text-[13px] font-bold text-white transition-colors hover:bg-[#105685]"
+          >
+            Book a Stand
+            <span className="transition-transform duration-300 group-hover:translate-x-1">
+              <ArrowIcon />
+            </span>
+          </Link>
+        </div>
+      </motion.div>
     </div>
   );
 }

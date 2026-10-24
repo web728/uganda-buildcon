@@ -1,315 +1,866 @@
+
 "use client";
 
 import Link from "next/link";
-import { motion, type Variants } from "framer-motion";
+import {
+  motion,
+  useReducedMotion,
+  type Variants,
+} from "framer-motion";
+
 import { event } from "@/config/event";
 import { Container } from "@/components/ui/Container";
 import { StatCard } from "@/components/ui/StatCard";
-import { marketFacts, marketSources, opportunityCategories } from "@/data/marketFacts";
 
-const containerVariants: Variants = {
-  hidden: { opacity: 0 },
+import {
+  marketFacts,
+  marketSources,
+  opportunityCategories,
+} from "@/data/marketFacts";
+
+const BLUE = "#1769A4";
+const GREEN = "#28A45A";
+const LIME = "#7ACB58";
+
+const EASE = [0.22, 1, 0.36, 1] as const;
+
+const STAGGER: Variants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.11,
+      delayChildren: 0.06,
+    },
+  },
+};
+
+const REVEAL: Variants = {
+  hidden: {
+    opacity: 0,
+    y: 22,
+  },
   visible: {
     opacity: 1,
+    y: 0,
     transition: {
-      staggerChildren: 0.08,
+      duration: 0.8,
+      ease: EASE,
+    },
+  },
+};
+
+const WORD: Variants = {
+  hidden: {
+    opacity: 0,
+    y: "110%",
+  },
+  visible: {
+    opacity: 1,
+    y: "0%",
+    transition: {
+      duration: 0.85,
+      ease: EASE,
+    },
+  },
+};
+
+const WORD_GROUP: Variants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.085,
       delayChildren: 0.05,
     },
   },
 };
 
-const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 16, filter: "blur(4px)" },
-  visible: {
-    opacity: 1,
-    y: 0,
-    filter: "blur(0px)",
-    transition: {
-      duration: 0.55,
-      ease: [0.16, 1, 0.3, 1],
-    },
-  },
-};
+/* ==========================================
+   EXISTING STRATEGIC CONTENT
+   No additional market statistics.
+========================================== */
 
-// Strategic pillars — "Why Uganda?" and "Industry Relevance", official 2026 brochure
 const STRATEGIC_PILLARS = [
   {
-    tag: "6.0% GDP Growth (FY2026)",
     title: "A Growing Economy",
-    body: "Uganda's GDP growth rate is projected to reach 6.0% in the fiscal year 2026, sustaining investment in construction, infrastructure and real estate.",
+    body:
+      "Uganda's economic development and investment priorities support demand for construction services, building materials and infrastructure solutions.",
     icon: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6",
   },
   {
-    tag: "26.77% Urbanisation",
     title: "Rapid Urbanisation",
-    body: "With urbanisation at 26.77% and rising, Uganda is experiencing high demand for residential housing, commercial spaces and urban infrastructure.",
-    icon: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4",
+    body:
+      "Urban development is creating demand for residential housing, commercial buildings and essential urban infrastructure.",
+    icon: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4",
   },
   {
-    tag: "Vision 2040 · $3bn+",
     title: "Infrastructure Investment",
-    body: "The government's Vision 2040 plan, with over $3 billion dedicated to infrastructure, reflects a strong commitment to the construction landscape. Projects like the Kampala–Jinja Expressway and hydropower expansions are already underway.",
+    body:
+      "Uganda's Vision 2040 development framework places importance on infrastructure, connectivity and long-term economic transformation.",
     icon: "M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z",
   },
   {
-    tag: "East African Community",
     title: "A Regional Gateway",
-    body: "Uganda's strategic role within the East African Community (EAC) and its construction demand make the expo a vital platform for engagement, knowledge exchange and networking across the regional construction and infrastructure sector.",
+    body:
+      "Uganda's position in the East African Community creates opportunities for regional partnerships, industry engagement and supplier networks.",
     icon: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z",
   },
-];
-export function WhyUgandaClientView() {
+] as const;
+
+/* ==========================================
+   SHARED COMPONENTS
+========================================== */
+
+function AnimatedWords({
+  text,
+  className = "",
+}: {
+  text: string;
+  className?: string;
+}) {
+  const words = text.trim().split(/\s+/);
+
   return (
-    <div className="relative overflow-hidden py-12 sm:py-16 text-brand-dark">
-      {/* Background Subtle Architectural Pattern */}
-      <div className="pointer-events-none absolute inset-0 -z-10 select-none opacity-[0.035]">
-        <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="market-grid" width="36" height="36" patternUnits="userSpaceOnUse">
-              <path d="M 36 0 L 0 0 0 36" fill="none" stroke="#0f2346" strokeWidth="0.8" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#market-grid)" />
-        </svg>
+    <span className={className}>
+      {words.map((word, index) => (
+        <span
+          key={`${word}-${index}`}
+          className="inline-block overflow-hidden align-bottom"
+        >
+          <motion.span variants={WORD} className="inline-block">
+            {word}
+          </motion.span>
+          {index < words.length - 1 ? "\u00A0" : null}
+        </span>
+      ))}
+    </span>
+  );
+}
+
+function ArrowIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-4 w-4 shrink-0"
+    >
+      <path d="M5 12h14m-6-6 6 6-6 6" />
+    </svg>
+  );
+}
+
+function PillarIcon({ path }: { path: string }) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-5 w-5"
+    >
+      <path d={path} />
+    </svg>
+  );
+}
+
+function SectionLabel({
+  children,
+  light = false,
+}: {
+  children: React.ReactNode;
+  light?: boolean;
+}) {
+  return (
+    <div className="flex items-center gap-3">
+      <span className="h-[2px] w-8 shrink-0 bg-[#28A45A]" />
+      <span
+        className={`text-[10px] font-bold uppercase tracking-[0.14em] ${
+          light ? "text-white/65" : "text-[#1769A4]"
+        }`}
+      >
+        {children}
+      </span>
+    </div>
+  );
+}
+
+/* ==========================================
+   ORIGINAL UGANDA BUILDCON BRAND SVG
+
+   Geometry matches your homepage SVG:
+   - Upper blue fan
+   - Green triangle
+   - Lower green fan
+   - Inner sectors
+   - Centre circles
+
+   Only subtle rotation/pulse is animated.
+========================================== */
+
+function UgandaBrandArtwork() {
+  const reduced = useReducedMotion() === true;
+
+  return (
+    <svg
+      viewBox="0 0 800 800"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      aria-hidden="true"
+      focusable="false"
+      className="h-full w-full"
+    >
+      <defs>
+        <radialGradient
+          id="why-uganda-page-glow"
+          cx="50%"
+          cy="50%"
+          r="50%"
+        >
+          <stop
+            offset="0%"
+            stopColor={BLUE}
+            stopOpacity=".19"
+          />
+          <stop
+            offset="100%"
+            stopColor={BLUE}
+            stopOpacity="0"
+          />
+        </radialGradient>
+      </defs>
+
+      <circle
+        cx="400"
+        cy="400"
+        r="365"
+        fill="url(#why-uganda-page-glow)"
+      />
+
+      {/* Original outer orbit */}
+      <motion.g
+        initial={false}
+        animate={reduced ? undefined : { rotate: 360 }}
+        transition={{
+          duration: 60,
+          repeat: Infinity,
+          ease: "linear",
+        }}
+        style={{
+          transformOrigin: "400px 400px",
+          transformBox: "view-box",
+        }}
+      >
+        <path
+          d="M180,210 A320,320 0 0,1 620,210"
+          stroke="white"
+          strokeOpacity=".3"
+          strokeWidth="1.25"
+        />
+        <circle cx="280" cy="140" r="6" fill={BLUE} />
+        <circle cx="580" cy="170" r="8" fill={LIME} />
+
+        <path
+          d="M130,340 A320,320 0 0,1 360,90"
+          stroke="white"
+          strokeOpacity=".28"
+        />
+        <circle cx="160" cy="270" r="9" fill={LIME} />
+        <circle cx="165" cy="400" r="8" fill={BLUE} />
+
+        <path
+          d="M480,680 A320,320 0 0,0 710,510"
+          stroke="white"
+          strokeOpacity=".27"
+        />
+        <circle cx="560" cy="620" r="8" fill={GREEN} />
+      </motion.g>
+
+      {/* Original reverse orbit */}
+      <motion.g
+        initial={false}
+        animate={reduced ? undefined : { rotate: -360 }}
+        transition={{
+          duration: 75,
+          repeat: Infinity,
+          ease: "linear",
+        }}
+        style={{
+          transformOrigin: "400px 400px",
+          transformBox: "view-box",
+        }}
+      >
+        <circle
+          cx="400"
+          cy="400"
+          r="345"
+          stroke="white"
+          strokeOpacity=".13"
+          strokeDasharray="5 15"
+        />
+        <circle cx="400" cy="55" r="5" fill={GREEN} />
+      </motion.g>
+
+      {/* Original upper blue fan */}
+      <motion.path
+        d="M400,400 L275,100 A340,340 0 0,1 525,100 Z"
+        fill={BLUE}
+        opacity=".95"
+        initial={false}
+        animate={
+          reduced ? undefined : { scale: [1, 1.02, 1] }
+        }
+        transition={{
+          duration: 6.2,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+        style={{
+          transformOrigin: "400px 400px",
+          transformBox: "view-box",
+        }}
+      />
+
+      {/* Original green triangle */}
+      <motion.polygon
+        points="465,370 655,80 655,470"
+        fill={GREEN}
+        opacity=".94"
+        initial={false}
+        animate={
+          reduced ? undefined : { scale: [1, 1.018, 1] }
+        }
+        transition={{
+          duration: 7,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+        style={{
+          transformOrigin: "400px 400px",
+          transformBox: "view-box",
+        }}
+      />
+
+      {/* Original lower green fan */}
+      <motion.path
+        d="M400,400 L95,475 A330,330 0 0,0 270,710 Z"
+        fill={GREEN}
+        opacity=".89"
+        initial={false}
+        animate={
+          reduced ? undefined : { scale: [1, 1.02, 1] }
+        }
+        transition={{
+          duration: 6.6,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+        style={{
+          transformOrigin: "400px 400px",
+          transformBox: "view-box",
+        }}
+      />
+
+      {/* Original inner sectors */}
+      <path
+        d="M400,400 L210,340 A205,205 0 0,0 280,560 Z"
+        fill="#208749"
+        opacity=".85"
+      />
+
+      <path
+        d="M400,400 L510,480 A205,205 0 0,1 465,565 Z"
+        fill={GREEN}
+        opacity=".87"
+      />
+
+      {/* Central rings */}
+      <circle
+        cx="400"
+        cy="400"
+        r="140"
+        stroke="white"
+        strokeOpacity=".34"
+        strokeWidth="1.5"
+      />
+
+      <circle
+        cx="400"
+        cy="400"
+        r="125"
+        stroke="white"
+        strokeOpacity=".9"
+        strokeWidth="3.5"
+      />
+
+      {/* Centre pulse */}
+      <motion.circle
+        cx="400"
+        cy="400"
+        r="105"
+        fill={BLUE}
+        initial={false}
+        animate={
+          reduced
+            ? undefined
+            : {
+                r: [105, 110, 105],
+                fill: [BLUE, "#105685", BLUE],
+              }
+        }
+        transition={{
+          duration: 4.8,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      />
+    </svg>
+  );
+}
+
+/* ==========================================
+   STRATEGIC PILLAR
+========================================== */
+
+function StrategicPillar({
+  pillar,
+}: {
+  pillar: (typeof STRATEGIC_PILLARS)[number];
+}) {
+  return (
+    <motion.article
+      variants={REVEAL}
+      className="group flex min-w-0 items-start gap-4 border-b border-[#E2E8ED] py-5 sm:gap-5 sm:py-6"
+    >
+      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#1769A4]/[0.065] text-[#1769A4] transition-colors duration-300 group-hover:bg-[#1769A4] group-hover:text-white">
+        <PillarIcon path={pillar.icon} />
       </div>
 
-      <Container className="relative z-10 w-full">
-        {/* ========================================================= */}
-        {/* Header Block 1: Verified Market Facts                     */}
-        {/* ========================================================= */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between pb-6 border-b border-slate-200/80">
-          <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 rounded-full border border-brand-blue/20 bg-brand-blue/[0.06] px-3.5 py-1">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-blue opacity-75" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-blue" />
-              </span>
-              <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-brand-blue">
-                Market Indicators
-              </span>
-            </div>
+      <div className="min-w-0">
+        <h3 className="font-heading text-[17px] font-bold leading-[1.35] tracking-[-0.025em] text-[#101214] sm:text-[18px]">
+          {pillar.title}
+        </h3>
 
-            <h2 className="mt-3.5 text-2xl sm:text-4xl font-extrabold tracking-[-0.03em] leading-[1.12] text-brand-dark">
-              Key Market Data &amp;{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue via-sky-500 to-brand-green">
-                Growth Benchmarks
-              </span>
-            </h2>
+        <p className="mt-2 max-w-[550px] text-[13px] leading-[1.8] tracking-[-0.005em] text-[#607083] sm:text-[14px]">
+          {pillar.body}
+        </p>
+      </div>
+    </motion.article>
+  );
+}
 
-            <p className="mt-2 text-xs sm:text-sm leading-relaxed text-slate-500 font-normal">
-              Indicators published in the official Uganda Buildcon brochure, reflecting steady demand for building materials, machinery and construction services.
-            </p>
-          </div>
+/* ==========================================
+   MAIN CLIENT VIEW
+========================================== */
 
-          <div className="shrink-0">
-            <Link
-              href={event.cta.bookStand}
-              className="inline-flex items-center justify-center rounded-full bg-brand-blue px-6 py-2.5 text-xs font-semibold uppercase tracking-wider text-white shadow-[0_4px_16px_rgba(31,111,174,0.25)] transition-all duration-300 hover:bg-brand-blue-dark hover:shadow-[0_6px_22px_rgba(31,111,174,0.35)] hover:-translate-y-0.5 active:translate-y-0"
-            >
-              Book Stand Space →
-            </Link>
-          </div>
-        </div>
-
-        {/* Dynamic Facts Grid */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-40px" }}
-          className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
-        >
-          {marketFacts.map((fact) => (
-            <motion.div key={fact.id} variants={itemVariants}>
-              <StatCard fact={fact} />
-            </motion.div>
-          ))}
-        </motion.div>
-
-        {/* ========================================================= */}
-        {/* Section 2: 4 Strategic Pillars (Brochure Match)           */}
-        {/* ========================================================= */}
-        <div className="mt-14 sm:mt-18">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between pb-5 border-b border-slate-200/80">
-            <div>
-              <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-brand-green">
-                Commercial Foundation
-              </span>
-              <h3 className="mt-1.5 text-xl sm:text-3xl font-extrabold tracking-tight text-brand-dark">
-                Why Uganda?
-              </h3>
-            </div>
-            <p className="text-xs text-slate-500 max-w-md font-normal">
-              Uganda&apos;s construction sector is witnessing rapid growth, making Kampala the natural meeting point for suppliers and buyers.
-            </p>
-          </div>
-
+export function WhyUgandaClientView() {
+  return (
+    <div className="overflow-hidden bg-white text-[#101214]">
+      {/* MARKET INDICATORS */}
+      <section
+        aria-labelledby="market-indicators-heading"
+        className="py-14 sm:py-16 lg:py-20"
+      >
+        <Container>
           <motion.div
-            variants={containerVariants}
+            variants={STAGGER}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, margin: "-40px" }}
-            className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2"
+            viewport={{ once: true, amount: 0.15 }}
+            className="flex flex-col gap-6 border-b border-[#E5EAF0] pb-7 lg:flex-row lg:items-end lg:justify-between"
           >
-            {STRATEGIC_PILLARS.map((pillar, idx) => (
-              <motion.div
-                key={pillar.title}
-                variants={itemVariants}
-                className="group relative flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-white p-6 shadow-[0_2px_10px_rgb(0,0,0,0.02)] transition-all duration-300 hover:border-brand-blue/40 hover:shadow-xl hover:-translate-y-1"
+            <div className="max-w-[730px]">
+              <motion.div variants={REVEAL}>
+                <SectionLabel>
+                  Market Indicators
+                </SectionLabel>
+              </motion.div>
+
+              <motion.h2
+                variants={WORD_GROUP}
+                id="market-indicators-heading"
+                aria-label="Understanding Uganda's Construction Market"
+                className="mt-5 font-heading text-[clamp(2rem,3.55vw,3.65rem)] font-extrabold leading-[1.12] tracking-[-0.045em]"
               >
-                <div>
-                  <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                    <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-brand-dark">
-                      {pillar.tag}
-                    </span>
+                <span aria-hidden="true">
+                  <AnimatedWords text="Understanding" />
+                  {" "}
+                  <AnimatedWords
+                    text="Uganda's"
+                    className="text-[#1769A4]"
+                  />
+                  {" "}
+                  <AnimatedWords text="Construction Market." />
+                </span>
+              </motion.h2>
 
-                    <span className="text-[10px] font-mono font-bold text-slate-300 group-hover:text-brand-blue transition-colors">
-                      0{idx + 1}
-                    </span>
-                  </div>
+              <motion.p
+                variants={REVEAL}
+                className="mt-5 max-w-[640px] text-[14px] leading-[1.85] tracking-[-0.005em] text-[#607083] sm:text-[15px]"
+              >
+                Explore market indicators referenced in
+                Uganda Buildcon exhibition materials
+                and the factors influencing demand for
+                building materials, construction machinery,
+                engineering and infrastructure solutions.
+              </motion.p>
+            </div>
 
-                  <h4 className="mt-4 text-base font-bold tracking-tight text-brand-dark group-hover:text-brand-blue transition-colors">
-                    {pillar.title}
-                  </h4>
+            <motion.div variants={REVEAL}>
+              <Link
+                href={event.cta.bookStand}
+                className="group inline-flex min-h-11 items-center justify-center gap-4 rounded-lg bg-[#1769A4] px-6 py-2.5 text-[13px] font-bold text-white transition-[background-color,transform] duration-300 hover:-translate-y-0.5 hover:bg-[#105685] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#28A45A] motion-reduce:transform-none"
+              >
+                Book a Stand
 
-                  <p className="mt-2 text-xs sm:text-sm leading-[1.7] text-slate-600 font-normal">
-                    {pillar.body}
-                  </p>
-                </div>
+                <span className="transition-transform duration-300 group-hover:translate-x-1">
+                  <ArrowIcon />
+                </span>
+              </Link>
+            </motion.div>
+          </motion.div>
 
-                <div className="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-brand-blue">
-                  <span>Source: Uganda Buildcon brochure</span>
-                  <span className="transition-transform group-hover:translate-x-1">→</span>
-                </div>
+          {/* Facts directly from existing data */}
+          <motion.div
+            variants={STAGGER}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.08 }}
+            className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+          >
+            {marketFacts.map((fact) => (
+              <motion.div
+                key={fact.id}
+                variants={REVEAL}
+                className="min-w-0"
+              >
+                <StatCard fact={fact} />
               </motion.div>
             ))}
           </motion.div>
+        </Container>
+      </section>
+
+      {/* UGANDA ORIGINAL BRAND SVG + MARKET CONTEXT */}
+      <section
+        aria-labelledby="uganda-opportunity-heading"
+        className="relative isolate overflow-hidden bg-[#080808] py-14 text-white sm:py-16 lg:py-20"
+      >
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
+        >
+          <div className="absolute -right-32 top-0 h-[440px] w-[440px] rounded-full bg-[#1769A4]/[0.08] blur-[100px]" />
+
+          <div className="absolute -bottom-32 left-0 h-[350px] w-[350px] rounded-full bg-[#28A45A]/[0.055] blur-[90px]" />
         </div>
 
-        {/* ========================================================= */}
-        {/* Section 3: Exact 9 Opportunity Categories from Brochure   */}
-        {/* ========================================================= */}
-        <div className="mt-14 sm:mt-18 rounded-3xl border border-slate-200/80 bg-white p-6 sm:p-8 shadow-sm">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between pb-5 border-b border-slate-100">
-            <div>
-              <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-brand-blue">
-                Commercial Prospects
-              </span>
-              <h3 className="mt-1 text-lg sm:text-xl font-bold tracking-tight text-brand-dark">
-                Opportunities Across Active Sectors
-              </h3>
-            </div>
-            <span className="text-xs text-slate-400">{opportunityCategories.length} Demand Areas</span>
-          </div>
+        <Container className="relative z-10">
+          <div className="grid items-center gap-9 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] lg:gap-12">
+            <motion.div
+              variants={STAGGER}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.2 }}
+            >
+              <motion.div variants={REVEAL}>
+                <SectionLabel light>
+                  The Uganda Opportunity
+                </SectionLabel>
+              </motion.div>
 
-          <div className="mt-6 flex flex-wrap gap-2">
-            {opportunityCategories.map((cat) => (
-              <span
-                key={cat}
-                className="inline-flex items-center gap-2 rounded-xl border border-slate-200/80 bg-slate-50/80 px-3.5 py-2 text-xs font-semibold text-slate-700 transition-all hover:border-brand-blue/40 hover:bg-white hover:text-brand-dark hover:shadow-sm"
+              <motion.h2
+                id="uganda-opportunity-heading"
+                variants={WORD_GROUP}
+                aria-label="A Market Shaped by Development and Opportunity"
+                className="mt-5 max-w-[650px] font-heading text-[clamp(2rem,3.4vw,3.6rem)] font-extrabold leading-[1.12] tracking-[-0.045em] text-white"
               >
-                <span className="h-1.5 w-1.5 rounded-full bg-brand-green" />
-                {cat}
-              </span>
-            ))}
-          </div>
+                <span aria-hidden="true">
+                  <AnimatedWords text="A Market Shaped" />
+                  {" "}
+                  <AnimatedWords text="by Development" />
+                  {" "}
+                  <AnimatedWords
+                    text="& Opportunity."
+                    className="text-[#7ACB58]"
+                  />
+                </span>
+              </motion.h2>
 
-          {/* Market Sources Strip */}
-          <div className="mt-8 pt-5 border-t border-slate-100">
-            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">
-              Further Reading
-            </span>
-            <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-xs text-slate-500">
-              {marketSources.map((src) => (
-                <span key={src.name} className="inline-flex items-center gap-1.5">
-                  <span className="h-1 w-1 rounded-full bg-slate-300" />
-                  {src.url ? (
+              <motion.p
+                variants={REVEAL}
+                className="mt-6 max-w-[590px] text-[14px] leading-[1.9] text-white/65 sm:text-[15px]"
+              >
+                Uganda&apos;s infrastructure priorities,
+                urban development and regional
+                connectivity create opportunities
+                across the building and construction
+                supply chain.
+              </motion.p>
+
+              <motion.p
+                variants={REVEAL}
+                className="mt-4 max-w-[590px] text-[14px] leading-[1.9] text-white/65 sm:text-[15px]"
+              >
+                {event.name} provides a platform
+                for manufacturers, suppliers and
+                construction professionals to explore
+                these opportunities, present products
+                and develop industry connections.
+              </motion.p>
+
+              <motion.div
+                variants={REVEAL}
+                className="mt-7"
+              >
+                <Link
+                  href="/exhibition-profile"
+                  className="group inline-flex items-center gap-3 border-b border-[#7ACB58]/50 pb-1.5 text-[13px] font-bold text-white transition-colors hover:text-[#7ACB58]"
+                >
+                  Explore Exhibition Profile
+
+                  <span className="transition-transform duration-300 group-hover:translate-x-1">
+                    <ArrowIcon />
+                  </span>
+                </Link>
+              </motion.div>
+            </motion.div>
+
+            {/* Original brand artwork */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.94 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{
+                duration: 1.15,
+                ease: EASE,
+              }}
+              className="relative mx-auto aspect-square w-full max-w-[410px] sm:max-w-[470px] lg:max-w-[520px]"
+            >
+              <UgandaBrandArtwork />
+            </motion.div>
+          </div>
+        </Container>
+      </section>
+
+      {/* STRATEGIC REASONS */}
+      <section
+        aria-labelledby="why-uganda-strategy-heading"
+        className="py-14 sm:py-16 lg:py-20"
+      >
+        <Container>
+          <div className="grid gap-9 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] lg:gap-16">
+            <motion.div
+              variants={STAGGER}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.2 }}
+            >
+              <motion.div variants={REVEAL}>
+                <SectionLabel>
+                  Commercial Foundation
+                </SectionLabel>
+              </motion.div>
+
+              <motion.h2
+                id="why-uganda-strategy-heading"
+                variants={REVEAL}
+                className="mt-5 font-heading text-[clamp(1.9rem,3vw,3.1rem)] font-extrabold leading-[1.15] tracking-[-0.045em]"
+              >
+                Why{" "}
+                <span className="text-[#1769A4]">
+                  Uganda?
+                </span>
+              </motion.h2>
+
+              <motion.p
+                variants={REVEAL}
+                className="mt-4 max-w-[420px] text-[14px] leading-[1.85] text-[#607083]"
+              >
+                Economic development, urbanisation,
+                infrastructure priorities and regional
+                trade are relevant factors for businesses
+                exploring Uganda&apos;s construction market.
+              </motion.p>
+            </motion.div>
+
+            <motion.div
+              variants={STAGGER}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.1 }}
+              className="border-t border-[#E2E8ED]"
+            >
+              {STRATEGIC_PILLARS.map((pillar) => (
+                <StrategicPillar
+                  key={pillar.title}
+                  pillar={pillar}
+                />
+              ))}
+            </motion.div>
+          </div>
+        </Container>
+      </section>
+
+      {/* MARKET OPPORTUNITY CATEGORIES */}
+      <section
+        aria-labelledby="uganda-sectors-heading"
+        className="border-y border-[#E5EBF0] bg-[#F8FAFB] py-14 sm:py-16 lg:py-20"
+      >
+        <Container>
+          <motion.div
+            variants={STAGGER}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+          >
+            <motion.div variants={REVEAL}>
+              <SectionLabel>
+                Industry Opportunities
+              </SectionLabel>
+            </motion.div>
+
+            <motion.h2
+              id="uganda-sectors-heading"
+              variants={REVEAL}
+              className="mt-4 max-w-[760px] font-heading text-[clamp(1.85rem,3vw,3rem)] font-extrabold leading-[1.14] tracking-[-0.045em]"
+            >
+              Opportunities Across{" "}
+              <span className="text-[#1769A4]">
+                Construction Sectors.
+              </span>
+            </motion.h2>
+
+            <motion.p
+              variants={REVEAL}
+              className="mt-4 max-w-[640px] text-[14px] leading-[1.85] text-[#607083]"
+            >
+              Explore the industry areas highlighted
+              in Uganda Buildcon exhibition materials.
+            </motion.p>
+          </motion.div>
+
+          <motion.div
+            variants={STAGGER}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.1 }}
+            className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
+          >
+            {opportunityCategories.map((category) => (
+              <motion.div
+                key={category}
+                variants={REVEAL}
+                className="group flex min-w-0 items-center gap-3 border border-[#E2E8ED] bg-white px-5 py-4 transition-[border-color,box-shadow] duration-300 hover:border-[#1769A4]/30 hover:shadow-[0_8px_24px_rgba(15,33,53,0.04)]"
+              >
+                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#28A45A]" />
+
+                <span className="text-[13px] font-semibold leading-[1.55] tracking-[-0.01em] text-[#253548]">
+                  {category}
+                </span>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          {/* Existing market sources */}
+          {marketSources.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{
+                duration: 0.75,
+                ease: EASE,
+              }}
+              className="mt-9 border-t border-[#E2E8ED] pt-6"
+            >
+              <h3 className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#647385]">
+                Sources &amp; Further Reading
+              </h3>
+
+              <div className="mt-4 flex flex-wrap gap-x-7 gap-y-3">
+                {marketSources.map((source) =>
+                  source.url ? (
                     <a
-                      href={src.url}
+                      key={source.name}
+                      href={source.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="font-medium hover:text-brand-blue hover:underline"
+                      className="group inline-flex items-center gap-2 text-[12px] font-semibold text-[#1769A4] transition-colors hover:text-[#28A45A]"
                     >
-                      {src.name}
+                      {source.name}
+                      <span className="transition-transform duration-300 group-hover:translate-x-1">
+                        <ArrowIcon />
+                      </span>
                     </a>
                   ) : (
-                    <span className="font-medium text-slate-600">{src.name}</span>
-                  )}
+                    <span
+                      key={source.name}
+                      className="text-[12px] font-medium text-[#647385]"
+                    >
+                      {source.name}
+                    </span>
+                  )
+                )}
+              </div>
+            </motion.div>
+          )}
+        </Container>
+      </section>
+
+      {/* PARTICIPATION CTA */}
+      <section className="py-12 sm:py-16">
+        <Container>
+          <motion.div
+            initial={{ opacity: 0, y: 22 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{
+              duration: 0.9,
+              ease: EASE,
+            }}
+            className="flex flex-col gap-7 border-t border-[#E2E8ED] pt-8 lg:flex-row lg:items-center lg:justify-between"
+          >
+            <div className="max-w-[660px]">
+              <h2 className="font-heading text-[clamp(1.7rem,2.5vw,2.5rem)] font-extrabold leading-[1.17] tracking-[-0.04em]">
+                Explore the Uganda{" "}
+                <span className="text-[#1769A4]">
+                  Construction Market.
                 </span>
-              ))}
+              </h2>
+
+              <p className="mt-3 text-[13px] leading-[1.8] text-[#607083] sm:text-[14px]">
+                Meet construction industry professionals
+                at {event.name}, taking place{" "}
+                {event.dates.display} at{" "}
+                {event.venue.fullLocation}.
+              </p>
             </div>
-          </div>
-        </div>
 
-      {/* ========================================================= */}
-{/* High-Impact Expo Conversion Card (Replaces Weak Ribbon)    */}
-{/* ========================================================= */}
-<motion.div
-  initial={{ opacity: 0, y: 24 }}
-  whileInView={{ opacity: 1, y: 0 }}
-  viewport={{ once: true }}
-  transition={{ duration: 0.6 }}
-  className="relative mt-12 sm:mt-16 overflow-hidden rounded-3xl bg-[#081a36] p-8 sm:p-12 text-white shadow-2xl shadow-black/25"
->
-  {/* Ambient Mesh Glows */}
-  <div className="pointer-events-none absolute -right-16 -top-16 h-72 w-72 rounded-full bg-brand-blue/20 blur-[90px]" />
-  <div className="pointer-events-none absolute -bottom-16 -left-16 h-72 w-72 rounded-full bg-brand-green/20 blur-[90px]" />
+            <div className="flex flex-wrap gap-3">
+              <Link
+                href={event.cta.bookStand}
+                className="inline-flex min-h-11 items-center justify-center rounded-lg bg-[#1769A4] px-6 py-3 text-[13px] font-bold text-white transition-colors hover:bg-[#105685]"
+              >
+                Book a Stand
+              </Link>
 
-  {/* Subtle Blueprint Wireframe Grid Background */}
-  <div
-    aria-hidden="true"
-    className="pointer-events-none absolute inset-0 opacity-[0.05] [mask-image:radial-gradient(ellipse_at_center,#fff_30%,transparent_80%)]"
-    style={{
-      backgroundImage:
-        "linear-gradient(to right, #ffffff 1px, transparent 1px), linear-gradient(to bottom, #ffffff 1px, transparent 1px)",
-      backgroundSize: "32px 32px",
-    }}
-  />
-
-  <div className="relative z-10 flex flex-col items-center justify-between gap-8 lg:flex-row text-center lg:text-left">
-    {/* Left Column: Heading + Event Meta Pill */}
-    <div className="max-w-2xl">
-      {/* Event Date & Location Micro-Pill */}
-      <div className="inline-flex flex-wrap items-center justify-center lg:justify-start gap-2 rounded-full border border-white/15 bg-white/[0.06] px-3.5 py-1 text-xs font-medium text-slate-300 backdrop-blur-md">
-        <span className="flex h-2 w-2 rounded-full bg-brand-green animate-pulse" />
-        <span className="text-white font-semibold">{event.dates.display}</span>
-        <span className="text-white/30">•</span>
-        <span>{event.venue.name}, {event.venue.city}</span>
-      </div>
-
-      <h3 className="mt-4 text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight leading-tight text-white">
-        Position Your Brand in{" "}
-        <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-300 via-sky-200 to-brand-lime">
-          Uganda&apos;s Growing
-        </span>{" "}
-        Construction Hub
-      </h3>
-
-      <p className="mt-3 text-xs sm:text-sm text-slate-300/90 leading-relaxed max-w-xl">
-        Connect face-to-face with key contractors, government specifiers, importers, and regional distributors ready for direct supply agreements.
-      </p>
-    </div>
-
-    {/* Right Column: High-Conversion Dual CTAs */}
-    <div className="flex flex-col sm:flex-row items-center gap-3.5 shrink-0 w-full sm:w-auto">
-      <Link
-        href={event.cta.bookStand}
-        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-brand-blue px-7 py-3.5 text-xs sm:text-sm font-bold uppercase tracking-wider text-white shadow-[0_0_24px_rgba(31,111,174,0.4)] transition-all duration-300 hover:bg-brand-blue-dark hover:shadow-[0_0_32px_rgba(31,111,174,0.55)] hover:-translate-y-0.5 active:translate-y-0"
-      >
-        <span>Book Your Stand</span>
-        <span>→</span>
-      </Link>
-
-      <Link
-        href={event.cta.registerVisit}
-        className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl border border-white/20 bg-white/[0.08] px-7 py-3.5 text-xs sm:text-sm font-bold uppercase tracking-wider text-white backdrop-blur-md transition-all duration-300 hover:bg-white/15 hover:border-white/30 hover:-translate-y-0.5 active:translate-y-0"
-      >
-        Register to Visit
-      </Link>
-    </div>
-  </div>
-</motion.div>
-      </Container>
+              <Link
+                href={event.cta.registerVisit}
+                className="inline-flex min-h-11 items-center justify-center rounded-lg border border-[#D5DEE6] bg-white px-6 py-3 text-[13px] font-bold text-[#1769A4] transition-colors hover:border-[#28A45A]"
+              >
+                Register to Visit
+              </Link>
+            </div>
+          </motion.div>
+        </Container>
+      </section>
     </div>
   );
 }
