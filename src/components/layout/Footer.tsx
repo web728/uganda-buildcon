@@ -145,14 +145,14 @@ export function Footer() {
                 aria-label={`${event.name} homepage`}
                 className="inline-flex"
               >
-                <Image
-                  src="/logos/uganda-logo.png"
-                  alt={event.name}
-                  width={869}
-                  height={287}
-                  sizes="(min-width: 640px) 220px, 180px"
-                  className="h-auto w-[175px] object-contain object-left sm:w-[210px]"
-                />
+            <Image
+  src="/logos/uganda-logo.png"
+  alt={event.name}
+  width={900}
+  height={320}
+  sizes="(min-width: 740px) 320px, 260px"
+  className="h-auto w-[260px] object-contain object-left sm:w-[280px] md:w-[320px]"
+/>
               </Link>
 
               <p className="mt-3 max-w-[370px] text-[12px] leading-[1.7] text-white/60">

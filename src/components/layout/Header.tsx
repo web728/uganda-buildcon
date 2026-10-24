@@ -446,7 +446,7 @@ export function Header() {
             "
           >
             <Image
-              src="/logos/uganda-logo.png"
+              src="/logos/uganda-buildcon-logo.png"
               alt={event.name}
               width={869}
               height={287}
