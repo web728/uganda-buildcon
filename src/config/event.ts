@@ -9,12 +9,16 @@
  */
 
 export const event = {
-  name: "Uganda Buildcon International Expo 2027",
+  name: "6th Uganda Buildcon International Expo 2027",
   shortName: "Uganda Buildcon",
   brandWord: "Buildcon",
-  descriptor: "Uganda's Largest B2B Trade Show for the Building & Construction Industry",
-  edition: "2027",
-  editionLabel: "6th Edition",
+edition: "2027",
+editionLabel: "6th Edition",
+
+descriptor:
+  "An international B2B trade exhibition connecting building and construction manufacturers, suppliers, buyers and industry professionals across Uganda and East Africa.",
+
+ 
 
   dates: {
     start: "2027-08-04",
@@ -34,7 +38,7 @@ venue: {
   countryCode: "UG",
 
   fullLocation:
-    "UMA Multi Purpose Hall, UMA Show Grounds, Lugogo, Kampala, Uganda",
+    "UMA Multi Purpose Hall, UMA Show Grounds, Kampala, Uganda",
 
   mapEmbedUrl:
     "https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d7979.5051093340335!2d32.6006641!3d0.3289738!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x177dbbebdb1732ff%3A0xf6d0dc5ffff22a9e!2sUMA%20multi%20purpose%20hall!5e0!3m2!1sen!2sin!4v1792735579365!5m2!1sen!2sin",
@@ -117,11 +121,11 @@ contact: {
 
 
   social: {
-    linkedin: process.env.NEXT_PUBLIC_SOCIAL_LINKEDIN || "",
-    facebook: process.env.NEXT_PUBLIC_SOCIAL_FACEBOOK || "",
-    instagram: process.env.NEXT_PUBLIC_SOCIAL_INSTAGRAM || "",
-    twitter: process.env.NEXT_PUBLIC_SOCIAL_TWITTER || "",
-    youtube: process.env.NEXT_PUBLIC_SOCIAL_YOUTUBE || "",
+    linkedin: "https://www.linkedin.com/company/ugandabuildcon/",
+    facebook: "https://www.facebook.com/ugandabuildcon/",
+    instagram: "https://www.instagram.com/ugandabuildcon",
+    twitter: "https://x.com/UgandaBuildcon",
+    youtube: "",
   },
 
   cta: {

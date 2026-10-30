@@ -76,20 +76,25 @@ const WORD: Variants = {
 
 const ORGANISER_CONTENT = [
   {
-    description:
-      "Futurex Trade Fair & Events Pvt. Ltd. is an exhibition and events organiser based in New Delhi, India. Its work includes business-to-business trade exhibitions that connect manufacturers, suppliers, buyers and industry professionals across multiple sectors.",
-    additional:
-      "As a joint organiser of Uganda Buildcon, Futurex contributes its exhibition planning and industry networking experience to the building and construction trade platform.",
     location: "New Delhi, India",
+
+    description:
+      "Futurex Trade Fair & Events Pvt. Ltd. is an international trade exhibition organiser based in New Delhi, India. Established in 2011, the company organises B2B exhibitions, conferences and industry events across India, South Asia and East Africa.",
+
+    additional:
+      "Its exhibition portfolio covers building and construction, woodworking, agriculture, energy, mining and other industrial sectors. Futurex manages exhibition planning, exhibitor participation, visitor promotion and event operations.",
   },
   {
-    description:
-      "Exhibitions & Trade Services India Pvt. Ltd. (ETSIPL) is an exhibition organiser based in Navi Mumbai, India, working with businesses and trade exhibition partners across international markets.",
-    additional:
-      "Through Uganda Buildcon, ETSIPL supports opportunities for industry engagement between international suppliers, regional businesses and construction sector professionals in Uganda and East Africa.",
     location: "Navi Mumbai, India",
+
+    description:
+      "Exhibitions & Trade Services India Pvt. Ltd. (ETSIPL) is an exhibition organising and promoting company based in Navi Mumbai, India. The company has over 12 years of experience working with international trade exhibitions.",
+
+    additional:
+      "Through its network of international partners, ETSIPL supports exhibition promotion, exhibitor participation and business connections across different industries and markets.",
   },
 ] as const;
+
 
 /* ==========================================
    ICONS
@@ -228,6 +233,7 @@ function SectionLabel({
    ORGANISER PROFILE
 ========================================== */
 
+
 function OrganiserProfile({
   index,
 }: {
@@ -238,14 +244,12 @@ function OrganiserProfile({
 
   if (!organiser || !content) return null;
 
-  const isFuturex = index === 0;
-
   return (
     <motion.article
       variants={REVEAL}
       className="group relative flex h-full min-w-0 flex-col overflow-hidden rounded-xl border border-[#E1E8EE] bg-white transition-[border-color,box-shadow] duration-300 hover:border-[#1769A4]/30 hover:shadow-[0_18px_45px_rgba(16,35,55,0.055)]"
     >
-      {/* Logo area */}
+      {/* Organiser Logo */}
       <div className="relative flex min-h-[150px] items-center justify-between gap-5 border-b border-[#E8EDF2] bg-[#FAFBFC] px-6 py-7 sm:px-8">
         <a
           href={organiser.url}
@@ -262,24 +266,16 @@ function OrganiserProfile({
             className="object-contain object-left"
           />
         </a>
-
-        <span
-          aria-hidden="true"
-          className={`h-9 w-[3px] shrink-0 rounded-full ${
-            isFuturex
-              ? "bg-[#1769A4]"
-              : "bg-[#28A45A]"
-          }`}
-        />
+ 
       </div>
 
-      {/* Company information */}
+      {/* Company Information */}
       <div className="flex flex-1 flex-col p-6 sm:p-8">
         <p className="text-[11px] font-semibold tracking-[0.03em] text-[#718294]">
           {content.location}
         </p>
 
-        <h3 className="mt-3 font-heading text-[clamp(1.15rem,1.7vw,1.5rem)] font-bold leading-[1.35] tracking-[-0.025em] text-[#101214]">
+        <h3 className="mt-3 font-heading text-[clamp(1.15rem,1.7vw,1.5rem)] font-bold leading-[1.35] tracking-[-0.025em] text-[#111111]">
           {organiser.name}
         </h3>
 
@@ -299,7 +295,7 @@ function OrganiserProfile({
               href={organiser.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="group/link inline-flex items-center gap-2 text-[12px] font-bold text-[#1769A4] transition-colors hover:text-[#28A45A]"
+              className="group/link inline-flex items-center gap-2 text-[12px] font-bold text-[#1769A4] transition-colors hover:text-[#111111]"
             >
               Visit Official Website
 
@@ -311,17 +307,15 @@ function OrganiserProfile({
         </div>
       </div>
 
+      {/* Bottom Accent */}
       <span
         aria-hidden="true"
-        className={`absolute bottom-0 left-0 h-[2px] w-full origin-left scale-x-0 transition-transform duration-500 group-hover:scale-x-100 ${
-          isFuturex
-            ? "bg-[#1769A4]"
-            : "bg-[#28A45A]"
-        }`}
+        className="absolute bottom-0 left-0 h-[2px] w-full origin-left scale-x-0 bg-[#1769A4] transition-transform duration-500 group-hover:scale-x-100"
       />
     </motion.article>
   );
 }
+
 
 /* ==========================================
    CONTACT DESK
@@ -405,47 +399,46 @@ export function OrganisersClientView() {
             }}
             className="flex flex-col gap-6 border-b border-[#E3E9EF] pb-8 lg:flex-row lg:items-end lg:justify-between"
           >
-            <div className="max-w-[760px]">
-              <motion.div variants={REVEAL}>
-                <SectionLabel>
-                  Joint Event Organisers
-                </SectionLabel>
-              </motion.div>
+      
+<div className="max-w-[760px]">
+  <motion.div variants={REVEAL}>
+    <SectionLabel>
+      Joint Organisers
+    </SectionLabel>
+  </motion.div>
 
-              <motion.h2
-                id="organisers-intro-heading"
-                variants={WORD_GROUP}
-                aria-label="The People Behind Uganda Buildcon"
-                className="mt-5 font-heading text-[clamp(2rem,3.6vw,3.6rem)] font-extrabold leading-[1.12] tracking-[-0.045em]"
-              >
-                <span aria-hidden="true">
-                  <AnimatedWords text="The People Behind" />
-                  {" "}
-                  <AnimatedWords
-                    text="Uganda"
-                    className="text-[#1769A4]"
-                  />
-                  {" "}
-                  <AnimatedWords
-                    text="Buildcon."
-                    className="text-[#28A45A]"
-                  />
-                </span>
-              </motion.h2>
+  <motion.h2
+    id="organisers-intro-heading"
+    variants={WORD_GROUP}
+    aria-label="The Companies Organising the Exhibition"
+    className="mt-5 font-heading text-[clamp(2rem,3.6vw,3.6rem)] font-extrabold leading-[1.12] tracking-[-0.045em] text-[#111111]"
+  >
+    <span aria-hidden="true">
+      <AnimatedWords text="The Companies Behind" />
+      {" "}
+      <AnimatedWords
+        text="the Exhibition."
+        className="text-[#1769A4]"
+      />
+    </span>
+  </motion.h2>
 
-              <motion.p
-                variants={REVEAL}
-                className="mt-5 max-w-[710px] text-[14px] leading-[1.85] tracking-[-0.005em] text-[#607083] sm:text-[15px]"
-              >
-                {event.name} is jointly organised by
-                Futurex Trade Fair &amp; Events Pvt. Ltd.
-                and Exhibitions &amp; Trade Services
-                India Pvt. Ltd. (ETSIPL). Both organisations
-                contribute exhibition experience and
-                industry connections to the Uganda
-                building and construction trade platform.
-              </motion.p>
-            </div>
+  <motion.p
+    variants={REVEAL}
+    className="mt-5 max-w-[710px] text-[14px] leading-[1.85] tracking-[-0.005em] text-[#607083] sm:text-[15px]"
+  >
+    <strong className="font-semibold text-[#111111]">
+      {event.name}
+    </strong>{" "}
+    is jointly organised by Futurex Trade Fair
+    & Events Pvt. Ltd. and Exhibitions & Trade
+    Services India Pvt. Ltd. (ETSIPL).
+    Both companies have experience in organising
+    and promoting trade exhibitions across
+    different industries and international markets.
+  </motion.p>
+</div>
+
 
             <motion.div variants={REVEAL}>
               <Link

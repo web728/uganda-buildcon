@@ -139,8 +139,11 @@ export default function VisitPage() {
       />
 
       <PageHero
-        title={event.brandLines.visitor}
-        intro={`Discover building products, compare construction solutions and connect with suppliers at ${event.name}, ${event.dates.display} at ${event.venue.fullLocation}.`}
+
+title="Why Visit"
+highlightTitle="the Exhibition?"
+intro={`Explore building and construction products, meet manufacturers and suppliers, and discover solutions for your projects at ${event.name}.`}
+
         image={{
           src: "/images/gallery/exhibition-hall-walkthrough.jpg",
           alt: "Visitors exploring exhibition stands and construction products at Uganda Buildcon",

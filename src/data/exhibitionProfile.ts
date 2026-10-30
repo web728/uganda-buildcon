@@ -4,67 +4,135 @@ export interface SectorItem {
   subcategories: string[];
 }
 
-// Every subcategory below is taken from the "Exhibitor Profile" page of the
-// official Uganda Buildcon brochure, grouped into sectors for navigation.
+// Product categories adapted from the exhibitor profile supplied for the exhibition.
+// These describe the exhibition's scope; they do not indicate confirmed exhibitors.
 export const exhibitionSectors: SectorItem[] = [
   {
     name: "Building Materials",
     slug: "building-materials",
-    subcategories: ["Cement and Steel", "Concrete Blocks & Machinery", "Gypsum Boards", "Lightweight Construction Materials", "Roofing & Façade", "Timber & Timber Products"],
+    subcategories: [
+      "Cement & Steel",
+      "Concrete Blocks & Block-Making Machinery",
+      "Gypsum Boards",
+      "Lightweight Building Materials",
+      "Roofing & Façade Materials",
+      "Timber & Wood Products",
+    ],
   },
   {
     name: "Construction Machinery & Equipment",
     slug: "construction-machinery-equipment",
-    subcategories: ["Earthmoving Equipment", "Demolition Equipment", "Quarrying & Mining Equipment", "Construction Tools, Machinery and Tapes", "Formwork and Scaffolding", "Surveying Equipment"],
+    subcategories: [
+      "Earthmoving Machinery",
+      "Demolition Equipment",
+      "Quarrying & Mining Equipment",
+      "Construction Tools & Measuring Equipment",
+      "Formwork & Scaffolding",
+      "Surveying Instruments",
+    ],
   },
   {
-    name: "Structural Engineering & Prefab",
+    name: "Structural Systems & Prefabrication",
     slug: "structural-engineering-prefab",
-    subcategories: ["Structural Engineering", "Structural Steel Fabrication", "Pre-fabricated Structures", "Modular Construction Solutions", "Aluminum Extrusions"],
+    subcategories: [
+      "Structural Engineering Services",
+      "Structural Steel Fabrication",
+      "Prefabricated Structures",
+      "Modular Building Systems",
+      "Aluminium Extrusions",
+    ],
   },
   {
     name: "Doors, Windows, Glass & Hardware",
     slug: "doors-windows-glass-hardware",
-    subcategories: ["Doors and Windows", "Architectural Glass", "Decorative Glass and Mirrors", "Architectural Hardware", "PVC/UPVC Machinery and Profiles"],
+    subcategories: [
+      "Doors & Windows",
+      "Architectural Glass",
+      "Decorative Glass & Mirrors",
+      "Architectural Hardware",
+      "uPVC Profiles & Machinery",
+    ],
   },
   {
-    name: "Construction Chemicals, Paints & Coatings",
+    name: "Construction Chemicals & Coatings",
     slug: "construction-chemicals-paints-coatings",
-    subcategories: ["Construction Chemicals & Waterproofing", "Adhesive & Sealants", "Paints & Coatings"],
+    subcategories: [
+      "Construction Chemicals",
+      "Waterproofing Products",
+      "Adhesives & Sealants",
+      "Paints & Protective Coatings",
+    ],
   },
   {
-    name: "Tiles, Marble, Stone & Flooring",
+    name: "Tiles, Stone & Flooring",
     slug: "tiles-marble-stone-flooring",
-    subcategories: ["Tiles & Sanitary Ware", "Marble & Stones", "Flooring and Wall Coverings", "Industrial Flooring Solutions"],
+    subcategories: [
+      "Tiles & Sanitaryware",
+      "Marble & Natural Stone",
+      "Flooring Materials",
+      "Wall Coverings",
+      "Industrial Flooring Systems",
+    ],
   },
   {
-    name: "Interiors, Kitchen & Bath",
+    name: "Interiors, Kitchens & Bathrooms",
     slug: "interiors-kitchen-bath",
-    subcategories: ["Interior Decorating Products", "Kitchen & Bathroom Solutions", "Plumbing Fittings and Accessories", "Acoustics & Soundproofing Solutions", "Noise Control Products", "Outdoor Furniture & Landscaping"],
+    subcategories: [
+      "Interior Finishes & Décor",
+      "Kitchen & Bathroom Products",
+      "Plumbing Fixtures & Fittings",
+      "Acoustic & Soundproofing Products",
+      "Noise Control Solutions",
+      "Outdoor Furniture & Landscaping",
+    ],
   },
   {
     name: "Electrical, Lighting & Power",
     slug: "electrical-lighting-power",
-    subcategories: ["Electricals & Electronics", "Wires & Cables", "Switches & Switch Gear", "Lighting / LED", "Battery & Generators"],
+    subcategories: [
+      "Electrical Equipment & Components",
+      "Wires & Cables",
+      "Switches & Switchgear",
+      "LED & Architectural Lighting",
+      "Batteries & Generators",
+    ],
   },
   {
     name: "HVAC, Lifts & Building Automation",
     slug: "hvac-lifts-automation",
-    subcategories: ["Air Conditioning & HVAC", "Lifts & Elevators", "Building Automation", "Home Automation Systems"],
+    subcategories: [
+      "Air Conditioning & HVAC Systems",
+      "Lifts & Elevators",
+      "Building Automation Systems",
+      "Home Automation Solutions",
+    ],
   },
   {
-    name: "Fire, Safety & Security",
+    name: "Fire Safety & Security",
     slug: "fire-safety-security",
-    subcategories: ["Fire Protection Systems", "Passive Fire Protection", "Safety & Security"],
+    subcategories: [
+      "Fire Detection & Protection Systems",
+      "Passive Fire Protection",
+      "Safety & Security Solutions",
+    ],
   },
   {
-    name: "Renewable & Green Energy",
+    name: "Renewable Energy Systems",
     slug: "renewable-green-energy",
-    subcategories: ["Renewable Energy Systems", "Solar, Wind & Other Green Energy Products"],
+    subcategories: [
+      "Renewable Energy Equipment",
+      "Solar Power Products",
+      "Wind Energy Products",
+      "Other Green Energy Solutions",
+    ],
   },
   {
     name: "Construction Technology & Software",
     slug: "construction-technology-software",
-    subcategories: ["Building Information Modeling (BIM) Software", "Infrastructure Software", "Construction Waste Management"],
+    subcategories: [
+      "Building Information Modelling (BIM)",
+      "Infrastructure Design Software",
+      "Construction Waste Management",
+    ],
   },
 ];

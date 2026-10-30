@@ -303,26 +303,7 @@ export function IntroSection() {
       className="relative overflow-hidden bg-white py-14 text-[#111111] sm:py-16 lg:py-20"
     >
       <Container>
-        {/* Top label */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.5 }}
-          transition={{ duration: 0.65, ease: EASE }}
-          className="mb-7 flex items-center justify-between gap-5 border-b border-[#E5E8EB] pb-5"
-        >
-          <div className="flex items-center gap-3">
-            <span className="h-[2px] w-8 bg-[#28A45A]" />
-
-            <span className="text-[10px] font-bold uppercase tracking-[0.17em] text-[#1769A4]">
-              The Exhibition
-            </span>
-          </div>
-
-          <span className="hidden text-[10px] font-semibold uppercase tracking-[0.12em] text-[#64748B] sm:block">
-            {event.editionLabel}
-          </span>
-        </motion.div>
+       
 
         {/* Main grid */}
         <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-14 xl:gap-20">
@@ -334,12 +315,7 @@ export function IntroSection() {
             viewport={{ once: true, amount: 0.2 }}
             className="min-w-0"
           >
-            <motion.p
-              variants={REVEAL}
-              className="mb-4 text-[11px] font-bold uppercase tracking-[0.14em] text-[#64748B]"
-            >
-              Uganda Buildcon International Expo
-            </motion.p>
+         
 
             <h2
               id="uganda-intro-title"
@@ -355,16 +331,17 @@ export function IntroSection() {
               <AnimatedLine text="Connects." />
             </h2>
 
-            <motion.p
-              variants={REVEAL}
-              className="mt-6 max-w-[430px] text-[14px] leading-[1.85] text-[#58677B] sm:text-[15px]"
-            >
-              Bringing people, products and ideas
-              together to create meaningful
-              opportunities for the building and
-              construction industry across Uganda
-              and East Africa.
-            </motion.p>
+          
+<motion.p
+  variants={REVEAL}
+  className="mt-6 max-w-[430px] text-[14px] leading-[1.85] text-[#58677B] sm:text-[15px]"
+>
+  Explore building and construction products,
+  meet industry professionals and discover
+  business opportunities in Uganda and
+  across East Africa.
+</motion.p>
+
 
             <motion.div
               variants={REVEAL}
@@ -394,50 +371,57 @@ export function IntroSection() {
             viewport={{ once: true, amount: 0.12 }}
             className="min-w-0"
           >
-            <motion.p
-              variants={REVEAL}
-              className="max-w-[650px] text-[14px] leading-[1.9] text-[#58677B] sm:text-[15px]"
-            >
-              <strong className="font-semibold text-[#111111]">
-                {event.name}
-              </strong>{" "}
-              connects manufacturers, suppliers,
-              contractors, architects, engineers
-              and industry decision-makers on a
-              dedicated B2B platform.
-            </motion.p>
+          
+<motion.p
+  variants={REVEAL}
+  className="max-w-[650px] text-[14px] leading-[1.9] text-[#58677B] sm:text-[15px]"
+>
+  <strong className="font-semibold text-[#111111]">
+    {event.name}
+  </strong>{" "}
+  is a B2B trade exhibition for the building
+  and construction industries, bringing
+  manufacturers, suppliers, contractors,
+  architects, engineers and buyers together
+  in one place.
+</motion.p>
 
-            <motion.p
-              variants={REVEAL}
-              className="mt-4 max-w-[650px] text-[14px] leading-[1.9] text-[#58677B] sm:text-[15px]"
-            >
-              Taking place{" "}
-              <span className="font-semibold text-[#111111]">
-                {event.dates.display}
-              </span>{" "}
-              at{" "}
-              <span className="font-semibold text-[#111111]">
-                {event.venue.fullLocation}
-              </span>
-              , the exhibition brings together
-              construction machinery, building
-              materials, architectural solutions
-              and emerging technologies.
-            </motion.p>
 
-            <div className="mt-7 border-t border-[#E5E8EB]">
-              <FeatureRow
-                number="01"
-                title="Industry Connections"
-                description="Meet professionals, suppliers and decision-makers working across the construction value chain."
-              />
+         
+<motion.p
+  variants={REVEAL}
+  className="mt-4 max-w-[650px] text-[14px] leading-[1.9] text-[#58677B] sm:text-[15px]"
+>
+  The 6th edition will take place{" "}
+  <span className="font-semibold text-[#111111]">
+    {event.dates.display}
+  </span>{" "}
+  at{" "}
+  <span className="font-semibold text-[#111111]">
+    {event.venue.fullLocation}
+  </span>
+  , featuring building materials,
+  construction machinery, architectural
+  products, engineering solutions and
+  building technologies.
+</motion.p>
 
-              <FeatureRow
-                number="02"
-                title="Business Opportunities"
-                description="Discover solutions, explore partnerships and build relationships in Uganda and East Africa."
-              />
-            </div>
+
+           
+<div className="mt-7 border-t border-[#E5E8EB]">
+  <FeatureRow
+    number="01"
+    title="Industry Networking"
+    description="Meet manufacturers, suppliers, contractors, architects, engineers and other building and construction professionals."
+  />
+
+  <FeatureRow
+    number="02"
+    title="Business Opportunities"
+    description="Explore products, discuss project requirements and connect with potential customers and business partners."
+  />
+</div>
+
 
             <motion.div
               variants={REVEAL}
@@ -469,7 +453,7 @@ export function IntroSection() {
         </div>
 
         {/* BLACK ARCHITECTURAL BAND */}
-        <motion.div
+        {/* <motion.div
           initial={{ opacity: 0, y: 28 }}
           whileInView={{
             opacity: 1,
@@ -528,7 +512,7 @@ export function IntroSection() {
               ease: EASE,
             }}
           />
-        </motion.div>
+        </motion.div> */}
       </Container>
     </section>
   );

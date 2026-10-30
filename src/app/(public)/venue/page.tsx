@@ -170,14 +170,17 @@ export default function VenuePage() {
       />
 
       <PageHero
-        title="Official Exhibition"
-            highlightTitle="Venue"
-        intro={
-          `${event.venue.fullLocation} · ` +
-          `${event.dates.display}. ` +
-          `Find the exhibition on Google Maps ` +
-          `and plan your visit to Kampala.`
-        }
+       
+title="Venue &"
+highlightTitle="Location."
+intro={
+  `${event.name} will take place at ` +
+  `${event.venue.fullLocation}, ` +
+  `from ${event.dates.display}. ` +
+  `Find venue details and information ` +
+  `to help plan your visit.`
+}
+
         image={{
           src: "/images/gallery/ribbon-cutting-opening.jpg",
           alt:

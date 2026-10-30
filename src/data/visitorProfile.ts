@@ -1,24 +1,34 @@
+
 export type VisitorGroup = {
   slug: string;
   name: string;
   roles: string[];
 };
 
-// Roles below are taken from the "Visitor Profile" page of the official
-// Uganda Buildcon brochure, grouped for navigation.
+/**
+ * Visitor profiles for the
+ * 6th Uganda Buildcon International Expo 2027.
+ *
+ * Based on the official exhibition brochure,
+ * with overlapping roles consolidated and
+ * category names standardised.
+ *
+ * Existing slugs are preserved for compatibility
+ * with visitor group icons and page components.
+ */
+
 export const visitorGroups: VisitorGroup[] = [
   {
     slug: "architects-engineers-consultants",
     name: "Architects, Engineers & Consultants",
     roles: [
-      "Architects and Planners",
-      "Engineers",
-      "Structural & Civil Engineers",
+      "Architects & Building Designers",
+      "Civil & Structural Engineers",
       "Consulting Engineers",
-      "Project Managers and Consultants",
-      "Urban Planners and Designers",
-      "Interior Design Professionals",
-      "Energy Efficiency Experts",
+      "Urban Planners",
+      "Interior Designers",
+      "Project Managers & Consultants",
+      "Energy Efficiency Specialists",
     ],
   },
   {
@@ -26,70 +36,45 @@ export const visitorGroups: VisitorGroup[] = [
     name: "Contractors & Builders",
     roles: [
       "Building Contractors",
-      "Contractors and Subcontractors",
-      "Builders and Developers",
-      "Construction Industry Professionals",
-      "Safety and Security Professionals",
+      "Civil Engineering Contractors",
+      "Specialist Contractors & Subcontractors",
+      "Builders & Construction Professionals",
+      "Construction Safety Professionals",
     ],
   },
   {
     slug: "developers-investors-owners",
-    name: "Developers, Investors & Owners",
+    name: "Developers, Investors & Property Owners",
     roles: [
-      "Builders and Developers",
-      "Homeowners and Property Investors",
-      "Investors and Financiers",
-      "Facility Managers",
-      "Hoteliers",
-      "Hospitality Industry Professionals",
-      "Hospitality & Health Facilities",
+      "Property Developers",
+      "Real Estate Investors",
+      "Property Owners & Homeowners",
+      "Investors & Financiers",
+      "Facility & Property Managers",
+      "Hotel Owners & Hospitality Developers",
+      "Healthcare Facility Developers",
     ],
   },
   {
     slug: "trade-distribution",
-    name: "Trade & Distribution",
+    name: "Trade Buyers & Distributors",
     roles: [
-      "Building Material Suppliers",
-      "Dealers and Distributors",
+      "Building Material Buyers & Suppliers",
       "Importers",
-      "Retailers",
-      "Sourcing Professionals",
+      "Wholesalers & Distributors",
+      "Building Product Dealers & Retailers",
+      "Procurement & Sourcing Professionals",
     ],
   },
   {
     slug: "government-institutions",
-    name: "Government, Academia & Institutions",
+    name: "Government & Institutions",
     roles: [
-      "Government Agencies / Building Authorities",
-      "Universities, Technical & Research Institutes",
-      "Academics and Researchers",
-      "General Visitors",
+      "Government Agencies & Building Authorities",
+      "Infrastructure & Urban Development Bodies",
+      "Universities & Technical Institutions",
+      "Research Institutions",
+      "Academics & Researchers",
     ],
   },
-];
-
-// Brochure "Exhibitors": companies specialising in construction materials,
-// heavy machinery, green building solutions, engineering services,
-// architectural design, finishing, infrastructure software and building tech.
-export const whoShouldExhibit: string[] = [
-  "Manufacturers",
-  "Exporters",
-  "International Suppliers",
-  "Ugandan Manufacturers",
-  "Importers",
-  "Distributors",
-  "Construction Material Companies",
-  "Heavy Machinery Companies",
-  "Green Building Solution Providers",
-  "Engineering Service Companies",
-  "Architectural Design Firms",
-  "Interior & Exterior Finishing Companies",
-  "Infrastructure Software Providers",
-  "Building Technology Providers",
-  "Electrical Companies",
-  "Plumbing & Sanitary Companies",
-  "HVAC & Lift Companies",
-  "Steel & Structural Companies",
-  "Solar & Renewable Energy Companies",
-  "Fire, Safety & Security Companies",
 ];

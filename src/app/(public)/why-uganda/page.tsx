@@ -145,9 +145,11 @@ export default function WhyUgandaPage() {
       />
 
       <PageHero
-        title="Uganda — A Construction Market"
-         highlightTitle="on the Move"
-        intro="Explore Uganda's construction market, infrastructure development and business opportunities across the building and construction supply chain."
+       
+title="Why Uganda for"
+highlightTitle="Building & Construction?"
+intro="Explore Uganda's building and construction market, infrastructure development, growing demand for building products and business opportunities across East Africa."
+
         image={{
           src: "/images/home/skyline-construction.jpg",
           alt: "Urban construction and building development in Uganda",

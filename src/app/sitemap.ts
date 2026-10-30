@@ -1,87 +1,214 @@
+
 import type { MetadataRoute } from "next";
+
 import { siteUrl } from "@/lib/utils/siteUrl";
 import { getPublishedExhibitors } from "@/lib/data/exhibitors";
 import { getPublishedNews } from "@/lib/data/news";
 
-export const dynamic = "force-dynamic";
+/**
+ * Refresh sitemap data every hour.
+ * Avoid rebuilding it on every request.
+ */
+export const revalidate = 3600;
 
-// High-Priority Pages for Google Sitelinks (Priority 0.9 - 0.8)
-const CORE_CONVERSION_ROUTES = [
-  { path: "/exhibit", priority: 0.9, changeFrequency: "weekly" },
-  { path: "/book-a-stand", priority: 0.9, changeFrequency: "weekly" },
-  { path: "/register-to-visit", priority: 0.9, changeFrequency: "weekly" },
-  { path: "/exhibition-profile", priority: 0.8, changeFrequency: "weekly" },
-  { path: "/who-should-exhibit", priority: 0.8, changeFrequency: "weekly" },
-  { path: "/who-should-visit", priority: 0.8, changeFrequency: "weekly" },
-  { path: "/about", priority: 0.8, changeFrequency: "monthly" },
-  { path: "/venue", priority: 0.8, changeFrequency: "monthly" },
-];
+/**
+ * Canonical website origin.
+ * Prevents double slashes in generated URLs.
+ */
+const BASE_URL = String(siteUrl).replace(/\/+$/, "");
 
-// Secondary Informational Pages (Priority 0.6 - 0.7)
-const SECONDARY_ROUTES = [
-  { path: "/why-uganda", priority: 0.7, changeFrequency: "monthly" },
-  { path: "/organisers", priority: 0.7, changeFrequency: "monthly" },
-  { path: "/exhibitor-services", priority: 0.7, changeFrequency: "monthly" },
-  { path: "/visit", priority: 0.7, changeFrequency: "weekly" },
-  { path: "/plan-your-visit", priority: 0.7, changeFrequency: "monthly" },
-  { path: "/exhibitors", priority: 0.7, changeFrequency: "daily" },
-  { path: "/partners", priority: 0.6, changeFrequency: "monthly" },
-  { path: "/news", priority: 0.7, changeFrequency: "daily" },
-  { path: "/gallery", priority: 0.6, changeFrequency: "monthly" },
-  { path: "/downloads", priority: 0.6, changeFrequency: "monthly" },
-  { path: "/contact", priority: 0.7, changeFrequency: "monthly" },
-  { path: "/privacy-policy", priority: 0.3, changeFrequency: "yearly" },
-  { path: "/terms-and-conditions", priority: 0.3, changeFrequency: "yearly" },
-  { path: "/cookie-policy", priority: 0.3, changeFrequency: "yearly" },
-];
+const absoluteUrl = (path: string): string => {
+  if (path === "/") return `${BASE_URL}/`;
+
+  return `${BASE_URL}${path.startsWith("/") ? path : `/${path}`}`;
+};
+
+/**
+ * Static public pages.
+ *
+ * Only include routes that actually exist,
+ * are indexable, and use these canonical URLs.
+ */
+const STATIC_ROUTES = [
+  // Main pages
+  "/",
+  "/about",
+  "/why-uganda",
+  "/venue",
+  "/organisers",
+  "/partners",
+
+  // Exhibitor pages
+  "/exhibit",
+  "/exhibition-profile",
+  "/exhibitors",
+  "/book-a-stand",
+
+  // Visitor pages
+  "/visit",
+  "/visitor-profile",
+  "/register-to-visit",
+
+  // Media and resources
+  "/news",
+  "/gallery",
+  "/downloads",
+
+  // Contact
+  "/contact",
+
+  // Legal pages
+  "/privacy-policy",
+  "/terms-and-conditions",
+  "/cookie-policy",
+] as const;
+
+/**
+ * Safely convert a real content timestamp
+ * into a valid Date.
+ *
+ * Never substitute the current time when a
+ * modification date is unknown.
+ */
+function parseDate(value: unknown): Date | undefined {
+  if (value === null || value === undefined || value === "") {
+    return undefined;
+  }
+
+  if (
+    typeof value !== "string" &&
+    typeof value !== "number" &&
+    !(value instanceof Date)
+  ) {
+    return undefined;
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return undefined;
+  }
+
+  // Avoid publishing future last-modified dates.
+  if (date.getTime() > Date.now()) {
+    return undefined;
+  }
+
+  return date;
+}
+
+/**
+ * Validate dynamic route segments before
+ * adding them to the sitemap.
+ */
+function isValidSlug(value: unknown): value is string {
+  return (
+    typeof value === "string" &&
+    value.trim().length > 0 &&
+    value !== "." &&
+    value !== ".." &&
+    !value.includes("/") &&
+    !value.includes("\\") &&
+    !value.includes("?") &&
+    !value.includes("#")
+  );
+}
+
+/**
+ * Remove duplicate URLs.
+ */
+function uniqueEntries(
+  entries: MetadataRoute.Sitemap
+): MetadataRoute.Sitemap {
+  const seen = new Set<string>();
+
+  return entries.filter((entry) => {
+    if (seen.has(entry.url)) {
+      return false;
+    }
+
+    seen.add(entry.url);
+    return true;
+  });
+}
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = siteUrl;
-
-  const [exhibitors, news] = await Promise.all([
-    getPublishedExhibitors().catch(() => []),
-    getPublishedNews().catch(() => []),
+  /**
+   * Fetch only published exhibitors and news.
+   * If one query fails, the other can still work.
+   */
+  const [exhibitorResult, newsResult] = await Promise.allSettled([
+    getPublishedExhibitors(),
+    getPublishedNews(),
   ]);
 
-  // 1. Homepage (Top Priority for Sitelinks generation)
-  const homeEntry: MetadataRoute.Sitemap[number] = {
-    url: `${baseUrl}/`,
-    lastModified: new Date(),
-    changeFrequency: "daily",
-    priority: 1.0,
-  };
+  const exhibitors =
+    exhibitorResult.status === "fulfilled"
+      ? exhibitorResult.value
+      : [];
 
-  // 2. Core Navigation Routes
-  const coreEntries: MetadataRoute.Sitemap = CORE_CONVERSION_ROUTES.map((route) => ({
-    url: `${baseUrl}${route.path}`,
-    lastModified: new Date(),
-    changeFrequency: route.changeFrequency as "weekly" | "monthly",
-    priority: route.priority,
-  }));
+  const news =
+    newsResult.status === "fulfilled"
+      ? newsResult.value
+      : [];
 
-  // 3. Secondary Routes
-  const secondaryEntries: MetadataRoute.Sitemap = SECONDARY_ROUTES.map((route) => ({
-    url: `${baseUrl}${route.path}`,
-    lastModified: new Date(),
-    changeFrequency: route.changeFrequency as "weekly" | "monthly" | "yearly" | "daily",
-    priority: route.priority,
-  }));
+  /**
+   * 1. Static pages
+   *
+   * Omit lastModified until a reliable
+   * modification date is available.
+   */
+  const staticEntries: MetadataRoute.Sitemap =
+    STATIC_ROUTES.map((path) => ({
+      url: absoluteUrl(path),
+    }));
 
-  // 4. Dynamic Exhibitors Pages
-  const exhibitorEntries: MetadataRoute.Sitemap = exhibitors.map((e) => ({
-    url: `${baseUrl}/exhibitors/${e.slug}`,
-    lastModified: new Date(),
-    changeFrequency: "weekly",
-    priority: 0.6,
-  }));
+  /**
+   * 2. Published exhibitor profiles
+   */
+  const exhibitorEntries: MetadataRoute.Sitemap =
+    exhibitors
+      .filter((exhibitor) => isValidSlug(exhibitor.slug))
+      .map((exhibitor) => ({
+        url: absoluteUrl(
+          `/exhibitors/${encodeURIComponent(exhibitor.slug)}`
+        ),
+      }));
 
-  // 5. Dynamic News Pages
-  const newsEntries: MetadataRoute.Sitemap = news.map((n) => ({
-    url: `${baseUrl}/news/${n.slug}`,
-    lastModified: new Date((n.publishedAt as unknown as string) || new Date()),
-    changeFrequency: "monthly",
-    priority: 0.5,
-  }));
+  /**
+   * 3. Published news articles
+   *
+   * Use the real publication timestamp as
+   * a fallback only when updatedAt is absent.
+   */
+  const newsEntries: MetadataRoute.Sitemap =
+    news
+      .filter((article) => isValidSlug(article.slug))
+      .map((article) => {
+        const updatedAt = (
+          article as typeof article & {
+            updatedAt?: unknown;
+          }
+        ).updatedAt;
 
-  return [homeEntry, ...coreEntries, ...secondaryEntries, ...exhibitorEntries, ...newsEntries];
+        const lastModified =
+          parseDate(updatedAt) ??
+          parseDate(article.publishedAt);
+
+        return {
+          url: absoluteUrl(
+            `/news/${encodeURIComponent(article.slug)}`
+          ),
+          ...(lastModified ? { lastModified } : {}),
+        };
+      });
+
+  /**
+   * 4. Combined sitemap
+   */
+  return uniqueEntries([
+    ...staticEntries,
+    ...exhibitorEntries,
+    ...newsEntries,
+  ]);
 }

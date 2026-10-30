@@ -710,16 +710,7 @@ function MarketFactCard({
         aria-hidden="true"
         className="absolute inset-x-0 top-0 h-[2px] origin-left scale-x-0 bg-[#28A45A] transition-transform duration-500 group-hover:scale-x-100"
       />
-
-      <div className="flex items-center justify-between gap-3">
-        <span className="text-[10px] font-semibold uppercase tracking-[0.13em] text-white/50">
-          {fact.period || "Market Indicator"}
-        </span>
-
-        <span className="text-[#7ACB58]">
-          <TrendIcon />
-        </span>
-      </div>
+ 
 
       {/* Animated numeric value */}
       <p className="mt-5 font-heading text-[clamp(2rem,3vw,2.8rem)] font-extrabold leading-none tracking-[-0.055em] text-white">
@@ -888,82 +879,76 @@ export function WhyUgandaSection() {
             HEADER
         ========================================= */}
 
-        <motion.div
-          variants={STAGGER}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{
-            once: true,
-            amount: 0.2,
-          }}
-          className="flex flex-col gap-6 border-b border-white/15 pb-8 md:flex-row md:items-end md:justify-between"
-        >
-          <div className="max-w-[730px]">
-            <motion.div
-              variants={REVEAL}
-              className="mb-5 flex items-center gap-3"
-            >
-              <span className="h-[3px] w-9 bg-[#28A45A]" />
+   
+<motion.div
+  variants={STAGGER}
+  initial="hidden"
+  whileInView="visible"
+  viewport={{
+    once: true,
+    amount: 0.2,
+  }}
+  className="flex flex-col gap-6 border-b border-white/15 pb-8 md:flex-row md:items-end md:justify-between"
+>
+  <div className="max-w-[730px]">
+    <motion.div
+      variants={REVEAL}
+      className="mb-5 flex items-center gap-3"
+    >
+      <span className="h-[3px] w-9 bg-[#28A45A]" />
 
-              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#7ACB58] sm:text-[11px]">
-                The Uganda Opportunity
-              </span>
-            </motion.div>
+      <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#7ACB58] sm:text-[11px]">
+        Why Uganda
+      </span>
+    </motion.div>
 
-            {/* Word-by-word heading */}
-            <h2
-              id="why-uganda-heading"
-              aria-label="Uganda — A Construction Market On The Move."
-              className="font-heading text-[clamp(2.15rem,3.5vw,3.6rem)] font-extrabold leading-[1.1] tracking-[-0.055em] text-white"
-            >
-              <span
-                aria-hidden="true"
-                className="block"
-              >
-                <AnimatedWords text="Uganda — A Construction" />
-              </span>
+    <h2
+      id="why-uganda-heading"
+      aria-label="Why Uganda for Building and Construction?"
+      className="font-heading text-[clamp(2.15rem,3.5vw,3.6rem)] font-extrabold leading-[1.1] tracking-[-0.055em] text-white"
+    >
+      <span aria-hidden="true" className="block">
+        <AnimatedWords text="Why Uganda for" />
+      </span>
 
-              <span
-                aria-hidden="true"
-                className="block"
-              >
-                <AnimatedWords text="Market" />{" "}
-                <AnimatedWords
-                  text="On The Move."
-                  className="text-[#7ACB58]"
-                />
-              </span>
-            </h2>
+      <span aria-hidden="true" className="block">
+        <AnimatedWords
+          text="Building & Construction?"
+          className="text-[#7ACB58]"
+        />
+      </span>
+    </h2>
 
-            <motion.p
-              variants={REVEAL}
-              className="mt-5 max-w-[630px] text-[14px] leading-[1.85] text-white/70 sm:text-[15px]"
-            >
-              Uganda&apos;s infrastructure development,
-              urbanisation and investment priorities
-              are creating opportunities for building
-              materials, construction machinery,
-              engineering solutions and new
-              partnerships.
-            </motion.p>
-          </div>
+    <motion.p
+      variants={REVEAL}
+      className="mt-5 max-w-[630px] text-[14px] leading-[1.85] text-white/70 sm:text-[15px]"
+    >
+      Uganda's growing urban population
+      and investment in housing, commercial
+      development and infrastructure support
+      demand for building materials,
+      construction equipment, engineering
+      services and modern building systems.
+    </motion.p>
+  </div>
 
-          <motion.div
-            variants={REVEAL}
-            className="shrink-0"
-          >
-            <Link
-              href="/why-uganda"
-              className="group inline-flex min-h-12 items-center justify-center gap-4 rounded-lg border border-white/20 bg-white/10 px-6 py-3 text-[13px] font-bold text-white transition-[background-color,border-color,transform] duration-300 hover:-translate-y-0.5 hover:border-[#28A45A] hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#28A45A] motion-reduce:transform-none"
-            >
-              Explore Why Uganda
+  <motion.div
+    variants={REVEAL}
+    className="shrink-0"
+  >
+    <Link
+      href="/why-uganda"
+      className="group inline-flex min-h-12 items-center justify-center gap-4 rounded-lg border border-white/20 bg-white/10 px-6 py-3 text-[13px] font-bold text-white transition-[background-color,border-color,transform] duration-300 hover:-translate-y-0.5 hover:border-[#28A45A] hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#28A45A] motion-reduce:transform-none"
+    >
+      Explore Why Uganda
 
-              <span className="transition-transform duration-300 group-hover:translate-x-1">
-                <ArrowIcon />
-              </span>
-            </Link>
-          </motion.div>
-        </motion.div>
+      <span className="transition-transform duration-300 group-hover:translate-x-1">
+        <ArrowIcon />
+      </span>
+    </Link>
+  </motion.div>
+</motion.div>
+
 
         {/* =========================================
             MARKET FACTS

@@ -618,12 +618,7 @@ export function HeroSection() {
               {event.editionLabel}
             </span>
 
-            <span className="h-1 w-1 rounded-full bg-[#C3C8CF]" />
-
-            <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#7A8796]">
-              {event.venue.city},{" "}
-              {event.venue.country}
-            </span>
+           
           </motion.div>
 
           {/* Word-by-word animated heading */}
@@ -703,26 +698,18 @@ export function HeroSection() {
           </motion.p>
 
           {/* Event details */}
-          <motion.div
-            variants={REVEAL}
-            className="mt-5 grid max-w-[650px] gap-4 rounded-xl border border-[#E7EBEF] bg-white/90 p-4 shadow-[0_8px_28px_rgba(16,36,62,0.035)] sm:grid-cols-2"
-          >
-            <MetaItem
-              icon={<CalendarIcon />}
-              label="Event Dates"
-              title={event.dates.display}
-              subtitle="Building & Construction Expo"
-              accent="red"
-            />
-
-            <MetaItem
-              icon={<PinIcon />}
-              label="Event Venue"
-              title={event.venue.name}
-              subtitle={`${event.venue.city}, ${event.venue.country}`}
-              accent="green"
-            />
-          </motion.div>
+        <motion.div
+  variants={REVEAL}
+  className="mt-5 w-full max-w-[320px] rounded-xl border border-[#E7EBEF] bg-white/90 p-4 shadow-[0_8px_28px_rgba(16,36,62,0.035)]"
+>
+  <MetaItem
+    icon={<PinIcon />}
+    label="Event Venue"
+    title={event.venue.name}
+    subtitle={`${event.venue.city}, ${event.venue.country}`}
+    accent="green"
+  />
+</motion.div>
 
           {/* Action buttons */}
           <motion.div

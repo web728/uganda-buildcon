@@ -161,9 +161,13 @@ export default function OrganisersPage() {
       />
 
       <PageHero
-        title="The Organisers Behind"
-            highlightTitle="Uganda Buildcon"
-        intro={`${event.name} is jointly organised by ${event.organisers.map((org) => org.name).join(" and ")}. Discover the organising companies and their official contacts.`}
+       
+title="Meet the"
+highlightTitle="Organisers."
+intro={`${event.name} is jointly organised by ${event.organisers
+  .map((org) => org.name)
+  .join(" and ")}. Learn about the organising companies and find their contact details.`}
+
         image={{
           src: "/images/gallery/inaugural-ceremony-address.jpg",
           alt: "Address at the Uganda Buildcon International Expo inaugural ceremony",

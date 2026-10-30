@@ -1,149 +1,174 @@
+
 import type { Metadata } from "next";
 import Link from "next/link";
+
 import { event } from "@/config/event";
 import { PageHero } from "@/components/ui/PageHero";
 import { Container } from "@/components/ui/Container";
 
 export const metadata: Metadata = {
   title: "Cookie Policy",
-  description: `Official Cookie Policy and Data Governance Framework for ${event.name}.`,
-  alternates: { canonical: "/cookie-policy" },
+  description:
+    "Learn how cookies may be used on the official website of the 6th Uganda Buildcon International Expo 2027.",
+  alternates: {
+    canonical: "/cookie-policy",
+  },
 };
 
 const COOKIE_TYPES = [
   {
-    name: "Essential & Security Core",
-    badge: "Always Active",
-    badgeColor: "green",
-    duration: "Session / 1 Year",
-    body: "Strictly necessary for the secure infrastructure of the portal. These cookies enable core functionality such as session integrity, CSRF mitigation, and caching your preferences. They cannot be deactivated.",
+    title: "Essential Cookies",
+    description:
+      "These cookies support basic website functions, such as navigation, security and remembering necessary settings. Some features may not work properly without them.",
   },
   {
-    name: "Performance & Audience Analytics",
-    badge: "Consent Required",
-    badgeColor: "blue",
-    duration: "Up to 24 Months",
-    body: "Collects aggregated, pseudonymous metrics detailing visitor pathways, dwell times, and international country delegations. Governed by Google Analytics standards to optimize digital expo accessibility.",
+    title: "Analytics Cookies",
+    description:
+      "If enabled, analytics cookies help us understand how visitors use the website, including which pages are viewed and how the site performs.",
   },
   {
-    name: "Commercial & Targeted Media",
-    badge: "Consent Required",
-    badgeColor: "blue",
-    duration: "90 Days - 1 Year",
-    body: "Enables bilateral business-matching intelligence and measures our international campaign reach across Google, Meta, and LinkedIn channels. Deployed exclusively upon explicit authorization.",
+    title: "Marketing Cookies",
+    description:
+      "If enabled, marketing cookies may help measure advertising campaigns and show relevant promotional content on other platforms.",
   },
-];
+] as const;
 
 export default function CookiePolicyPage() {
   return (
-    <main className="min-h-screen bg-[#fafbfd] selection:bg-brand-blue selection:text-white">
+    <main className="min-h-screen bg-white selection:bg-[#1769A4] selection:text-white">
       <PageHero
-        title="Cookie Governance Policy"
-        intro="Our transparent commitment to digital privacy, security infrastructure, and international visitor data protection standards."
+        title="Cookie"
+        highlightTitle="Policy."
+        intro="Learn about cookies, how they may be used on our website and the choices available to you."
       />
 
-      <section className="relative overflow-hidden py-16 sm:py-24">
-        {/* Subtle Architectural Vector Grid Pattern */}
-        <div className="pointer-events-none absolute inset-0 -z-10 select-none opacity-[0.035]">
-          <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <pattern id="cookie-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#081a36" strokeWidth="0.85" />
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#cookie-grid)" />
-          </svg>
-        </div>
+      <section className="py-14 sm:py-16 lg:py-20">
+        <Container className="max-w-4xl">
+          {/* INTRODUCTION */}
+          <div className="border-b border-[#E3E9EF] pb-8">
+            <p className="text-[11px] font-bold uppercase tracking-[0.13em] text-[#1769A4]">
+              Website Information
+            </p>
 
-        <Container className="max-w-4xl relative z-10">
-          {/* Header Context Pill */}
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between pb-8 border-b border-slate-200/80">
-            <div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-brand-blue/20 bg-brand-blue/[0.06] px-3.5 py-1">
-                <span className="h-2 w-2 rounded-full bg-brand-green animate-pulse" />
-                <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-brand-blue">
-                  Compliance Framework 2027
-                </span>
-              </div>
-              <h2 className="mt-2.5 text-2xl sm:text-3xl font-extrabold tracking-tight text-brand-dark">
-                How We Use Cookies &amp; Tracking
-              </h2>
-            </div>
+            <h2 className="mt-4 font-heading text-[clamp(1.7rem,2.8vw,2.6rem)] font-bold leading-[1.2] tracking-[-0.035em] text-[#111111]">
+              How We Use Cookies
+            </h2>
 
-            <div className="text-xs text-slate-400 font-medium">
-              Effective: August 2026 &bull; Verified
-            </div>
-          </div>
+            <p className="mt-4 max-w-[720px] text-[14px] leading-[1.85] text-[#607083] sm:text-[15px]">
+              Cookies are small files that websites
+              store on your device. They can help
+              websites function properly, remember
+              settings and provide information about
+              how visitors use a site.
+            </p>
 
-          {/* Overview Statement Card */}
-          <div className="mt-8 rounded-2xl border border-slate-200/90 bg-white p-6 sm:p-8 shadow-sm">
-            <p className="text-xs sm:text-sm leading-relaxed text-slate-600 font-normal">
-              When navigating <strong className="font-semibold text-brand-dark">{event.websiteDisplay}</strong>, we deploy small cryptographic data tokens (cookies) to elevate portal operational responsiveness, ensure fail-safe transaction security during booth booking registrations, and aggregate international trade insights across East Africa.
+            <p className="mt-4 max-w-[720px] text-[14px] leading-[1.85] text-[#607083] sm:text-[15px]">
+              This policy explains the types of cookies
+              that may be used on the website for{" "}
+              <strong className="font-semibold text-[#111111]">
+                {event.name}
+              </strong>
+              .
             </p>
           </div>
 
-          {/* Structured Cookie Tiers */}
-          <div className="mt-8 space-y-4">
-            {COOKIE_TYPES.map((c) => {
-              const isGreen = c.badgeColor === "green";
-              return (
-                <div
-                  key={c.name}
-                  className="rounded-2xl border border-slate-200/90 bg-white p-6 shadow-sm transition-all hover:border-brand-blue/40 hover:shadow-md"
-                >
-                  <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100">
-                    <div className="flex items-center gap-2.5">
-                      <span className={`h-2 w-2 rounded-full ${isGreen ? "bg-brand-green" : "bg-brand-blue"}`} />
-                      <h3 className="text-base font-bold text-brand-dark">{c.name}</h3>
-                    </div>
+          {/* COOKIE CATEGORIES */}
+          <div className="pt-9">
+            <h2 className="font-heading text-[clamp(1.5rem,2.4vw,2.1rem)] font-bold tracking-[-0.03em] text-[#111111]">
+              Types of Cookies
+            </h2>
 
-                    <div className="flex items-center gap-3">
-                      <span className="text-[11px] font-mono text-slate-400">
-                        {c.duration}
-                      </span>
-                      <span
-                        className={`rounded-full px-3 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
-                          isGreen
-                            ? "border border-brand-green/30 bg-emerald-50 text-brand-green"
-                            : "border border-brand-blue/30 bg-sky-50 text-brand-blue"
-                        }`}
-                      >
-                        {c.badge}
-                      </span>
+            <p className="mt-3 max-w-[680px] text-[14px] leading-[1.8] text-[#607083]">
+              Different cookies serve different
+              purposes. The categories below explain
+              how they are commonly used.
+            </p>
+
+            <div className="mt-6 overflow-hidden rounded-xl border border-[#E1E8EF] bg-white">
+              {COOKIE_TYPES.map((cookie, index) => (
+                <article
+                  key={cookie.title}
+                  className={`px-5 py-6 sm:px-7 ${
+                    index > 0
+                      ? "border-t border-[#E8EDF2]"
+                      : ""
+                  }`}
+                >
+                  <div className="flex items-start gap-4">
+                    <span
+                      aria-hidden="true"
+                      className="mt-2 h-2 w-2 shrink-0 rounded-full bg-[#1769A4]"
+                    />
+
+                    <div>
+                      <h3 className="font-heading text-[16px] font-bold leading-[1.4] text-[#111111]">
+                        {cookie.title}
+                      </h3>
+
+                      <p className="mt-2 text-[13px] leading-[1.85] text-[#607083] sm:text-[14px]">
+                        {cookie.description}
+                      </p>
                     </div>
                   </div>
-
-                  <p className="mt-3.5 text-xs sm:text-sm leading-relaxed text-slate-600 font-normal">
-                    {c.body}
-                  </p>
-                </div>
-              );
-            })}
+                </article>
+              ))}
+            </div>
           </div>
 
-          {/* Dual Organisers Contact & Inquiries Strip */}
-          <div className="mt-12 rounded-2xl border border-slate-200/90 bg-white p-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div>
-              <h4 className="text-sm font-bold text-brand-dark">Questions Regarding Data Governance?</h4>
-              <p className="text-xs text-slate-500 mt-0.5 font-normal">
-                Direct all privacy rights and consent queries to the joint secretariat.
-              </p>
-            </div>
+          {/* COOKIE SETTINGS */}
+          <div className="mt-10 border-t border-[#E3E9EF] pt-9">
+            <h2 className="font-heading text-[clamp(1.5rem,2.4vw,2.1rem)] font-bold tracking-[-0.03em] text-[#111111]">
+              Managing Cookies
+            </h2>
 
-            <div className="flex flex-wrap items-center gap-2.5 shrink-0">
-              <Link
-                href={`mailto:${event.contact.futurex.email}`}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs font-semibold text-slate-700 hover:border-brand-blue hover:text-brand-blue transition-all"
-              >
-                Futurex Privacy Desk
-              </Link>
-              <Link
-                href={`mailto:${event.contact.etsipl.email}`}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs font-semibold text-slate-700 hover:border-brand-green hover:text-brand-green transition-all"
-              >
-                ETSIPL Compliance
-              </Link>
-            </div>
+            <p className="mt-3 max-w-[720px] text-[14px] leading-[1.85] text-[#607083]">
+              You can manage or delete cookies through
+              your browser settings. Most browsers
+              allow you to block certain cookies or
+              clear cookies already stored on your
+              device.
+            </p>
+
+            <p className="mt-3 max-w-[720px] text-[14px] leading-[1.85] text-[#607083]">
+              Disabling some cookies may affect
+              certain website features or how
+              the site functions.
+            </p>
+          </div>
+
+          {/* POLICY UPDATES */}
+          <div className="mt-10 border-t border-[#E3E9EF] pt-9">
+            <h2 className="font-heading text-[clamp(1.5rem,2.4vw,2.1rem)] font-bold tracking-[-0.03em] text-[#111111]">
+              Policy Updates
+            </h2>
+
+            <p className="mt-3 max-w-[720px] text-[14px] leading-[1.85] text-[#607083]">
+              This policy may be updated if the
+              website's cookie practices change.
+              Any revised information will be
+              published on this page.
+            </p>
+          </div>
+
+          {/* CONTACT */}
+          <div className="mt-10 rounded-xl border border-[#E1E8EF] bg-[#F8FAFC] p-6 sm:p-8">
+            <h2 className="font-heading text-[18px] font-bold text-[#111111]">
+              Questions About This Policy?
+            </h2>
+
+            <p className="mt-2 max-w-[650px] text-[13px] leading-[1.85] text-[#607083] sm:text-[14px]">
+              If you have questions about cookies
+              or how information is handled on
+              our website, please contact the
+              organising team.
+            </p>
+
+            <Link
+              href="/contact"
+              className="mt-5 inline-flex min-h-10 items-center justify-center rounded-lg bg-[#1769A4] px-5 py-2.5 text-[12px] font-bold text-white transition-colors hover:bg-[#105685] focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#1769A4]"
+            >
+              Contact Us
+            </Link>
           </div>
         </Container>
       </section>

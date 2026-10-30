@@ -61,6 +61,7 @@ export type Supporter = {
  * Partners shown on ugandabuildcon.com and in the 2025 Post Show Report.
  * Logos are the official files published on ugandabuildcon.com.
  */
+
 export const supporters: Supporter[] = [
   {
     name: "Ministry of Lands, Housing and Urban Development",
@@ -68,18 +69,56 @@ export const supporters: Supporter[] = [
     logo: "/images/partners/mlhud.jpg",
     url: "https://mlhud.go.ug/",
   },
-  { name: "UNABSEC", role: "Supported By", logo: "/images/partners/unabsec.jpg" },
-  { name: "Uganda Institution of Professional Engineers (UIPE)", role: "Supported By", logo: "/images/partners/uipe.jpg" },
-  { name: "Engineers Registration Board (ERB)", role: "Supported By", logo: "/images/partners/erb.jpg" },
-  { name: "Uganda Manufacturers Association (UMA)", role: "Supported By", logo: "/images/partners/uma.jpg" },
-  { name: "Lanestra", role: "Local Partner", logo: "/images/partners/lanestra.jpg" },
+  {
+    name: "Uganda National Association of Building and Civil Engineering Contractors (UNABCEC)",
+    role: "Supported By",
+    logo: "/images/partners/unabsec.jpg",
+  },
+  {
+    name: "Uganda Institution of Professional Engineers (UIPE)",
+    role: "Supported By",
+    logo: "/images/partners/uipe.jpg",
+  },
+  {
+    name: "Engineers Registration Board (ERB)",
+    role: "Supported By",
+    logo: "/images/partners/erb.jpg",
+  },
+  {
+    name: "Uganda Manufacturers Association (UMA)",
+    role: "Supported By",
+    logo: "/images/partners/uma.jpg",
+  },
+  {
+    name: "Lanestra",
+    role: "Local Partner",
+    logo: "/images/partners/lanestra.jpg",
+  },
 ];
 
-/** Additional supporters & sponsors named on the 2025 Post Show Report cover. */
+/**
+ * Organisations and sponsors associated
+ * with the 2025 edition.
+ */
 export const supporters2025: Supporter[] = [
-  { name: "National Housing", role: "Supported By" },
-  { name: "Institution of Surveyors of Uganda", role: "Supported By" },
-  { name: "Uganda Society of Architects", role: "Supported By" },
-  { name: "GuangRenWood", role: "Gold Sponsor 2025" },
-  { name: "Eurofoam", role: "Bronze Sponsor 2025" },
+  {
+    name: "National Housing",
+    role: "2025 Supporter",
+  },
+  {
+    name: "Institution of Surveyors of Uganda",
+    role: "2025 Supporter",
+  },
+  {
+    name: "Uganda Society of Architects",
+    role: "2025 Supporter",
+  },
+  {
+    name: "GuangRenWood",
+    role: "Gold Sponsor 2025",
+  },
+  {
+    name: "Eurofoam",
+    role: "Bronze Sponsor 2025",
+  },
 ];

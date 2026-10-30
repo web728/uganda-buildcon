@@ -22,9 +22,13 @@ export default async function GalleryPage() {
   return (
     <>
       <PageHero
-        title="Gallery"
-        intro="Moments from previous editions of Uganda Buildcon International Expo, UMA Show Grounds, Kampala."
-        image={{
+     
+
+title="Exhibition"
+highlightTitle="Gallery."
+intro="Explore photos from previous editions of the exhibition, featuring exhibitors, building and construction products, and industry networking."
+
+    image={{
           src: "/images/gallery/inauguration-2025-stage.jpg",
           alt: "Inaugural ceremony of Uganda Buildcon 2025",
         }}

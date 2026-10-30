@@ -79,32 +79,38 @@ const WORD_GROUP: Variants = {
    No additional market statistics.
 ========================================== */
 
+
 const STRATEGIC_PILLARS = [
   {
-    title: "A Growing Economy",
+    title: "Economic Growth",
     body:
-      "Uganda's economic development and investment priorities support demand for construction services, building materials and infrastructure solutions.",
-    icon: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6",
+      "Uganda's economic activity and investment support opportunities for building products, construction services and related industries.",
+    icon:
+      "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6",
   },
   {
-    title: "Rapid Urbanisation",
+    title: "Urban Development",
     body:
-      "Urban development is creating demand for residential housing, commercial buildings and essential urban infrastructure.",
-    icon: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4",
+      "Urban growth brings continuing needs for housing, commercial buildings, utilities and building services.",
+    icon:
+      "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-5 10v-5m-9 0h4",
   },
   {
-    title: "Infrastructure Investment",
+    title: "Infrastructure Development",
     body:
-      "Uganda's Vision 2040 development framework places importance on infrastructure, connectivity and long-term economic transformation.",
-    icon: "M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z",
+      "National development plans include priorities for transport, energy, water and other essential infrastructure.",
+    icon:
+      "M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z",
   },
   {
-    title: "A Regional Gateway",
+    title: "Regional Trade",
     body:
-      "Uganda's position in the East African Community creates opportunities for regional partnerships, industry engagement and supplier networks.",
-    icon: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z",
+      "Uganda's membership in the East African Community supports regional trade and connections between suppliers and businesses.",
+    icon:
+      "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z",
   },
 ] as const;
+
 
 /* ==========================================
    SHARED COMPONENTS
@@ -477,9 +483,9 @@ export function WhyUgandaClientView() {
           >
             <div className="max-w-[730px]">
               <motion.div variants={REVEAL}>
-                <SectionLabel>
-                  Market Indicators
-                </SectionLabel>
+              <SectionLabel>
+  Market Indicators
+</SectionLabel>
               </motion.div>
 
               <motion.h2
@@ -488,28 +494,26 @@ export function WhyUgandaClientView() {
                 aria-label="Understanding Uganda's Construction Market"
                 className="mt-5 font-heading text-[clamp(2rem,3.55vw,3.65rem)] font-extrabold leading-[1.12] tracking-[-0.045em]"
               >
-                <span aria-hidden="true">
-                  <AnimatedWords text="Understanding" />
-                  {" "}
-                  <AnimatedWords
-                    text="Uganda's"
-                    className="text-[#1769A4]"
-                  />
-                  {" "}
-                  <AnimatedWords text="Construction Market." />
-                </span>
+               <span aria-hidden="true">
+  <AnimatedWords text="Uganda's" />
+  {" "}
+  <AnimatedWords
+    text="Economic"
+    className="text-[#1769A4]"
+  />
+  {" "}
+  <AnimatedWords text="& Urban Development." />
+</span>
               </motion.h2>
 
-              <motion.p
-                variants={REVEAL}
-                className="mt-5 max-w-[640px] text-[14px] leading-[1.85] tracking-[-0.005em] text-[#607083] sm:text-[15px]"
-              >
-                Explore market indicators referenced in
-                Uganda Buildcon exhibition materials
-                and the factors influencing demand for
-                building materials, construction machinery,
-                engineering and infrastructure solutions.
-              </motion.p>
+            <motion.p
+  variants={REVEAL}
+  className="mt-5 max-w-[640px] text-[14px] leading-[1.85] tracking-[-0.005em] text-[#607083] sm:text-[15px]"
+>
+  Key economic and development indicators
+  that provide context for Uganda's building
+  and construction market.
+</motion.p>
             </div>
 
             <motion.div variants={REVEAL}>
@@ -570,9 +574,9 @@ export function WhyUgandaClientView() {
               viewport={{ once: true, amount: 0.2 }}
             >
               <motion.div variants={REVEAL}>
-                <SectionLabel light>
-                  The Uganda Opportunity
-                </SectionLabel>
+             <SectionLabel light>
+  Market Development
+</SectionLabel>
               </motion.div>
 
               <motion.h2
@@ -581,39 +585,37 @@ export function WhyUgandaClientView() {
                 aria-label="A Market Shaped by Development and Opportunity"
                 className="mt-5 max-w-[650px] font-heading text-[clamp(2rem,3.4vw,3.6rem)] font-extrabold leading-[1.12] tracking-[-0.045em] text-white"
               >
-                <span aria-hidden="true">
-                  <AnimatedWords text="A Market Shaped" />
-                  {" "}
-                  <AnimatedWords text="by Development" />
-                  {" "}
-                  <AnimatedWords
-                    text="& Opportunity."
-                    className="text-[#7ACB58]"
-                  />
-                </span>
+              <span aria-hidden="true">
+  <AnimatedWords text="Building Needs" />
+  {" "}
+  <AnimatedWords text="Across" />
+  {" "}
+  <AnimatedWords
+    text="Uganda."
+    className="text-[#7DBBE8]"
+  />
+</span>
               </motion.h2>
 
-              <motion.p
-                variants={REVEAL}
-                className="mt-6 max-w-[590px] text-[14px] leading-[1.9] text-white/65 sm:text-[15px]"
-              >
-                Uganda&apos;s infrastructure priorities,
-                urban development and regional
-                connectivity create opportunities
-                across the building and construction
-                supply chain.
-              </motion.p>
+             <motion.p
+  variants={REVEAL}
+  className="mt-6 max-w-[590px] text-[14px] leading-[1.9] text-white/70 sm:text-[15px]"
+>
+  Housing, commercial buildings, transport
+  projects and urban infrastructure create
+  demand for building materials, construction
+  equipment and engineering services.
+</motion.p>
 
-              <motion.p
-                variants={REVEAL}
-                className="mt-4 max-w-[590px] text-[14px] leading-[1.9] text-white/65 sm:text-[15px]"
-              >
-                {event.name} provides a platform
-                for manufacturers, suppliers and
-                construction professionals to explore
-                these opportunities, present products
-                and develop industry connections.
-              </motion.p>
+             <motion.p
+  variants={REVEAL}
+  className="mt-4 max-w-[590px] text-[14px] leading-[1.9] text-white/70 sm:text-[15px]"
+>
+  {event.name} gives manufacturers, suppliers
+  and industry professionals an opportunity
+  to present products, meet potential buyers
+  and establish business contacts.
+</motion.p>
 
               <motion.div
                 variants={REVEAL}
@@ -663,31 +665,32 @@ export function WhyUgandaClientView() {
               viewport={{ once: true, amount: 0.2 }}
             >
               <motion.div variants={REVEAL}>
-                <SectionLabel>
-                  Commercial Foundation
-                </SectionLabel>
+              <SectionLabel>
+  Market Drivers
+</SectionLabel>
+
               </motion.div>
 
-              <motion.h2
-                id="why-uganda-strategy-heading"
-                variants={REVEAL}
-                className="mt-5 font-heading text-[clamp(1.9rem,3vw,3.1rem)] font-extrabold leading-[1.15] tracking-[-0.045em]"
-              >
-                Why{" "}
-                <span className="text-[#1769A4]">
-                  Uganda?
-                </span>
-              </motion.h2>
+            <motion.h2
+  id="why-uganda-strategy-heading"
+  variants={REVEAL}
+  className="mt-5 font-heading text-[clamp(1.9rem,3vw,3.1rem)] font-extrabold leading-[1.15] tracking-[-0.045em] text-[#111111]"
+>
+  Factors Driving{" "}
+  <span className="text-[#1769A4]">
+    Market Demand.
+  </span>
+</motion.h2>
 
-              <motion.p
-                variants={REVEAL}
-                className="mt-4 max-w-[420px] text-[14px] leading-[1.85] text-[#607083]"
-              >
-                Economic development, urbanisation,
-                infrastructure priorities and regional
-                trade are relevant factors for businesses
-                exploring Uganda&apos;s construction market.
-              </motion.p>
+            <motion.p
+  variants={REVEAL}
+  className="mt-4 max-w-[420px] text-[14px] leading-[1.85] text-[#607083]"
+>
+  Economic activity, urban growth,
+  infrastructure planning and regional trade
+  influence Uganda's building and
+  construction market.
+</motion.p>
             </motion.div>
 
             <motion.div
@@ -709,7 +712,7 @@ export function WhyUgandaClientView() {
       </section>
 
       {/* MARKET OPPORTUNITY CATEGORIES */}
-      <section
+      {/* <section
         aria-labelledby="uganda-sectors-heading"
         className="border-y border-[#E5EBF0] bg-[#F8FAFB] py-14 sm:py-16 lg:py-20"
       >
@@ -726,24 +729,25 @@ export function WhyUgandaClientView() {
               </SectionLabel>
             </motion.div>
 
-            <motion.h2
-              id="uganda-sectors-heading"
-              variants={REVEAL}
-              className="mt-4 max-w-[760px] font-heading text-[clamp(1.85rem,3vw,3rem)] font-extrabold leading-[1.14] tracking-[-0.045em]"
-            >
-              Opportunities Across{" "}
-              <span className="text-[#1769A4]">
-                Construction Sectors.
-              </span>
-            </motion.h2>
+         <motion.h2
+  id="uganda-sectors-heading"
+  variants={REVEAL}
+  className="mt-4 max-w-[760px] font-heading text-[clamp(1.85rem,3vw,3rem)] font-extrabold leading-[1.14] tracking-[-0.045em] text-[#111111]"
+>
+  Key Building &{" "}
+  <span className="text-[#1769A4]">
+    Construction Segments.
+  </span>
+</motion.h2>
 
-            <motion.p
-              variants={REVEAL}
-              className="mt-4 max-w-[640px] text-[14px] leading-[1.85] text-[#607083]"
-            >
-              Explore the industry areas highlighted
-              in Uganda Buildcon exhibition materials.
-            </motion.p>
+           <motion.p
+  variants={REVEAL}
+  className="mt-4 max-w-[640px] text-[14px] leading-[1.85] text-[#607083]"
+>
+  Explore the types of projects and
+  developments that require building products,
+  construction equipment and related services.
+</motion.p>
           </motion.div>
 
           <motion.div
@@ -768,99 +772,11 @@ export function WhyUgandaClientView() {
             ))}
           </motion.div>
 
-          {/* Existing market sources */}
-          {marketSources.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{
-                duration: 0.75,
-                ease: EASE,
-              }}
-              className="mt-9 border-t border-[#E2E8ED] pt-6"
-            >
-              <h3 className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#647385]">
-                Sources &amp; Further Reading
-              </h3>
-
-              <div className="mt-4 flex flex-wrap gap-x-7 gap-y-3">
-                {marketSources.map((source) =>
-                  source.url ? (
-                    <a
-                      key={source.name}
-                      href={source.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group inline-flex items-center gap-2 text-[12px] font-semibold text-[#1769A4] transition-colors hover:text-[#28A45A]"
-                    >
-                      {source.name}
-                      <span className="transition-transform duration-300 group-hover:translate-x-1">
-                        <ArrowIcon />
-                      </span>
-                    </a>
-                  ) : (
-                    <span
-                      key={source.name}
-                      className="text-[12px] font-medium text-[#647385]"
-                    >
-                      {source.name}
-                    </span>
-                  )
-                )}
-              </div>
-            </motion.div>
-          )}
+       
         </Container>
-      </section>
+      </section> */}
 
-      {/* PARTICIPATION CTA */}
-      <section className="py-12 sm:py-16">
-        <Container>
-          <motion.div
-            initial={{ opacity: 0, y: 22 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{
-              duration: 0.9,
-              ease: EASE,
-            }}
-            className="flex flex-col gap-7 border-t border-[#E2E8ED] pt-8 lg:flex-row lg:items-center lg:justify-between"
-          >
-            <div className="max-w-[660px]">
-              <h2 className="font-heading text-[clamp(1.7rem,2.5vw,2.5rem)] font-extrabold leading-[1.17] tracking-[-0.04em]">
-                Explore the Uganda{" "}
-                <span className="text-[#1769A4]">
-                  Construction Market.
-                </span>
-              </h2>
-
-              <p className="mt-3 text-[13px] leading-[1.8] text-[#607083] sm:text-[14px]">
-                Meet construction industry professionals
-                at {event.name}, taking place{" "}
-                {event.dates.display} at{" "}
-                {event.venue.fullLocation}.
-              </p>
-            </div>
-
-            <div className="flex flex-wrap gap-3">
-              <Link
-                href={event.cta.bookStand}
-                className="inline-flex min-h-11 items-center justify-center rounded-lg bg-[#1769A4] px-6 py-3 text-[13px] font-bold text-white transition-colors hover:bg-[#105685]"
-              >
-                Book a Stand
-              </Link>
-
-              <Link
-                href={event.cta.registerVisit}
-                className="inline-flex min-h-11 items-center justify-center rounded-lg border border-[#D5DEE6] bg-white px-6 py-3 text-[13px] font-bold text-[#1769A4] transition-colors hover:border-[#28A45A]"
-              >
-                Register to Visit
-              </Link>
-            </div>
-          </motion.div>
-        </Container>
-      </section>
+     
     </div>
   );
 }

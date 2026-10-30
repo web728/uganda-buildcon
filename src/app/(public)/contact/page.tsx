@@ -163,10 +163,11 @@ export default function ContactPage() {
       />
 
       <PageHero
-        title="Let's Connect "
-          highlightTitle="& Build Together"
-        intro={`Contact the organising team of ${event.name} for exhibition bookings, international participation, sponsorship, partnerships and visitor enquiries.`}
-        image={{
+    
+title="Contact"
+highlightTitle="Us."
+intro={`Get in touch with the organising team of ${event.name} for exhibitor enquiries, stand bookings, partnerships, sponsorships and visitor information.`}
+       image={{
           src: "/images/venue/building-exterior.jpg",
           alt: "Modern building exterior representing the building and construction industry",
         }}

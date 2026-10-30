@@ -76,48 +76,52 @@ const WORD: Variants = {
    OFFICIAL EXHIBITION OBJECTIVES & FEATURES
 ========================================== */
 
+
 const CORE_DELIVERABLES = [
   {
-    title: "Networking",
-    desc: "Facilitate meaningful connections among industry professionals, investors and government representatives.",
-    icon: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z",
+    title: "Industry Networking",
+    desc:
+      "Meet manufacturers, suppliers, contractors, architects, engineers and other industry professionals.",
+    icon:
+      "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z",
   },
   {
-    title: "Showcasing Innovation",
-    desc: "Present emerging technologies and sustainable practices shaping building and construction in East Africa.",
-    icon: "M13 10V3L4 14h7v7l9-11h-7z",
+    title: "Product Showcase",
+    desc:
+      "Explore building materials, construction equipment, architectural products and modern building systems.",
+    icon:
+      "M13 10V3L4 14h7v7l9-11h-7z",
   },
   {
     title: "Knowledge Sharing",
-    desc: "Workshops, seminars and discussions offering insights into industry trends, solutions and emerging challenges.",
-    icon: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z",
+    desc:
+      "Learn about industry developments, new materials, technologies and building practices.",
+    icon:
+      "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z",
   },
   {
     title: "Business Development",
-    desc: "Help exhibitors and visitors explore partnerships, identify potential clients and develop new business opportunities.",
-    icon: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6",
+    desc:
+      "Connect with potential customers, identify suppliers and explore business partnerships.",
+    icon:
+      "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6",
   },
   {
-    title: "Product Demonstrations",
-    desc: "Experience demonstrations of construction materials, machinery and building technologies on the exhibition floor.",
-    icon: "M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z",
+    title: "Product Displays",
+    desc:
+      "View products, equipment and technical solutions presented by exhibitors.",
+    icon:
+      "M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z",
   },
   {
-    title: "Professional Development",
-    desc: "Learning opportunities relevant to engineers, architects, contractors and construction professionals.",
-    icon: "M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z",
-  },
-  {
-    title: "Interactive Exhibits",
-    desc: "Explore displays that help visitors evaluate solutions, compare products and connect with relevant suppliers.",
-    icon: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4",
-  },
-  {
-    title: "Networking Events",
-    desc: "Connect with industry leaders, specialists and peers through exhibition networking opportunities.",
-    icon: "M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z",
+    title: "Industry Solutions",
+    desc:
+      "Find solutions for building design, construction projects and facility operations.",
+    icon:
+      "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4",
   },
 ] as const;
+
 
 /* ==========================================
    WORD-BY-WORD REVEAL
@@ -219,6 +223,7 @@ function SectionLabel({
    OBJECTIVE CARD
 ========================================== */
 
+
 function ObjectiveCard({
   item,
   index,
@@ -226,38 +231,39 @@ function ObjectiveCard({
   item: (typeof CORE_DELIVERABLES)[number];
   index: number;
 }) {
-  const isBlue = index % 2 === 0;
-
   return (
     <motion.article
       variants={CARD_REVEAL}
-      className="group relative flex min-w-0 flex-col border border-[#E3E8ED] bg-white p-5 transition-[border-color,box-shadow] duration-300 hover:border-[#1769A4]/35 hover:shadow-[0_12px_32px_rgba(15,33,53,0.045)] sm:p-6"
+      className="group relative flex h-full min-w-0 flex-col overflow-hidden rounded-xl border border-[#E3E8ED] bg-white p-5 transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-1 hover:border-[#1769A4]/30 hover:shadow-[0_16px_40px_rgba(15,33,53,0.07)] motion-reduce:transform-none sm:p-6"
     >
-      <div
-        className={`flex h-11 w-11 items-center justify-center rounded-lg transition-colors duration-300 ${
-          isBlue
-            ? "bg-[#1769A4]/[0.075] text-[#1769A4] group-hover:bg-[#1769A4] group-hover:text-white"
-            : "bg-[#28A45A]/[0.075] text-[#28A45A] group-hover:bg-[#28A45A] group-hover:text-white"
-        }`}
-      >
-        <ObjectiveIcon path={item.icon} />
+      {/* Icon and number */}
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-[#1769A4]/10 bg-[#1769A4]/[0.07] text-[#1769A4] transition-colors duration-300 group-hover:border-[#1769A4] group-hover:bg-[#1769A4] group-hover:text-white">
+          <ObjectiveIcon path={item.icon} />
+        </div>
+ 
       </div>
 
-      <h4 className="mt-5 font-heading text-[16px] font-bold leading-[1.35] tracking-[-0.025em] text-[#101214] sm:text-[17px]">
-        {item.title}
-      </h4>
+      {/* Content */}
+      <div className="mt-6 flex flex-1 flex-col">
+        <h4 className="font-heading text-[17px] font-bold leading-[1.35] tracking-[-0.025em] text-[#111111] transition-colors duration-300 group-hover:text-[#1769A4]">
+          {item.title}
+        </h4>
 
-      <p className="mt-2 text-[13px] leading-[1.75] tracking-[-0.005em] text-[#627183]">
-        {item.desc}
-      </p>
+        <p className="mt-3 text-[13px] leading-[1.8] tracking-[-0.005em] text-[#627183]">
+          {item.desc}
+        </p>
+      </div>
 
+      {/* Bottom accent */}
       <span
         aria-hidden="true"
-        className="absolute bottom-0 left-0 h-[2px] w-full origin-left scale-x-0 bg-[#28A45A] transition-transform duration-500 group-hover:scale-x-100"
+        className="absolute bottom-0 left-0 h-[3px] w-full origin-left scale-x-0 bg-[#1769A4] transition-transform duration-500 group-hover:scale-x-100 motion-reduce:transition-none"
       />
     </motion.article>
   );
 }
+
 
 /* ==========================================
    ABOUT CLIENT VIEW
@@ -286,7 +292,7 @@ export function AboutClientView() {
             >
               <motion.div variants={REVEAL}>
                 <SectionLabel>
-                  About the Exhibition
+                  Exhibition Overview
                 </SectionLabel>
               </motion.div>
 
@@ -296,50 +302,47 @@ export function AboutClientView() {
                 aria-label="Connecting the Building and Construction Industry"
                 className="mt-5 max-w-[710px] font-heading text-[clamp(2.05rem,3.65vw,3.8rem)] font-extrabold leading-[1.12] tracking-[-0.045em]"
               >
-                <span aria-hidden="true">
-                  <AnimatedWords text="Connecting the" />
-                  {" "}
-                  <AnimatedWords
-                    text="Building"
-                    className="text-[#1769A4]"
-                  />
-                  {" "}
-                  <AnimatedWords text="& Construction" />
-                  {" "}
-                  <AnimatedWords
-                    text="Industry."
-                    className="text-[#28A45A]"
-                  />
-                </span>
+             <span aria-hidden="true">
+  <AnimatedWords text="Bringing Together" />
+  {" "}
+  <AnimatedWords
+    text="Building & Construction"
+    className="text-[#1769A4]"
+  />
+  {" "}
+  <AnimatedWords
+    text="Professionals."
+  />
+</span>
               </motion.h2>
 
-              <motion.p
-                variants={REVEAL}
-                className="mt-6 max-w-[660px] text-[14px] leading-[1.85] tracking-[-0.005em] text-[#58677B] sm:text-[15px]"
-              >
-                <strong className="font-semibold text-[#101214]">
-                  {event.name}
-                </strong>{" "}
-                is an international B2B exhibition
-                connecting manufacturers, suppliers,
-                contractors, architects, engineers and
-                decision-makers from the building and
-                construction industry.
-              </motion.p>
+           
+<motion.p
+  variants={REVEAL}
+  className="mt-6 max-w-[660px] text-[14px] leading-[1.85] tracking-[-0.005em] text-[#58677B] sm:text-[15px]"
+>
+  <strong className="font-semibold text-[#101214]">
+    {event.name}
+  </strong>{" "}
+  provides a platform for manufacturers,
+  suppliers and service providers to present
+  their products to contractors, architects,
+  engineers, developers and trade buyers.
+</motion.p>
 
-              <motion.p
-                variants={REVEAL}
-                className="mt-4 max-w-[660px] text-[14px] leading-[1.85] tracking-[-0.005em] text-[#58677B] sm:text-[15px]"
-              >
-                The expo showcases construction
-                machinery, building materials,
-                architectural products, engineering
-                solutions and sustainable technologies,
-                creating opportunities for professional
-                networking, product discovery and
-                business development across Uganda and
-                East Africa.
-              </motion.p>
+<motion.p
+  variants={REVEAL}
+  className="mt-4 max-w-[660px] text-[14px] leading-[1.85] tracking-[-0.005em] text-[#58677B] sm:text-[15px]"
+>
+  The exhibition covers building materials,
+  construction machinery, architectural
+  products, interior solutions, engineering
+  services and building technologies.
+  It offers opportunities to compare products,
+  meet suppliers and discuss business needs
+  across Uganda and East Africa.
+</motion.p>
+
 
               <motion.div
                 variants={REVEAL}
@@ -381,40 +384,42 @@ export function AboutClientView() {
               />
 
               <div className="relative z-10">
-                <SectionLabel light>
-                  Strategic Gateway
-                </SectionLabel>
+              
 
-                <h3 className="mt-6 max-w-[360px] font-heading text-[clamp(1.65rem,2.5vw,2.35rem)] font-bold leading-[1.2] tracking-[-0.04em]">
-                  A Platform for
-                  <span className="text-[#7ACB58]">
-                    {" "}Industry Connections.
-                  </span>
-                </h3>
+<SectionLabel light>
+  Business Connections
+</SectionLabel>
 
-                <p className="mt-5 max-w-[390px] text-[13px] leading-[1.85] text-white/65 sm:text-[14px]">
-                  Uganda Buildcon offers a meeting
-                  platform for businesses involved in
-                  construction, infrastructure and
-                  property development. Exhibitors can
-                  present products, engage potential
-                  buyers and explore opportunities in
-                  the regional market.
-                </p>
+<h3 className="mt-6 max-w-[360px] font-heading text-[clamp(1.65rem,2.5vw,2.35rem)] font-bold leading-[1.2] tracking-[-0.04em] text-white">
+  Meet Buyers &{" "}
+  <span className="text-[#7DBBE8]">
+    Industry Professionals.
+  </span>
+</h3>
 
-                <div className="mt-8 border-t border-white/15 pt-6">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-white/45">
-                    Event Location
-                  </p>
+<p className="mt-5 max-w-[390px] text-[13px] leading-[1.85] text-white/70 sm:text-[14px]">
+  Meet professionals involved in building
+  projects, construction and property
+  development. Discuss product requirements,
+  explore supplier options and establish
+  business contacts across the region.
+</p>
 
-                  <p className="mt-2 font-heading text-[16px] font-semibold leading-[1.5] tracking-[-0.015em] text-white">
-                    {event.venue.fullLocation}
-                  </p>
+<div className="mt-8 border-t border-white/15 pt-6">
+  <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-white/50">
+    Event Location
+  </p>
 
-                  <p className="mt-2 text-[12px] font-medium text-[#7ACB58]">
-                    {event.dates.display}
-                  </p>
-                </div>
+  <p className="mt-2 font-heading text-[16px] font-semibold leading-[1.5] tracking-[-0.015em] text-white">
+    {event.venue.fullLocation}
+  </p>
+
+  <p className="mt-2 text-[12px] font-medium text-[#7DBBE8]">
+    {event.dates.display}
+  </p>
+</div>
+
+
 
                 <Link
                   href="/why-uganda"
@@ -464,30 +469,31 @@ export function AboutClientView() {
             <div className="max-w-[650px]">
               <motion.div variants={REVEAL}>
                 <SectionLabel>
-                  Objectives &amp; Features
+                  Exhibition Objectives
                 </SectionLabel>
               </motion.div>
 
-              <motion.h2
-                id="about-objectives-heading"
-                variants={REVEAL}
-                className="mt-4 font-heading text-[clamp(1.85rem,3vw,3rem)] font-extrabold leading-[1.15] tracking-[-0.045em]"
-              >
-                What the Expo{" "}
-                <span className="text-[#1769A4]">
-                  Delivers.
-                </span>
-              </motion.h2>
-            </div>
+           <motion.h2
+  id="about-objectives-heading"
+  variants={REVEAL}
+  className="mt-4 font-heading text-[clamp(1.85rem,3vw,3rem)] font-extrabold leading-[1.15] tracking-[-0.045em] text-[#111111]"
+>
+  More Than an{" "}
+  <span className="text-[#1769A4]">
+    Exhibition.
+  </span>
+</motion.h2>
 
-            <motion.p
-              variants={REVEAL}
-              className="max-w-[395px] text-[13px] leading-[1.8] text-[#627183] sm:text-[14px]"
-            >
-              Bringing together innovation, knowledge,
-              products and professionals across the
-              building and construction value chain.
-            </motion.p>
+
+            </div>
+<motion.p
+  variants={REVEAL}
+  className="max-w-[395px] text-[13px] leading-[1.8] text-[#627183] sm:text-[14px]"
+>
+  Explore products, exchange industry knowledge
+  and meet professionals from the building
+  and construction sectors.
+</motion.p>
           </motion.div>
 
           <motion.div
@@ -507,148 +513,7 @@ export function AboutClientView() {
           </motion.div>
         </Container>
       </section>
-
-      {/* =====================================
-          EVENT INFORMATION
-          Only confirmed event details
-      ===================================== */}
-
-      <section
-        aria-labelledby="about-event-information-heading"
-        className="py-14 sm:py-18 lg:py-20"
-      >
-        <Container>
-          <motion.div
-            variants={GROUP}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.18 }}
-            className="grid items-start gap-8 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-16"
-          >
-            <div>
-              <motion.div variants={REVEAL}>
-                <SectionLabel>
-                  Event Information
-                </SectionLabel>
-              </motion.div>
-
-              <motion.h2
-                variants={REVEAL}
-                id="about-event-information-heading"
-                className="mt-4 font-heading text-[clamp(1.8rem,2.8vw,2.8rem)] font-extrabold leading-[1.15] tracking-[-0.045em]"
-              >
-                Plan Your{" "}
-                <span className="text-[#1769A4]">
-                  Participation.
-                </span>
-              </motion.h2>
-
-              <motion.p
-                variants={REVEAL}
-                className="mt-4 max-w-[380px] text-[13px] leading-[1.85] text-[#627183] sm:text-[14px]"
-              >
-                Learn about the exhibition dates,
-                venue and participation opportunities
-                for {event.name}.
-              </motion.p>
-
-              <motion.div variants={REVEAL} className="mt-6">
-                <Link
-                  href="/plan-your-visit"
-                  className="group inline-flex items-center gap-3 text-[13px] font-bold text-[#1769A4] transition-colors hover:text-[#105685]"
-                >
-                  Plan Your Visit
-                  <span className="transition-transform duration-300 group-hover:translate-x-1">
-                    <ArrowIcon />
-                  </span>
-                </Link>
-              </motion.div>
-            </div>
-
-            <motion.dl
-              variants={GROUP}
-              className="border-t border-[#E3E9EF]"
-            >
-              {[
-                {
-                  label: "Event",
-                  value: event.name,
-                },
-                {
-                  label: "Exhibition Dates",
-                  value: event.dates.display,
-                },
-                {
-                  label: "Venue",
-                  value: event.venue.fullLocation,
-                },
-                {
-                  label: "Exhibition Format",
-                  value: event.format,
-                },
-              ].map((item) => (
-                <motion.div
-                  key={item.label}
-                  variants={REVEAL}
-                  className="grid gap-2 border-b border-[#E3E9EF] py-5 sm:grid-cols-[165px_minmax(0,1fr)] sm:items-start sm:gap-6"
-                >
-                  <dt className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#82909E]">
-                    {item.label}
-                  </dt>
-
-                  <dd className="font-heading text-[14px] font-semibold leading-[1.6] tracking-[-0.015em] text-[#101214] sm:text-[15px]">
-                    {item.value}
-                  </dd>
-                </motion.div>
-              ))}
-            </motion.dl>
-          </motion.div>
-
-          {/* EXISTING INTERNAL PAGE LINKS */}
-          <motion.nav
-            aria-label="Explore Uganda Buildcon"
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.75, ease: EASE }}
-            className="mt-10 flex flex-wrap items-center gap-x-7 gap-y-4 border-t border-[#E3E9EF] pt-6"
-          >
-            {[
-              {
-                href: "/exhibition-profile",
-                label: "Exhibitor Profile",
-              },
-              {
-                href: "/exhibit",
-                label: "Why Exhibit",
-              },
-              {
-                href: "/why-uganda",
-                label: "Why Uganda",
-              },
-              {
-                href: event.cta.registerVisit,
-                label: "Register to Visit",
-              },
-              {
-                href: event.cta.bookStand,
-                label: "Book a Stand",
-              },
-            ].map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="group inline-flex items-center gap-2 text-[12px] font-semibold text-[#1769A4] transition-colors duration-300 hover:text-[#28A45A]"
-              >
-                {link.label}
-                <span className="transition-transform duration-300 group-hover:translate-x-1">
-                  <ArrowIcon />
-                </span>
-              </Link>
-            ))}
-          </motion.nav>
-        </Container>
-      </section>
+ 
     </div>
   );
 }

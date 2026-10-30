@@ -137,8 +137,11 @@ export default function ExhibitPage() {
       />
 
       <PageHero
-        title={event.brandLines.exhibitor}
-        intro={`Discover exhibitor benefits, industry buyers and stand participation options at ${event.name}, ${event.dates.display} at ${event.venue.fullLocation}.`}
+      
+title="Why Exhibit at"
+highlightTitle="the Exhibition?"
+intro={`Showcase your building and construction products at ${event.name}. Meet potential buyers, connect with industry professionals and explore business opportunities across Uganda and East Africa.`}
+
         image={{
           src: "/images/sectors/engineer-blueprint.jpg",
           alt: "Construction engineer reviewing architectural blueprints and building plans",

@@ -345,48 +345,51 @@ export function ContactClientView() {
         </div>
 
         <Container className="relative z-10">
-          {/* HEADER */}
-          <motion.div
-            variants={GROUP}
-            initial={initial}
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.15 }}
-            className="mx-auto max-w-[850px] text-center"
-          >
-            <motion.div
-              variants={REVEAL}
-              className="flex justify-center"
-            >
-              <SectionLabel>
-                Contact Our Team
-              </SectionLabel>
-            </motion.div>
+          
+{/* CONTACT FORM HEADER */}
+<motion.div
+  variants={GROUP}
+  initial={initial}
+  whileInView="visible"
+  viewport={{ once: true, amount: 0.15 }}
+  className="mx-auto max-w-[850px] text-center"
+>
+  <motion.div
+    variants={REVEAL}
+    className="flex justify-center"
+  >
+    <SectionLabel>
+      Send an Enquiry
+    </SectionLabel>
+  </motion.div>
 
-            <motion.h2
-              id="contact-form-heading"
-              variants={WORD_GROUP}
-              aria-label="Let's Start a Conversation"
-              className="mt-5 font-heading text-[clamp(2rem,3.5vw,3.5rem)] font-extrabold leading-[1.12] tracking-[-0.045em]"
-            >
-              <span aria-hidden="true">
-                <AnimatedWords text="Let's Start a" />
-                {" "}
-                <AnimatedWords
-                  text="Conversation."
-                  className="text-[#1769A4]"
-                />
-              </span>
-            </motion.h2>
+  <motion.h2
+    id="contact-form-heading"
+    variants={WORD_GROUP}
+    aria-label="How Can We Help?"
+    className="mt-5 font-heading text-[clamp(2rem,3.5vw,3.5rem)] font-extrabold leading-[1.12] tracking-[-0.045em] text-[#111111]"
+  >
+    <span aria-hidden="true">
+      <AnimatedWords text="How Can" />
+      {" "}
+      <AnimatedWords
+        text="We Help?"
+        className="text-[#1769A4]"
+      />
+    </span>
+  </motion.h2>
 
-            <motion.p
-              variants={REVEAL}
-              className="mx-auto mt-5 max-w-[620px] text-[14px] leading-[1.85] text-[#607083] sm:text-[15px]"
-            >
-              Have a question about exhibiting, visitor
-              participation or partnership opportunities?
-              Send your enquiry to the organising team.
-            </motion.p>
-          </motion.div>
+  <motion.p
+    variants={REVEAL}
+    className="mx-auto mt-5 max-w-[620px] text-[14px] leading-[1.85] text-[#607083] sm:text-[15px]"
+  >
+    Have a question about exhibiting,
+    visiting or participating in the exhibition?
+    Complete the enquiry form below to contact
+    our organising team.
+  </motion.p>
+</motion.div>
+
 
           {/* EXISTING FUNCTIONAL FORM */}
           <motion.div
@@ -420,40 +423,43 @@ export function ContactClientView() {
         className="border-t border-[#E5EAF0] bg-[#F8FAFB] py-12 sm:py-14 lg:py-16"
       >
         <Container>
-          <motion.div
-            variants={GROUP}
-            initial={initial}
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.15 }}
-            className="flex flex-col gap-4 border-b border-[#E1E8EF] pb-6 sm:flex-row sm:items-end sm:justify-between"
-          >
-            <div>
-              <motion.div variants={REVEAL}>
-                <SectionLabel>
-                  Direct Assistance
-                </SectionLabel>
-              </motion.div>
+          
+{/* OFFICIAL CONTACTS HEADER */}
+<motion.div
+  variants={GROUP}
+  initial={initial}
+  whileInView="visible"
+  viewport={{ once: true, amount: 0.15 }}
+  className="flex flex-col gap-4 border-b border-[#E1E8EF] pb-6 sm:flex-row sm:items-end sm:justify-between"
+>
+  <div>
+    <motion.div variants={REVEAL}>
+      <SectionLabel>
+        Official Contacts
+      </SectionLabel>
+    </motion.div>
 
-              <motion.h2
-                id="official-contacts-heading"
-                variants={REVEAL}
-                className="mt-3 font-heading text-[clamp(1.6rem,2.6vw,2.5rem)] font-bold leading-[1.2] tracking-[-0.035em] text-[#111820]"
-              >
-                Speak with Our{" "}
-                <span className="text-[#1769A4]">
-                  Organising Team.
-                </span>
-              </motion.h2>
-            </div>
+    <motion.h2
+      id="official-contacts-heading"
+      variants={REVEAL}
+      className="mt-3 font-heading text-[clamp(1.6rem,2.6vw,2.5rem)] font-bold leading-[1.2] tracking-[-0.035em] text-[#111111]"
+    >
+      Contact Our{" "}
+      <span className="text-[#1769A4]">
+        Representatives.
+      </span>
+    </motion.h2>
+  </div>
 
-            <motion.p
-              variants={REVEAL}
-              className="max-w-[340px] text-[12px] leading-[1.75] text-[#68788A] sm:text-[13px]"
-            >
-              Contact our official representatives
-              directly for event-related assistance.
-            </motion.p>
-          </motion.div>
+  <motion.p
+    variants={REVEAL}
+    className="max-w-[340px] text-[12px] leading-[1.75] text-[#68788A] sm:text-[13px]"
+  >
+    Find the contact details for our
+    organising companies and speak directly
+    with the relevant representatives.
+  </motion.p>
+</motion.div>
 
           <motion.div
             variants={GROUP}

@@ -19,53 +19,62 @@ export type MarketFact = {
 const BROCHURE_SOURCE = "Uganda Buildcon 2026 brochure";
 const BROCHURE_URL = "/downloads/Uganda-Buildcon-Expo-Brochure.pdf";
 
+
+
 export const marketFacts: MarketFact[] = [
   {
     id: "gdp-growth",
-    value: "6.0%",
-    label: "Projected GDP growth",
+    value: "6.4%",
+    label: "Real GDP Growth",
     detail:
-      "Uganda's GDP growth rate is projected to reach 6.0% in the fiscal year 2026, sustaining demand for infrastructure, housing and commercial space.",
-    period: "FY 2026",
-    sourceName: BROCHURE_SOURCE,
-    sourceUrl: BROCHURE_URL,
-    lastVerified: "2026-10-09",
+      "Uganda's economy recorded preliminary real GDP growth of 6.4% in FY 2025/26, compared with 6.3% in FY 2024/25.",
+    period: "FY 2025/26",
+    sourceName: "Uganda Bureau of Statistics",
+    sourceUrl:
+      "https://www.ubos.org/wp-content/uploads/publications/06_2026Preliminary_GDP_2025-26_June_Release.pdf",
+    lastVerified: "2026-10-29",
   },
   {
     id: "urbanisation",
-    value: "26.77%",
-    label: "Urbanisation rate and rising",
+    value: "32%",
+    label: "Urban Population",
     detail:
-      "With urbanisation now at 26.77% and rising, Uganda faces high demand for residential housing, commercial buildings and urban infrastructure.",
-    period: "Current",
-    sourceName: BROCHURE_SOURCE,
-    sourceUrl: BROCHURE_URL,
-    lastVerified: "2026-10-09",
+      "Approximately 32% of Uganda's population lived in urban areas in 2025, reflecting the importance of housing, buildings and urban services.",
+    period: "2025",
+    sourceName: "World Bank",
+    sourceUrl:
+      "https://data.worldbank.org/indicator/SP.URB.TOTL.IN.ZS?locations=UG",
+    lastVerified: "2026-10-29",
   },
   {
     id: "vision-2040",
-    value: "$3 billion+",
-    label: "Vision 2040 infrastructure commitment",
+    value: "2040",
+    label: "National Development Vision",
     detail:
-      "The government's Vision 2040 plan dedicates over $3 billion to infrastructure projects, with the Kampala–Jinja Expressway and hydropower expansions already underway.",
-    period: "Vision 2040",
-    sourceName: BROCHURE_SOURCE,
-    sourceUrl: BROCHURE_URL,
-    lastVerified: "2026-10-09",
+      "Uganda Vision 2040 sets out the country's long-term development priorities, including infrastructure, urban development and industrialisation.",
+    period: "Uganda Vision 2040",
+    sourceName: "National Planning Authority",
+    sourceUrl:
+      "https://npa.go.ug/uganda-vision-2040/",
+    lastVerified: "2026-10-29",
   },
 ];
 
+
+
+
 export const opportunityCategories: string[] = [
   "Residential Housing",
-  "Commercial Construction",
-  "Roads & Expressways",
-  "Hydropower & Energy",
-  "Urban Infrastructure",
-  "Industrial Projects",
-  "Hospitality & Health Facilities",
-  "Water & Utility Projects",
-  "Interior & Finishing Projects",
+  "Commercial Buildings",
+  "Roads & Transport Infrastructure",
+  "Energy & Hydropower Projects",
+  "Urban Development",
+  "Industrial Buildings",
+  "Hospitality & Healthcare Facilities",
+  "Water & Utility Infrastructure",
+  "Interiors & Building Finishes",
 ];
+
 
 export const keyProjects: string[] = ["Kampala–Jinja Expressway", "Hydropower expansions"];
 

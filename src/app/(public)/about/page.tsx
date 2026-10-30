@@ -178,16 +178,17 @@ export default function AboutPage() {
 
       {/* Existing animated hero */}
       <PageHero
-        title="Where Uganda’s Building"
-        highlightTitle="& Construction Industry Meets"
-        intro={
-          `${event.name} — ${event.editionLabel}, ` +
-          `${event.dates.display} at ` +
-          `${event.venue.fullLocation}. ` +
-          `Discover the exhibition, industry ` +
-          `opportunities and professional networking ` +
-          `across Uganda and East Africa.`
-        }
+       
+title="About the"
+highlightTitle="Exhibition."
+intro={
+  `${event.name} is a B2B trade exhibition ` +
+  `bringing together manufacturers, suppliers, ` +
+  `contractors, architects, engineers and buyers ` +
+  `from the building and construction industries ` +
+  `across Uganda and East Africa.`
+}
+
         image={{
           src: "/images/gallery/dignitaries-stand-visit.jpg",
           alt:

@@ -63,30 +63,35 @@ const WORD: Variants = {
 
 const ADVANTAGES = [
   {
-    title: "Central Kampala Location",
+    title: "Location in Kampala",
     description:
-      "Kampala is Uganda's capital and commercial centre, bringing together construction companies, developers, consultants and industry professionals.",
-    icon: "M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1116 0zM12 10h.01",
+      "The venue is located in Kampala, Uganda's capital and main commercial centre.",
+    icon:
+      "M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1116 0zM12 10h.01",
   },
   {
-    title: "Established Exhibition Grounds",
+    title: "Established Exhibition Venue",
     description:
-      "UMA Show Grounds have hosted previous editions of Uganda Buildcon, including the 2025 exhibition at the Multi Purpose Hall.",
-    icon: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16M3 21h18M9 8h2M9 12h2M9 16h2M15 8h.01M15 12h.01M15 16h.01",
+      "UMA Show Grounds is an established event venue that has hosted previous editions of the exhibition.",
+    icon:
+      "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16M3 21h18M9 8h2M9 12h2M9 16h2M15 8h.01M15 12h.01M15 16h.01",
   },
   {
-    title: "East African Business Connections",
+    title: "Business Location",
     description:
-      "Uganda's position within the East African Community supports engagement between regional suppliers, manufacturers and construction industry buyers.",
-    icon: "M12 21a9 9 0 100-18 9 9 0 000 18zM3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18",
+      "Kampala provides access to businesses, suppliers and professionals involved in building, construction and property development.",
+    icon:
+      "M12 21a9 9 0 100-18 9 9 0 000 18zM3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18",
   },
   {
-    title: "International Travel Access",
+    title: "International Travel",
     description:
-      "International visitors can arrive through Entebbe International Airport and continue to Kampala by road.",
-    icon: "M22 2 9.5 14.5M22 2l-7 20-4.5-8.5L2 9z",
+      "Visitors arriving from abroad can travel through Entebbe International Airport and continue to Kampala by road.",
+    icon:
+      "M22 2 9.5 14.5M22 2l-7 20-4.5-8.5L2 9z",
   },
 ] as const;
+
 
 /* ==========================================
    SHARED UI
@@ -351,41 +356,38 @@ export function VenueClientView() {
               className="min-w-0"
             >
               <motion.div variants={REVEAL}>
-                <SectionLabel>
-                  Exhibition Location
-                </SectionLabel>
+               <SectionLabel>
+  Exhibition Location
+</SectionLabel>
               </motion.div>
 
-              <motion.h2
-                id="venue-overview-heading"
-                variants={WORD_GROUP}
-                aria-label={event.venue.fullLocation}
-                className="mt-5 max-w-[570px] font-heading text-[clamp(2.05rem,3.4vw,3.5rem)] font-extrabold leading-[1.13] tracking-[-0.045em]"
-              >
-                <span aria-hidden="true">
-                  <AnimatedWords text={event.venue.name} />
+           <motion.h2
+  id="venue-overview-heading"
+  variants={WORD_GROUP}
+  aria-label={event.venue.fullLocation}
+  className="mt-5 max-w-[570px] font-heading text-[clamp(2.05rem,3.4vw,3.5rem)] font-extrabold leading-[1.13] tracking-[-0.045em] text-[#111111]"
+>
+  <span aria-hidden="true">
+    <AnimatedWords text={event.venue.name} />
 
-                  <span className="block text-[#1769A4]">
-                    <AnimatedWords
-                      text={`${event.venue.city}, ${event.venue.country}.`}
-                    />
-                  </span>
-                </span>
-              </motion.h2>
+    <span className="block text-[#1769A4]">
+      <AnimatedWords
+        text={`${event.venue.city}, ${event.venue.country}.`}
+      />
+    </span>
+  </span>
+</motion.h2>
 
-              <motion.p
-                variants={REVEAL}
-                className="mt-6 max-w-[550px] text-[14px] leading-[1.85] tracking-[-0.005em] text-[#607083] sm:text-[15px]"
-              >
-                {event.name} takes place at{" "}
-                <strong className="font-semibold text-[#101214]">
-                  {event.venue.fullLocation}
-                </strong>
-                . The venue is situated in Kampala,
-                Uganda&apos;s capital and commercial centre,
-                providing a meeting point for professionals
-                from the building and construction industry.
-              </motion.p>
+           <motion.p
+  variants={REVEAL}
+  className="mt-6 max-w-[550px] text-[14px] leading-[1.85] tracking-[-0.005em] text-[#607083] sm:text-[15px]"
+>
+  Located at UMA Show Grounds in Kampala,
+  the exhibition venue welcomes businesses
+  and professionals from the building and
+  construction industries. Find the location
+  on the map below and plan your journey.
+</motion.p>
 
               <motion.div
                 variants={REVEAL}
@@ -396,15 +398,15 @@ export function VenueClientView() {
                     <LocationIcon />
                   </span>
 
-                  <div>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#8793A0]">
-                      Venue Location
-                    </p>
+                 <div>
+  <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#8793A0]">
+    Venue Address
+  </p>
 
-                    <p className="mt-1.5 text-[14px] font-semibold leading-[1.65] text-[#101214]">
-                      {event.venue.fullLocation}
-                    </p>
-                  </div>
+  <p className="mt-1.5 text-[14px] font-semibold leading-[1.65] text-[#101214]">
+    {event.venue.fullLocation}
+  </p>
+</div>
                 </div>
 
                 <div className="flex items-start gap-4 border-b border-[#E4E9EE] py-5">
@@ -412,15 +414,15 @@ export function VenueClientView() {
                     <CalendarIcon />
                   </span>
 
-                  <div>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#8793A0]">
-                      Exhibition Dates
-                    </p>
+               <div>
+  <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#8793A0]">
+    Exhibition Dates
+  </p>
 
-                    <p className="mt-1.5 text-[14px] font-semibold leading-[1.65] text-[#101214]">
-                      {event.dates.display}
-                    </p>
-                  </div>
+  <p className="mt-1.5 text-[14px] font-semibold leading-[1.65] text-[#101214]">
+    {event.dates.display}
+  </p>
+</div>
                 </div>
               </motion.div>
 
@@ -473,31 +475,32 @@ export function VenueClientView() {
               viewport={{ once: true, amount: 0.15 }}
             >
               <motion.div variants={REVEAL}>
-                <SectionLabel>
-                  Infrastructure &amp; Access
-                </SectionLabel>
+           
+<SectionLabel>
+  Venue Facilities & Access
+</SectionLabel>
+
               </motion.div>
 
-              <motion.h2
-                id="venue-advantages-heading"
-                variants={REVEAL}
-                className="mt-5 max-w-[430px] font-heading text-[clamp(1.9rem,3vw,3rem)] font-extrabold leading-[1.15] tracking-[-0.045em]"
-              >
-                A Strategic{" "}
-                <span className="text-[#1769A4]">
-                  Exhibition Location.
-                </span>
-              </motion.h2>
+            <motion.h2
+  id="venue-advantages-heading"
+  variants={REVEAL}
+  className="mt-5 max-w-[430px] font-heading text-[clamp(1.9rem,3vw,3rem)] font-extrabold leading-[1.15] tracking-[-0.045em] text-[#111111]"
+>
+  Venue Location{" "}
+  <span className="text-[#1769A4]">
+    & Accessibility.
+  </span>
+</motion.h2>
 
-              <motion.p
-                variants={REVEAL}
-                className="mt-4 max-w-[425px] text-[14px] leading-[1.85] text-[#607083]"
-              >
-                Discover the location advantages and
-                travel connections relevant to visitors,
-                exhibitors and businesses attending
-                Uganda Buildcon.
-              </motion.p>
+            <motion.p
+  variants={REVEAL}
+  className="mt-4 max-w-[425px] text-[14px] leading-[1.85] text-[#607083]"
+>
+  Learn about the exhibition venue,
+  its location in Kampala and travel
+  options for visitors and exhibitors.
+</motion.p>
             </motion.div>
 
             <motion.div
@@ -536,39 +539,39 @@ export function VenueClientView() {
             <div>
               <motion.div variants={REVEAL}>
                 <SectionLabel>
-                  Event Details
+                  Visitor Information
                 </SectionLabel>
               </motion.div>
 
-              <motion.h2
-                id="venue-information-heading"
-                variants={REVEAL}
-                className="mt-5 font-heading text-[clamp(1.85rem,2.8vw,2.8rem)] font-extrabold leading-[1.15] tracking-[-0.045em]"
-              >
-                Everything You Need{" "}
-                <span className="text-[#1769A4]">
-                  to Know.
-                </span>
-              </motion.h2>
+            <motion.h2
+  id="venue-information-heading"
+  variants={REVEAL}
+  className="mt-5 font-heading text-[clamp(1.85rem,2.8vw,2.8rem)] font-extrabold leading-[1.15] tracking-[-0.045em] text-[#111111]"
+>
+  Plan Your{" "}
+  <span className="text-[#1769A4]">
+    Visit.
+  </span>
+</motion.h2>
 
-              <motion.p
-                variants={REVEAL}
-                className="mt-4 max-w-[390px] text-[13px] leading-[1.85] text-[#607083] sm:text-[14px]"
-              >
-                Essential venue and event information
-                for planning your participation at
-                {` ${event.shortName}`}.
-              </motion.p>
+            <motion.p
+  variants={REVEAL}
+  className="mt-4 max-w-[390px] text-[13px] leading-[1.85] text-[#607083] sm:text-[14px]"
+>
+  Find the exhibition dates, venue address
+  and useful information for visiting
+  the event.
+</motion.p>
 
               <motion.div
                 variants={REVEAL}
                 className="mt-6"
               >
                 <Link
-                  href={event.cta.bookStand}
+                  href={event.cta.registerVisit}
                   className="group inline-flex items-center gap-2 text-[13px] font-bold text-[#1769A4] hover:text-[#28A45A]"
                 >
-                  Book a Stand
+                  Register to visit
 
                   <span className="transition-transform duration-300 group-hover:translate-x-1">
                     <ArrowIcon />

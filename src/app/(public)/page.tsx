@@ -215,10 +215,10 @@ export default async function HomePage() {
       <WhyUgandaSection />
 
       {/* 05. Exhibition Profile */}
-      <ExhibitionProfileSection />
+      {/* <ExhibitionProfileSection /> */}
 
       {/* 06. Why Exhibit */}
-      <WhyExhibitSection />
+      {/* <WhyExhibitSection /> */}
 
       {/* Optional sections — unchanged */}
       {/* <WhoWillYouMeetSection /> */}
@@ -230,7 +230,7 @@ export default async function HomePage() {
       */}
 
       {/* 07. Venue */}
-      <VenueSection />
+      {/* <VenueSection /> */}
 
       {/* 08. Partners */}
       <PartnersSection />
@@ -238,12 +238,12 @@ export default async function HomePage() {
       {/* <NewsSection /> */}
 
       {/* 09. Final CTA */}
-      <div className="relative animate-premium-up">
+      {/* <div className="relative animate-premium-up">
         <FinalCtaSection />
-      </div>
+      </div> */}
 
       {/* Existing-page internal links for Google navigation */}
-      <nav
+      {/* <nav
         aria-label="Explore Uganda Buildcon"
         className="border-t border-slate-200 bg-white"
       >
@@ -273,7 +273,7 @@ export default async function HomePage() {
             </Link>
           ))}
         </div>
-      </nav>
+      </nav> */}
     </>
   );
 }
