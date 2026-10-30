@@ -134,8 +134,8 @@ contact: {
   },
 
   downloads: {
-    brochure: "/downloads/Uganda-Buildcon-Expo-Brochure.pdf",
-    postShowReport: "/downloads/Uganda-Buildcon-Post-Show-Report-2025.pdf",
+    brochure: "/downloads/6th_Uganda_Buildcon_International_Expo_2027_Brochure.pdf",
+    postShowReport: "/downloads/5th_Uganda_Buildcon_International_Expo_2026_Post_Show_Report.pdf",
   },
 
   exhibitorDirectoryMinimum: 6,

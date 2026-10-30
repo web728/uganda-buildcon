@@ -11,7 +11,7 @@ import { countries } from "@/data/countries";
 import { event } from "@/config/event";
 
 const BROCHURE_FILE_URL = event.downloads.brochure;
-const BROCHURE_FILE_NAME = "Uganda-Buildcon-Expo-Brochure.pdf";
+const BROCHURE_FILE_NAME = "6th_Uganda_Buildcon_International_Expo_2027_Brochure.pdf";
 
 export function BrochureDownloadForm() {
   const [startedAt] = useState(() => Date.now());

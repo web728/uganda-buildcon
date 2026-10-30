@@ -16,8 +16,8 @@ export type MarketFact = {
   lastVerified: string; // YYYY-MM-DD
 };
 
-const BROCHURE_SOURCE = "Uganda Buildcon 2026 brochure";
-const BROCHURE_URL = "/downloads/Uganda-Buildcon-Expo-Brochure.pdf";
+const BROCHURE_SOURCE = "6th Uganda Buildcon International Expo 2027 Brochure";
+const BROCHURE_URL = "/downloads/6th_Uganda_Buildcon_International_Expo_2027_Brochure.pdf";
 
 
 
