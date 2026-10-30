@@ -392,27 +392,7 @@ export async function PartnersSection() {
           </>
         )}
 
-        {/* Partnership enquiry */}
-        <PartnersReveal delay={0.08}>
-          <div className="mt-9 flex flex-wrap items-center justify-between gap-4 border-t border-[#E5EBEF] pt-6">
-            <p className="max-w-[610px] text-[12px] leading-[1.75] text-[#718092]">
-              Interested in becoming an industry
-              or media partner for
-              6th Uganda Buildcon International Expo 2027?
-            </p>
-
-            <Link
-              href="/contact"
-              className="group inline-flex items-center gap-2 border-b border-[#1769A4]/35 pb-1 text-[12px] font-bold text-[#1769A4] transition-colors hover:border-[#28A45A] hover:text-[#28A45A]"
-            >
-              Enquire About Partnership
-
-              <span className="transition-transform duration-300 group-hover:translate-x-1">
-                <ArrowIcon />
-              </span>
-            </Link>
-          </div>
-        </PartnersReveal>
+        
       </Container>
     </section>
   );

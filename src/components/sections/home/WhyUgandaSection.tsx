@@ -1,14 +1,10 @@
-
 "use client";
-
 import {
   useEffect,
   useRef,
   useState,
 } from "react";
-
 import Link from "next/link";
-
 import {
   animate,
   motion,
@@ -18,36 +14,29 @@ import {
   useReducedMotion,
   type Variants,
 } from "framer-motion";
-
 import { Container } from "@/components/ui/Container";
-
 import {
   marketFacts,
   opportunityCategories,
   type MarketFact,
 } from "@/data/marketFacts";
-
 /* =========================================================
    WHY UGANDA — PREMIUM MOTION EDITION
-
    Important:
-   Official Buildcon SVG geometry is preserved.
-   No brand shape or colour changes.
-
+   Original Buildcon SVG geometry and brand colours retained. Other section accents use blue.
    - Word-by-word scroll reveal
    - Animated official brand SVG
    - Real 0 -> target counters
    - Staggered market facts
    - Seamless focus area marquee
 ========================================================= */
-
-const BLACK = "#080808";
+const BLACK = "#0B0C11";
 const BLUE = "#1769A4";
+const SKY = "#2583C4";
+const LIGHT_BLUE = "#7DBBE8";
 const GREEN = "#28A45A";
 const LIME = "#7ACB58";
-
 const EASE = [0.22, 1, 0.36, 1] as const;
-
 const STAGGER: Variants = {
   hidden: {},
   visible: {
@@ -57,7 +46,6 @@ const STAGGER: Variants = {
     },
   },
 };
-
 const REVEAL: Variants = {
   hidden: {
     opacity: 0,
@@ -72,7 +60,6 @@ const REVEAL: Variants = {
     },
   },
 };
-
 const WORD: Variants = {
   hidden: {
     opacity: 0,
@@ -87,11 +74,9 @@ const WORD: Variants = {
     },
   },
 };
-
 /* =========================================================
    ICONS
 ========================================================= */
-
 function ArrowIcon() {
   return (
     <svg
@@ -108,7 +93,6 @@ function ArrowIcon() {
     </svg>
   );
 }
-
 function TrendIcon() {
   return (
     <svg
@@ -126,14 +110,11 @@ function TrendIcon() {
     </svg>
   );
 }
-
 /* =========================================================
    ANIMATED HEADING WORDS
-
    Each word reveals upwards inside an overflow
    hidden wrapper. No layout shifting.
 ========================================================= */
-
 function AnimatedWords({
   text,
   className = "",
@@ -142,7 +123,6 @@ function AnimatedWords({
   className?: string;
 }) {
   const words = text.trim().split(/\s+/);
-
   return (
     <span className={className}>
       {words.map((word, index) => (
@@ -156,27 +136,22 @@ function AnimatedWords({
           >
             {word}
           </motion.span>
-
           {index < words.length - 1 ? "\u00A0" : null}
         </span>
       ))}
     </span>
   );
 }
-
 /* =========================================================
    SMOOTH MARKET FACT COUNTER
-
    Supports:
    6.0%
    26.77%
    1,200+
    $5.2B
-
    Initial number always 0.
    Counts gradually and stops at exact target.
 ========================================================= */
-
 function AnimatedCounter({
   value,
   delay = 0,
@@ -185,43 +160,32 @@ function AnimatedCounter({
   delay?: number;
 }) {
   const ref = useRef<HTMLSpanElement>(null);
-
   const inView = useInView(ref, {
     once: true,
     amount: 0.35,
   });
-
   const match = value.match(
     /-?\d[\d,]*(?:\.\d+)?/
   );
-
   const numericText = match?.[0] ?? "";
-
   const target = Number(
     numericText.replace(/,/g, "")
   );
-
   const valid =
     match !== null && Number.isFinite(target);
-
   const decimals =
     numericText.split(".")[1]?.length ?? 0;
-
   const prefix = match
     ? value.slice(0, match.index ?? 0)
     : "";
-
   const suffix = match
     ? value.slice(
         (match.index ?? 0) + numericText.length
       )
     : "";
-
   const [count, setCount] = useState(0);
-
   useEffect(() => {
     if (!inView || !valid) return;
-
     // Do not jump directly to final number.
     // Count visibly increases, even on systems
     // where reduced-motion is enabled.
@@ -229,23 +193,18 @@ function AnimatedCounter({
       duration: 2.8,
       delay,
       ease: "linear",
-
       onUpdate(latest) {
         setCount(latest);
       },
-
       onComplete() {
         setCount(target);
       },
     });
-
     return () => controls.stop();
   }, [inView, valid, target, delay]);
-
   if (!valid) {
     return <span>{value}</span>;
   }
-
   const displayNumber = count.toLocaleString(
     "en-US",
     {
@@ -253,7 +212,6 @@ function AnimatedCounter({
       maximumFractionDigits: decimals,
     }
   );
-
   return (
     <span
       ref={ref}
@@ -268,27 +226,19 @@ function AnimatedCounter({
     </span>
   );
 }
-
 /* =========================================================
    OFFICIAL BUILDCON SVG
-
    EXACT ORIGINAL GEOMETRY RETAINED.
-
    Top blue fan:
    M400,400 L275,100 A340,340 0 0,1 525,100 Z
-
-   Green triangle:
+   Right blue triangle:
    465,370 655,80 655,470
-
-   Lower green fan:
+   Lower blue fan:
    M400,400 L95,475 A330,330 0 0,0 270,710 Z
-
    Centre:
    400,400
-
    Only animation behaviour has been refined.
 ========================================================= */
-
 function AnimatedBuildconSVG({
   reduced,
 }: {
@@ -322,18 +272,15 @@ function AnimatedBuildconSVG({
           />
         </radialGradient>
       </defs>
-
       <circle
         cx="400"
         cy="400"
         r="365"
         fill="url(#uganda-why-official-glow)"
       />
-
       {/* ----------------------------------
           ROTATING ORIGINAL OUTER ORBIT
       ---------------------------------- */}
-
       <motion.g
         initial={false}
         animate={
@@ -355,49 +302,42 @@ function AnimatedBuildconSVG({
           strokeOpacity=".30"
           strokeWidth="1.25"
         />
-
         <circle
           cx="280"
           cy="140"
           r="6"
           fill={BLUE}
         />
-
         <circle
           cx="580"
           cy="170"
           r="8"
           fill={LIME}
         />
-
         <path
           d="M130,340 A320,320 0 0,1 360,90"
           stroke="#FFFFFF"
           strokeOpacity=".28"
           strokeWidth="1"
         />
-
         <circle
           cx="160"
           cy="270"
           r="9"
           fill={LIME}
         />
-
         <circle
           cx="165"
           cy="400"
           r="8"
           fill={BLUE}
         />
-
         <path
           d="M480,680 A320,320 0 0,0 710,510"
           stroke="#FFFFFF"
           strokeOpacity=".27"
           strokeWidth="1"
         />
-
         <circle
           cx="560"
           cy="620"
@@ -405,11 +345,9 @@ function AnimatedBuildconSVG({
           fill={GREEN}
         />
       </motion.g>
-
       {/* ----------------------------------
           REVERSE ORBIT
       ---------------------------------- */}
-
       <motion.g
         initial={false}
         animate={
@@ -436,7 +374,6 @@ function AnimatedBuildconSVG({
           strokeWidth="1"
           strokeDasharray="5 15"
         />
-
         <circle
           cx="400"
           cy="55"
@@ -444,11 +381,9 @@ function AnimatedBuildconSVG({
           fill={GREEN}
         />
       </motion.g>
-
       {/* ----------------------------------
           OFFICIAL TOP BLUE FAN
       ---------------------------------- */}
-
       <motion.path
         d="M400,400 L275,100 A340,340 0 0,1 525,100 Z"
         fill={BLUE}
@@ -471,11 +406,9 @@ function AnimatedBuildconSVG({
           transformBox: "view-box",
         }}
       />
-
       {/* ----------------------------------
           OFFICIAL GREEN TRIANGLE
       ---------------------------------- */}
-
       <motion.polygon
         points="465,370 655,80 655,470"
         fill={GREEN}
@@ -499,11 +432,9 @@ function AnimatedBuildconSVG({
           transformBox: "view-box",
         }}
       />
-
       {/* ----------------------------------
           OFFICIAL LOWER GREEN FAN
       ---------------------------------- */}
-
       <motion.path
         d="M400,400 L95,475 A330,330 0 0,0 270,710 Z"
         fill={GREEN}
@@ -527,23 +458,18 @@ function AnimatedBuildconSVG({
           transformBox: "view-box",
         }}
       />
-
       {/* ORIGINAL INNER GREEN SECTORS */}
-
       <path
         d="M400,400 L210,340 A205,205 0 0,0 280,560 Z"
         fill="#208749"
         opacity=".85"
       />
-
       <path
         d="M400,400 L510,480 A205,205 0 0,1 465,565 Z"
         fill={GREEN}
         opacity=".87"
       />
-
       {/* ORIGINAL CENTRAL TRACKS */}
-
       <circle
         cx="400"
         cy="400"
@@ -552,7 +478,6 @@ function AnimatedBuildconSVG({
         strokeOpacity=".34"
         strokeWidth="1.5"
       />
-
       <circle
         cx="400"
         cy="400"
@@ -561,9 +486,7 @@ function AnimatedBuildconSVG({
         strokeOpacity=".90"
         strokeWidth="3.5"
       />
-
       {/* CENTER PULSE */}
-
       <motion.circle
         cx="400"
         cy="400"
@@ -591,14 +514,11 @@ function AnimatedBuildconSVG({
     </svg>
   );
 }
-
 /* =========================================================
    BACKGROUND SVG ENTRANCE
-
    SVG stays in its exact position.
    Reveal uses only subtle scale + opacity.
 ========================================================= */
-
 function OfficialArtwork({
   reduced,
 }: {
@@ -610,9 +530,7 @@ function OfficialArtwork({
       className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
     >
       <div className="absolute -right-40 -top-36 h-[520px] w-[520px] rounded-full bg-[#1769A4]/[0.07] blur-[100px]" />
-
-      <div className="absolute -bottom-44 -left-36 h-[420px] w-[420px] rounded-full bg-[#28A45A]/[0.045] blur-[100px]" />
-
+      <div className="absolute -bottom-44 -left-36 h-[420px] w-[420px] rounded-full bg-[#1769A4]/[0.045] blur-[100px]" />
       <motion.div
         initial={{
           opacity: 0,
@@ -651,7 +569,6 @@ function OfficialArtwork({
           <AnimatedBuildconSVG reduced={reduced} />
         </div>
       </motion.div>
-
       {/* Grid */}
       <div
         className="absolute inset-0 opacity-[0.035]"
@@ -663,19 +580,15 @@ function OfficialArtwork({
             "linear-gradient(to right, transparent, black 45%, black)",
         }}
       />
-
       {/* Readability gradient */}
-      <div className="absolute inset-0 bg-gradient-to-r from-[#080808]/85 via-[#080808]/45 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#0B0C11]/85 via-[#0B0C11]/45 to-transparent" />
     </div>
   );
 }
-
 /* =========================================================
    MARKET FACT CARD
-
    Clean premium cards with staggered scroll reveal.
 ========================================================= */
-
 function MarketFactCard({
   fact,
   index,
@@ -708,10 +621,8 @@ function MarketFactCard({
       {/* Top accent */}
       <span
         aria-hidden="true"
-        className="absolute inset-x-0 top-0 h-[2px] origin-left scale-x-0 bg-[#28A45A] transition-transform duration-500 group-hover:scale-x-100"
+        className="absolute inset-x-0 top-0 h-[2px] origin-left scale-x-0 bg-[#1769A4] transition-transform duration-500 group-hover:scale-x-100"
       />
- 
-
       {/* Animated numeric value */}
       <p className="mt-5 font-heading text-[clamp(2rem,3vw,2.8rem)] font-extrabold leading-none tracking-[-0.055em] text-white">
         <AnimatedCounter
@@ -719,68 +630,48 @@ function MarketFactCard({
           delay={index * 0.14}
         />
       </p>
-
       <h3 className="mt-3 font-heading text-[14px] font-bold leading-[1.4] text-white sm:text-[15px]">
         {fact.label}
       </h3>
-
       {fact.detail && (
         <p className="mt-2 text-[12px] leading-[1.7] text-white/60">
           {fact.detail}
         </p>
       )}
-
-     
-      
     </motion.article>
   );
 }
-
 /* =========================================================
    SEAMLESS FOCUS AREA MARQUEE
-
    Pixel based width measurement.
    No repeated jump at loop boundary.
 ========================================================= */
-
-
 function FocusAreas({
   reduced: _reduced,
 }: {
   reduced: boolean;
 }) {
   const trackRef = useRef<HTMLDivElement>(null);
-
   const [trackWidth, setTrackWidth] = useState(0);
   const [paused, setPaused] = useState(false);
-
   const x = useMotionValue(0);
-
   useEffect(() => {
     const element = trackRef.current;
     if (!element) return;
-
     const measure = () => {
       setTrackWidth(element.getBoundingClientRect().width);
     };
-
     measure();
-
     const observer = new ResizeObserver(measure);
     observer.observe(element);
-
     return () => observer.disconnect();
   }, []);
-
   useAnimationFrame((_, delta) => {
     if (paused || trackWidth <= 0) return;
-
     // Smooth continuous scrolling
     const speed = 36; // pixels per second
     const distance = (speed * Math.min(delta, 64)) / 1000;
-
     const next = x.get() - distance;
-
     // Seamless wrapping
     x.set(
       next <= -trackWidth
@@ -788,22 +679,19 @@ function FocusAreas({
         : next
     );
   });
-
   if (opportunityCategories.length === 0) {
     return null;
   }
-
   const renderItems = (prefix: string) =>
     opportunityCategories.map((category, index) => (
       <span
         key={`${prefix}-${index}`}
         className="inline-flex shrink-0 items-center gap-3 whitespace-nowrap text-[12px] font-medium text-white/75"
       >
-        <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#28A45A]" />
+        <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#1769A4]" />
         {category}
       </span>
     ));
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
@@ -822,13 +710,11 @@ function FocusAreas({
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
         {/* Heading unchanged */}
         <div className="relative z-10 flex shrink-0 items-center gap-3 lg:pr-8">
-          <span className="h-2 w-2 rounded-full bg-[#28A45A]" />
-
+          <span className="h-2 w-2 rounded-full bg-[#1769A4]" />
           <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-white">
             Key Focus Areas
           </span>
         </div>
-
         {/* Infinite scrolling content */}
         <div className="relative min-w-0 flex-1 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_6%,black_94%,transparent)]">
           <motion.div
@@ -842,7 +728,6 @@ function FocusAreas({
             >
               {renderItems("original")}
             </div>
-
             {/* Duplicate for seamless looping */}
             <div
               aria-hidden="true"
@@ -856,30 +741,23 @@ function FocusAreas({
     </motion.div>
   );
 }
-
-
 /* =========================================================
    MAIN SECTION
 ========================================================= */
-
 export function WhyUgandaSection() {
   const reduced = useReducedMotion() === true;
-
   return (
     <section
       aria-labelledby="why-uganda-heading"
-      className="relative isolate overflow-hidden border-b border-white/10 bg-[#080808] py-14 text-white sm:py-16 lg:py-20"
+      className="relative isolate overflow-hidden border-b border-white/10 bg-[#0B0C11] py-14 text-white sm:py-16 lg:py-20"
       style={{ backgroundColor: BLACK }}
     >
       {/* Official branded SVG */}
       <OfficialArtwork reduced={reduced} />
-
       <Container className="relative z-10">
         {/* =========================================
             HEADER
         ========================================= */}
-
-   
 <motion.div
   variants={STAGGER}
   initial="hidden"
@@ -895,13 +773,11 @@ export function WhyUgandaSection() {
       variants={REVEAL}
       className="mb-5 flex items-center gap-3"
     >
-      <span className="h-[3px] w-9 bg-[#28A45A]" />
-
-      <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#7ACB58] sm:text-[11px]">
+      <span className="h-[3px] w-9 bg-[#1769A4]" />
+      <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#7DBBE8] sm:text-[11px]">
         Why Uganda
       </span>
     </motion.div>
-
     <h2
       id="why-uganda-heading"
       aria-label="Why Uganda for Building and Construction?"
@@ -910,15 +786,13 @@ export function WhyUgandaSection() {
       <span aria-hidden="true" className="block">
         <AnimatedWords text="Why Uganda for" />
       </span>
-
       <span aria-hidden="true" className="block">
         <AnimatedWords
           text="Building & Construction?"
-          className="text-[#7ACB58]"
+          className="text-[#7DBBE8]"
         />
       </span>
     </h2>
-
     <motion.p
       variants={REVEAL}
       className="mt-5 max-w-[630px] text-[14px] leading-[1.85] text-white/70 sm:text-[15px]"
@@ -931,29 +805,24 @@ export function WhyUgandaSection() {
       services and modern building systems.
     </motion.p>
   </div>
-
   <motion.div
     variants={REVEAL}
     className="shrink-0"
   >
     <Link
       href="/why-uganda"
-      className="group inline-flex min-h-12 items-center justify-center gap-4 rounded-lg border border-white/20 bg-white/10 px-6 py-3 text-[13px] font-bold text-white transition-[background-color,border-color,transform] duration-300 hover:-translate-y-0.5 hover:border-[#28A45A] hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#28A45A] motion-reduce:transform-none"
+      className="group inline-flex min-h-12 items-center justify-center gap-4 rounded-lg border border-white/20 bg-white/10 px-6 py-3 text-[13px] font-bold text-white transition-[background-color,border-color,transform] duration-300 hover:-translate-y-0.5 hover:border-[#1769A4] hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#1769A4] motion-reduce:transform-none"
     >
       Explore Why Uganda
-
       <span className="transition-transform duration-300 group-hover:translate-x-1">
         <ArrowIcon />
       </span>
     </Link>
   </motion.div>
 </motion.div>
-
-
         {/* =========================================
             MARKET FACTS
         ========================================= */}
-
         <motion.div
           variants={STAGGER}
           initial="hidden"
@@ -972,11 +841,9 @@ export function WhyUgandaSection() {
             />
           ))}
         </motion.div>
-
         {/* =========================================
             FOCUS AREAS
         ========================================= */}
-
         <FocusAreas reduced={reduced} />
       </Container>
     </section>

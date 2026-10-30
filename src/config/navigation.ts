@@ -42,12 +42,12 @@ export const mainNav: NavItem[] = [
         description:
           "Meet the joint organising companies.",
       },
-      {
-        label: "Partners",
-        href: "/partners",
-        description:
-          "Exhibition partners and supporting organisations.",
-      },
+      // {
+      //   label: "Partners",
+      //   href: "/partners",
+      //   description:
+      //     "Exhibition partners and supporting organisations.",
+      // },
     ],
   },
   {

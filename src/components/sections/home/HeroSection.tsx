@@ -521,31 +521,7 @@ function HeroVisual() {
           {/* Bottom dark area */}
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[42%] bg-gradient-to-t from-[#0A0D11] via-[#0A0D11]/75 to-transparent" />
 
-          <motion.div
-            initial={{
-              opacity: 0,
-              y: 15,
-            }}
-            whileInView={{
-              opacity: 1,
-              y: 0,
-            }}
-            viewport={{ once: true }}
-            transition={{
-              duration: 0.75,
-              delay: 0.75,
-              ease: EASE,
-            }}
-            className="absolute inset-x-0 bottom-0 z-10 p-5 sm:p-6"
-          >
-            <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-white/65">
-              The Industry Meets Here
-            </p>
-
-            <p className="mt-1.5 font-heading text-[19px] font-bold tracking-[-0.035em] text-white sm:text-[21px]">
-              {event.venue.city}, {event.venue.country}
-            </p>
-          </motion.div>
+      
         </div>
       </div>
 

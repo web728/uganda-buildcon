@@ -271,9 +271,7 @@ function FeatureRow({
       variants={REVEAL}
       className="group flex items-start gap-4 border-b border-[#E5E8EB] py-4 sm:gap-5"
     >
-      <span className="mt-1 font-heading text-[11px] font-bold text-[#28A45A]">
-        {number}
-      </span>
+    
 
       <div className="min-w-0 flex-1">
         <h3 className="font-heading text-[15px] font-bold text-[#111111] transition-colors duration-300 group-hover:text-[#1769A4]">
