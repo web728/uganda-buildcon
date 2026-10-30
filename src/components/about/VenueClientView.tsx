@@ -311,25 +311,7 @@ function VenueMap() {
           />
         </motion.div>
       </div>
-
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
-        <p className="text-[12px] leading-[1.65] text-[#647385]">
-          {event.venue.fullLocation}
-        </p>
-
-        <a
-          href={event.venue.mapLinkUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group inline-flex items-center gap-2 border-b border-[#1769A4]/40 pb-1 text-[12px] font-bold text-[#1769A4] transition-colors hover:border-[#28A45A] hover:text-[#28A45A]"
-        >
-          Open in Google Maps
-
-          <span className="transition-transform duration-300 group-hover:translate-x-1">
-            <ArrowIcon />
-          </span>
-        </a>
-      </div>
+ 
     </motion.div>
   );
 }
